@@ -17,23 +17,29 @@ function normalizeModel(model) {
 }
 
 router.post('/', async (req, res) => {
-  const { model, prompt } = req.body || {};
+  const { model, prompt, image } = req.body || {};
   if (!prompt) {
     return res.status(400).json({ error: 'prompt is required' });
   }
 
   const target = normalizeModel(model);
+  
+  // Vision support note
+  if (image && !['openai', 'anthropic', 'gemini'].includes(target)) {
+    return res.json({ reply: `[Note: ${target} doesn't support vision yet. Image analysis available with ChatGPT, Claude, and Gemini.]` });
+  }
+
   try {
     let reply;
     switch (target) {
       case 'openai':
-        reply = await callOpenAI(prompt);
+        reply = await callOpenAI(prompt, image);
         break;
       case 'anthropic':
-        reply = await callAnthropic(prompt);
+        reply = await callAnthropic(prompt, image);
         break;
       case 'gemini':
-        reply = await callGemini(prompt);
+        reply = await callGemini(prompt, image);
         break;
       case 'llama':
         reply = await callGroq(prompt);

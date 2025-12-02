@@ -100,11 +100,33 @@
           <div class="playground-left">
             <label class="field-label">Models</label>
             <div id="model-toggles" class="toggle-row"></div>
+            
+            <label class="field-label">Examples</label>
+            <select id="exampleSelect" class="input">
+              <option value="">Load an example prompt...</option>
+              <option value="spanish-learning">🇪🇸 Learn Basic Spanish Phrases</option>
+              <option value="troubleshooting">🐛 Debug React Error</option>
+              <option value="design-review">🎨 Review Landing Page Design</option>
+              <option value="code-refactor">⚡ Refactor Code for Efficiency</option>
+              <option value="product-compare">⚖️ PostgreSQL vs MongoDB</option>
+            </select>
+            
             <label class="field-label" for="playgroundPrompt">Prompt</label>
-            <textarea id="playgroundPrompt" class="input" rows="4" placeholder="Type a real prompt you would ship..." ></textarea>
+            <div class="prompt-controls">
+              <textarea id="playgroundPrompt" class="input" rows="4" placeholder="Type or speak your prompt..." ></textarea>
+              <button id="voiceInputBtn" class="btn btn-icon">🎤 Voice Input</button>
+            </div>
+            
+            <label class="field-label">Vision (Optional)</label>
+            <div class="vision-upload">
+              <input type="file" id="visionUpload" accept="image/*" style="display:none;">
+              <button onclick="document.getElementById('visionUpload').click()" class="btn btn-ghost full">📷 Upload Image</button>
+              <div id="imagePreview" class="image-preview"></div>
+            </div>
+            
             <button id="playgroundRun" class="btn btn-primary full">Run experiment</button>
-            <button onclick="downloadFeedbackCSV()" class="btn btn-ghost full" style="margin-top: 8px;">📥 Download Feedback CSV</button>
-            <p class="stub-note">Tip: deselect a model to exclude it for this run. Use thumbs/issues to track behavior patterns.</p>
+            <button onclick="downloadFeedbackCSV()" class="btn btn-ghost full download-csv-btn">📥 Download Feedback CSV</button>
+            <p class="stub-note">Tip: Use voice input, examples, or type your own. Track model behavior with feedback tools.</p>
           </div>
           <div class="playground-right">
             <div class="results" id="playgroundResults">

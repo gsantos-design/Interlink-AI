@@ -2,18 +2,32 @@
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 
-async function callAnthropic(prompt) {
+async function callAnthropic(prompt, imageData = null) {
   if (!prompt) return '';
   if (!ANTHROPIC_API_KEY) {
     return `[stub: anthropic] ${prompt}`;
   }
   try {
+    const content = [];
+    if (imageData) {
+      const base64Data = imageData.split(',')[1] || imageData;
+      content.push({
+        type: 'image',
+        source: {
+          type: 'base64',
+          media_type: 'image/jpeg',
+          data: base64Data,
+        },
+      });
+    }
+    content.push({ type: 'text', text: prompt });
+
     const res = await axios.post(
       'https://api.anthropic.com/v1/messages',
       {
-        model: 'claude-3-haiku-20240307',
-        max_tokens: 300,
-        messages: [{ role: 'user', content: prompt }],
+        model: 'claude-3-5-sonnet-20241022',
+        max_tokens: 500,
+        messages: [{ role: 'user', content }],
       },
       {
         headers: {
@@ -26,7 +40,7 @@ async function callAnthropic(prompt) {
     return res.data?.content?.[0]?.text?.trim() || 'No response from Claude.';
   } catch (err) {
     console.error('Anthropic error', err.response?.data || err.message);
-    return '[stub: anthropic error] Unable to reach Anthropic. Check API key and model.';
+    return '[Claude error] ' + (err.response?.data?.error?.message || err.message);
   }
 }
 

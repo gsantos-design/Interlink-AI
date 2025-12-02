@@ -2,21 +2,28 @@
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
-async function callOpenAI(prompt) {
+async function callOpenAI(prompt, imageData = null) {
   if (!prompt) return '';
   if (!OPENAI_API_KEY) {
     return `[stub: openai] ${prompt}`;
   }
   try {
+    const userContent = imageData 
+      ? [
+          { type: 'text', text: prompt },
+          { type: 'image_url', image_url: { url: imageData } }
+        ]
+      : prompt;
+
     const res = await axios.post(
       'https://api.openai.com/v1/chat/completions',
       {
-        model: 'gpt-4o-mini',
+        model: imageData ? 'gpt-4o' : 'gpt-4o-mini',
         messages: [
           { role: 'system', content: 'You are Interlink AI. Keep responses concise.' },
-          { role: 'user', content: prompt },
+          { role: 'user', content: userContent },
         ],
-        max_tokens: 300,
+        max_tokens: 500,
       },
       {
         headers: {
@@ -28,7 +35,7 @@ async function callOpenAI(prompt) {
     return res.data?.choices?.[0]?.message?.content?.trim() || 'No response from OpenAI.';
   } catch (err) {
     console.error('OpenAI error', err.response?.data || err.message);
-    return '[stub: openai error] Unable to reach OpenAI. Check API key and model.';
+    return '[OpenAI error] ' + (err.response?.data?.error?.message || err.message);
   }
 }
 

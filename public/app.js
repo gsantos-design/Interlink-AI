@@ -55,11 +55,15 @@ function getSelectedModelIds() {
   return selected.length ? selected : models.map((m) => m.id);
 }
 
-async function callModel(modelId, prompt) {
+async function callModel(modelId, prompt, imageData = null) {
+  const body = { model: modelId, prompt };
+  if (imageData) {
+    body.image = imageData;
+  }
   const res = await fetch('/api/chat', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model: modelId, prompt }),
+    body: JSON.stringify(body),
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error || 'Request failed');
@@ -112,14 +116,17 @@ function renderPlaygroundResults(items) {
             <span class="model-avatar" style="background: ${modelData.color || '#333'}">${modelData.avatar || '🤖'}</span>
             <span>${item.label}</span>
           </div>
-          <span>${item.status}</span>
+          <div class="head-actions">
+            ${item.status === 'done' ? `<button class="speak-btn" data-idx="${idx}" title="Read aloud">🔊</button>` : ''}
+            <span>${item.status}</span>
+          </div>
         </div>
         <div class="result-body">${item.text}</div>
         ${item.status === 'done' ? `
           <div class="feedback-bar">
             <button class="feedback-btn thumbs-up" data-idx="${idx}" title="Good response">👍</button>
             <button class="feedback-btn thumbs-down" data-idx="${idx}" title="Bad response">👎</button>
-            <select class="issue-select" data-idx="${idx}">
+            <select class="issue-select" data-idx="${idx}" title="Flag issue">
               <option value="">Flag issue...</option>
               <option value="wrong">Wrong/Incorrect</option>
               <option value="overconfident">Overconfident</option>
@@ -145,12 +152,14 @@ async function handlePlaygroundRun() {
   if (!prompt) return;
   const selected = getSelectedModelIds();
   if (!selected.length) return;
-  renderPlaygroundResults(selected.map((id) => ({ label: id, status: 'running...', text: '' })));
+  
+  const imageNote = uploadedImageData ? ' (with image)' : '';
+  renderPlaygroundResults(selected.map((id) => ({ label: id, status: 'running...' + imageNote, text: '' })));
   const results = [];
   for (const id of selected) {
     const meta = models.find((m) => m.id === id) || { label: id };
     try {
-      const reply = await callModel(id, prompt);
+      const reply = await callModel(id, prompt, uploadedImageData);
       results.push({ label: meta.label, status: 'done', text: reply });
     } catch (err) {
       results.push({ label: meta.label, status: 'error', text: err.message });
@@ -415,6 +424,174 @@ function wireFeedbackButtons() {
   });
 }
 
+// Voice input/output
+let recognition = null;
+let isListening = false;
+
+function initVoiceRecognition() {
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    console.warn('Speech recognition not supported');
+    return null;
+  }
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
+  recognition.continuous = false;
+  recognition.interimResults = false;
+  recognition.lang = 'en-US';
+  
+  recognition.onresult = (event) => {
+    const transcript = event.results[0][0].transcript;
+    const promptEl = document.getElementById('playgroundPrompt');
+    if (promptEl) {
+      promptEl.value = transcript;
+    }
+  };
+  
+  recognition.onerror = (event) => {
+    console.error('Speech recognition error:', event.error);
+    isListening = false;
+    updateMicButton();
+  };
+  
+  recognition.onend = () => {
+    isListening = false;
+    updateMicButton();
+  };
+  
+  return recognition;
+}
+
+function toggleVoiceInput() {
+  if (!recognition) {
+    recognition = initVoiceRecognition();
+    if (!recognition) {
+      alert('Voice input not supported in your browser. Try Chrome or Edge.');
+      return;
+    }
+  }
+  
+  if (isListening) {
+    recognition.stop();
+    isListening = false;
+  } else {
+    recognition.start();
+    isListening = true;
+  }
+  updateMicButton();
+}
+
+function updateMicButton() {
+  const btn = document.getElementById('voiceInputBtn');
+  if (btn) {
+    btn.textContent = isListening ? '🔴 Listening...' : '🎤 Voice Input';
+    btn.style.background = isListening ? '#ff4444' : '';
+  }
+}
+
+function speakText(text) {
+  if (!('speechSynthesis' in window)) {
+    console.warn('Text-to-speech not supported');
+    return;
+  }
+  
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.rate = 1.0;
+  utterance.pitch = 1.0;
+  utterance.volume = 1.0;
+  
+  const voices = window.speechSynthesis.getVoices();
+  if (voices.length > 0) {
+    utterance.voice = voices[0];
+  }
+  
+  window.speechSynthesis.speak(utterance);
+}
+
+// Example prompts
+const examplePrompts = {
+  'spanish-learning': 'Teach me 10 basic Spanish phrases for travelers with pronunciation tips.',
+  'troubleshooting': 'I\'m getting a "Cannot read property of undefined" error in my React app. The error occurs when I try to access user.profile.name. How do I fix this?',
+  'design-review': 'Review this landing page design: minimalist hero section, purple gradient background, sans-serif fonts. Is it modern enough for a SaaS product in 2025?',
+  'code-refactor': 'Refactor this function to be more efficient: function findDuplicates(arr) { let dups = []; for(let i=0; i<arr.length; i++) { for(let j=i+1; j<arr.length; j++) { if(arr[i] === arr[j]) dups.push(arr[i]); } } return dups; }',
+  'product-compare': 'Compare the pros and cons of using PostgreSQL vs MongoDB for a real-time chat application with 100k users.',
+};
+
+function loadExamplePrompt(key) {
+  const promptEl = document.getElementById('playgroundPrompt');
+  if (promptEl && examplePrompts[key]) {
+    promptEl.value = examplePrompts[key];
+  }
+}
+
+// Vision/Image upload
+let uploadedImageData = null;
+
+function handleImageUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    uploadedImageData = e.target.result;
+    const preview = document.getElementById('imagePreview');
+    if (preview) {
+      preview.innerHTML = `
+        <div class="image-preview-content">
+          <img src="${uploadedImageData}" alt="Uploaded image">
+          <button class="remove-image-btn" onclick="clearImage()">✕ Remove</button>
+        </div>
+      `;
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearImage() {
+  uploadedImageData = null;
+  const preview = document.getElementById('imagePreview');
+  if (preview) {
+    preview.innerHTML = '';
+  }
+  const input = document.getElementById('visionUpload');
+  if (input) {
+    input.value = '';
+  }
+}
+
+function wireVoiceControls() {
+  const voiceBtn = document.getElementById('voiceInputBtn');
+  if (voiceBtn) {
+    voiceBtn.addEventListener('click', toggleVoiceInput);
+  }
+  
+  const exampleSelect = document.getElementById('exampleSelect');
+  if (exampleSelect) {
+    exampleSelect.addEventListener('change', (e) => {
+      if (e.target.value) {
+        loadExamplePrompt(e.target.value);
+        e.target.value = '';
+      }
+    });
+  }
+
+  const visionUpload = document.getElementById('visionUpload');
+  if (visionUpload) {
+    visionUpload.addEventListener('change', handleImageUpload);
+  }
+
+  // Add speak buttons to results
+  document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('speak-btn')) {
+      const idx = parseInt(e.target.dataset.idx);
+      const result = lastPlaygroundResults[idx];
+      if (result && result.text) {
+        speakText(result.text);
+      }
+    }
+  });
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   setYear();
   await fetchModels();
@@ -428,4 +605,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   wirePricingButtons();
   wireCTA();
   wireParticipants();
+  wireVoiceControls();
+  
+  // Load voices for TTS
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.getVoices();
+  }
 });
