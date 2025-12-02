@@ -2,6 +2,7 @@
 const { callOpenAI } = require('../services/openaiService');
 const { callAnthropic } = require('../services/anthropicService');
 const { callGemini } = require('../services/geminiService');
+const { callGroq } = require('../services/groqService');
 
 const router = express.Router();
 
@@ -9,6 +10,7 @@ const modelConfig = {
   openai: { label: 'ChatGPT', fn: callOpenAI },
   anthropic: { label: 'Claude', fn: callAnthropic },
   gemini: { label: 'Gemini', fn: callGemini },
+  llama: { label: 'Llama', fn: callGroq },
 };
 
 function normalize(model) {
@@ -17,6 +19,7 @@ function normalize(model) {
   if (['gpt', 'chatgpt', 'openai'].includes(key)) return 'openai';
   if (['claude', 'anthropic'].includes(key)) return 'anthropic';
   if (['gemini', 'google'].includes(key)) return 'gemini';
+  if (['llama', 'groq', 'meta'].includes(key)) return 'llama';
   return null;
 }
 
@@ -49,7 +52,7 @@ router.post('/', async (req, res) => {
   const normalized = (Array.isArray(models) ? models : [])
     .map(normalize)
     .filter(Boolean);
-  const chosen = normalized.length ? normalized : ['openai', 'anthropic', 'gemini'];
+  const chosen = normalized.length ? normalized : ['openai', 'anthropic', 'gemini', 'llama'];
 
   try {
     const start = Date.now();

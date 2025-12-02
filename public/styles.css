@@ -395,6 +395,45 @@ a {
   white-space: pre-wrap;
 }
 
+.feedback-bar {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  align-items: center;
+}
+
+.feedback-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 6px 12px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.feedback-btn:hover {
+  background: var(--bg-contrast);
+  transform: scale(1.1);
+}
+
+.issue-select {
+  background: var(--bg-contrast);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  font-family: var(--font-sans);
+}
+
+.issue-select:hover {
+  border-color: var(--accent);
+}
+
 .placeholder {
   color: var(--muted);
   font-size: 0.92rem;

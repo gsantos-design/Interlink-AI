@@ -2,6 +2,7 @@
   { id: 'openai', label: 'ChatGPT (OpenAI)' },
   { id: 'anthropic', label: 'Claude (Anthropic)' },
   { id: 'gemini', label: 'Gemini (Google)' },
+  { id: 'llama', label: 'Llama 3.3 (Meta)' },
 ];
 
 let models = [...defaultModels];
@@ -102,14 +103,32 @@ function renderPlaygroundResults(items) {
   }
   const html = items
     .map(
-      (item) => `
-      <div class="result-item">
-        <div class="result-head"><span>${item.label}</span><span>${item.status}</span></div>
+      (item, idx) => `
+      <div class="result-item" data-result-idx="${idx}">
+        <div class="result-head">
+          <span>${item.label}</span>
+          <span>${item.status}</span>
+        </div>
         <div class="result-body">${item.text}</div>
+        ${item.status === 'done' ? `
+          <div class="feedback-bar">
+            <button class="feedback-btn thumbs-up" data-idx="${idx}" title="Good response">👍</button>
+            <button class="feedback-btn thumbs-down" data-idx="${idx}" title="Bad response">👎</button>
+            <select class="issue-select" data-idx="${idx}">
+              <option value="">Flag issue...</option>
+              <option value="wrong">Wrong/Incorrect</option>
+              <option value="overconfident">Overconfident</option>
+              <option value="hallucinated">Hallucinated</option>
+              <option value="refused">Refused to answer</option>
+              <option value="biased">Biased</option>
+            </select>
+          </div>
+        ` : ''}
       </div>`
     )
     .join('');
   container.innerHTML = html;
+  wireFeedbackButtons();
 }
 
 async function handlePlaygroundRun() {
@@ -130,6 +149,7 @@ async function handlePlaygroundRun() {
       results.push({ label: meta.label, status: 'error', text: err.message });
     }
   }
+  lastPlaygroundResults = results;
   renderPlaygroundResults(results);
 }
 
@@ -293,6 +313,53 @@ function wireRace() {
       handleRaceStart();
     });
   }
+}
+
+let lastPlaygroundResults = [];
+
+async function submitFeedback(modelLabel, rating, issues, prompt, response) {
+  try {
+    await fetch('/api/feedback', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: modelLabel,
+        prompt,
+        response,
+        rating,
+        issues: Array.isArray(issues) ? issues : [issues],
+      }),
+    });
+    console.log('Feedback submitted:', { modelLabel, rating, issues });
+  } catch (err) {
+    console.error('Feedback error:', err);
+  }
+}
+
+function wireFeedbackButtons() {
+  document.querySelectorAll('.feedback-btn').forEach((btn) => {
+    btn.addEventListener('click', async (e) => {
+      const idx = parseInt(btn.dataset.idx);
+      const result = lastPlaygroundResults[idx];
+      if (!result) return;
+      
+      const rating = btn.classList.contains('thumbs-up') ? 5 : 1;
+      btn.style.opacity = '0.5';
+      await submitFeedback(result.label, rating, [], '', result.text);
+    });
+  });
+
+  document.querySelectorAll('.issue-select').forEach((select) => {
+    select.addEventListener('change', async (e) => {
+      const idx = parseInt(select.dataset.idx);
+      const result = lastPlaygroundResults[idx];
+      if (!result || !select.value) return;
+      
+      await submitFeedback(result.label, 2, [select.value], '', result.text);
+      select.value = '';
+      alert(`Issue "${select.options[select.selectedIndex].text}" reported for ${result.label}`);
+    });
+  });
 }
 
 document.addEventListener('DOMContentLoaded', async () => {

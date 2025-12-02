@@ -9,6 +9,7 @@ const chatRoutes = require('./routes/chatRoutes');
 const billingRoutes = require('./routes/billingRoutes');
 const contestRoutes = require('./routes/contestRoutes');
 const modelsRoutes = require('./routes/modelsRoutes');
+const feedbackRoutes = require('./routes/feedbackRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -23,6 +24,7 @@ app.use('/api/chat', chatRoutes);
 app.use('/api/billing', billingRoutes);
 app.use('/api/contest', contestRoutes);
 app.use('/api/models', modelsRoutes);
+app.use('/api/feedback', feedbackRoutes);
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
