@@ -3,6 +3,7 @@ const { callOpenAI } = require('../services/openaiService');
 const { callAnthropic } = require('../services/anthropicService');
 const { callGemini } = require('../services/geminiService');
 const { callGroq } = require('../services/groqService');
+const { contentFilterMiddleware } = require('../middleware/contentFilter');
 
 const router = express.Router();
 
@@ -16,7 +17,7 @@ function normalizeModel(model) {
   return key;
 }
 
-router.post('/', async (req, res) => {
+router.post('/', contentFilterMiddleware, async (req, res) => {
   const { model, prompt, image } = req.body || {};
   if (!prompt) {
     return res.status(400).json({ error: 'prompt is required' });

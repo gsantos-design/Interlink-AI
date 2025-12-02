@@ -859,11 +859,12 @@ async function sendChatMessage() {
     // Show typing indicator
     const typingId = addChatMessage('...', 'assistant', true);
     
-    // Call API
+    // Call API with Safe Mode check
+    const safeMode = checkSafeMode();
     const res = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: contextPrompt, model: modelId }),
+      body: JSON.stringify({ prompt: contextPrompt, model: modelId, safeMode }),
     });
     
     const data = await res.json();
@@ -929,6 +930,88 @@ function endChat() {
   document.getElementById('chatInput').value = '';
 }
 
+// ========== Age Verification & Safety ==========
+function showAgeVerification() {
+  const modal = document.getElementById('ageVerificationModal');
+  if (modal) {
+    modal.style.display = 'flex';
+  }
+}
+
+function verifyAge() {
+  const birthdateInput = document.getElementById('birthdate');
+  const birthdate = new Date(birthdateInput.value);
+  
+  if (!birthdateInput.value) {
+    alert('Please enter your date of birth.');
+    return;
+  }
+  
+  const today = new Date();
+  const age = today.getFullYear() - birthdate.getFullYear();
+  const monthDiff = today.getMonth() - birthdate.getMonth();
+  const dayDiff = today.getDate() - birthdate.getDate();
+  
+  // Adjust age if birthday hasn't occurred this year
+  const actualAge = (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) ? age - 1 : age;
+  
+  // Store age verification
+  localStorage.setItem('interlinkAgeVerified', 'true');
+  localStorage.setItem('interlinkUserAge', actualAge);
+  
+  if (actualAge < 13) {
+    // Under 13 - deny access
+    document.getElementById('ageVerificationStep1').style.display = 'none';
+    document.getElementById('ageDeniedStep').style.display = 'block';
+  } else if (actualAge < 18) {
+    // 13-17 - require parental consent
+    localStorage.setItem('interlinkSafeMode', 'true');
+    document.getElementById('ageVerificationStep1').style.display = 'none';
+    document.getElementById('parentalConsentStep').style.display = 'block';
+  } else {
+    // 18+ - full access
+    localStorage.setItem('interlinkSafeMode', 'false');
+    document.getElementById('ageVerificationStep1').style.display = 'none';
+    document.getElementById('ageVerifiedStep').style.display = 'block';
+  }
+}
+
+function submitParentalConsent() {
+  const parentEmail = document.getElementById('parentEmail').value;
+  const consentChecked = document.getElementById('parentConsent').checked;
+  
+  if (!parentEmail || !consentChecked) {
+    alert('Please provide your parent/guardian email and confirm consent.');
+    return;
+  }
+  
+  // Store parental consent (in production, send verification email)
+  localStorage.setItem('interlinkParentEmail', parentEmail);
+  localStorage.setItem('interlinkParentalConsent', 'true');
+  
+  document.getElementById('parentalConsentStep').style.display = 'none';
+  document.getElementById('ageVerifiedStep').style.display = 'block';
+  
+  // In production: Send verification email to parent
+  console.log('Parental consent collected for:', parentEmail);
+}
+
+function closeAgeVerification() {
+  const modal = document.getElementById('ageVerificationModal');
+  if (modal) {
+    modal.style.display = 'none';
+  }
+  
+  // Show tutorial for first-time users
+  if (!localStorage.getItem('interlinkTutorialSeen')) {
+    setTimeout(showTutorial, 500);
+  }
+}
+
+function checkSafeMode() {
+  return localStorage.getItem('interlinkSafeMode') === 'true';
+}
+
 // ==========================================
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -957,8 +1040,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
   }
 
-  // Show tutorial for first-time users
-  if (!localStorage.getItem('interlinkTutorialSeen')) {
+  // Check age verification on first visit
+  if (!localStorage.getItem('interlinkAgeVerified')) {
+    setTimeout(showAgeVerification, 500);
+  } else if (!localStorage.getItem('interlinkTutorialSeen')) {
+    // Show tutorial for verified users who haven't seen it
     setTimeout(showTutorial, 1000);
   }
 });

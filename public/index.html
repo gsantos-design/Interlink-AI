@@ -17,6 +17,7 @@
         <a href="#features">Features</a>
         <a href="#playground">Playground</a>
         <a href="#one-on-one">One-on-One</a>
+        <a href="#educators">For Teachers</a>
         <a href="#resources">Resources</a>
         <a href="#community">Community</a>
         <a href="#pricing">Pricing</a>
@@ -204,6 +205,47 @@
             <p><strong>Hallucination:</strong> Fabricates data, links, or references that don't exist.</p>
             <p><strong>Inconsistency:</strong> Gives different answers to the same question in different sessions.</p>
             <p><strong>Deception:</strong> Creates false scenarios (like Gemini's fake Stripe request!).</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section section-contrast" id="educators">
+        <div class="section-header">
+          <p class="kicker">For Educators</p>
+          <h2>Empower your classroom with AI literacy.</h2>
+          <p class="section-sub">Built by a former 1st & 5th grade teacher who believes AI should strengthen critical thinking, not replace it.</p>
+        </div>
+        <div class="educator-grid">
+          <article class="educator-card">
+            <h3>🎓 Classroom Ready</h3>
+            <p><strong>Compare & Contrast:</strong> Have students analyze how different AI models answer the same question. Perfect for critical thinking lessons.</p>
+            <p><strong>Research Skills:</strong> Use feedback tools to teach fact-checking, source verification, and detecting misinformation.</p>
+            <p><strong>Safe Environment:</strong> Built-in content filtering and parental controls for K-12 use.</p>
+          </article>
+          <article class="educator-card">
+            <h3>📋 Free Lesson Plans</h3>
+            <p><strong>Elementary:</strong> "Which AI Tutor is Right?" - Students pick avatars and learn about AI personalities.</p>
+            <p><strong>Middle School:</strong> "Spot the Hallucination" - Identify when AI makes mistakes or fabricates information.</p>
+            <p><strong>High School:</strong> "Model Behavior Analysis" - Track patterns in AI responses across multiple sessions.</p>
+            <a href="#" class="btn btn-ghost" onclick="alert('Lesson plan library coming soon!'); return false;">Download Plans</a>
+          </article>
+          <article class="educator-card">
+            <h3>💰 Educator Pricing</h3>
+            <p><strong>Free Tier:</strong> Up to 30 students per classroom with basic features.</p>
+            <p><strong>School License:</strong> Unlimited students, advanced analytics, admin dashboard - $299/year per school.</p>
+            <p><strong>District Partnership:</strong> Custom pricing, training workshops, ongoing support.</p>
+            <a href="mailto:educators@interlinkAI.com?subject=School%20Partnership%20Inquiry" class="btn btn-primary">Request School Demo</a>
+          </article>
+          <article class="educator-card">
+            <h3>🤝 Why Teachers Love It</h3>
+            <blockquote>
+              <p>"Finally, a tool that teaches kids HOW to think about AI, not just how to use it. My 5th graders now question everything they see online."</p>
+              <cite>— Sarah M., Elementary Teacher</cite>
+            </blockquote>
+            <blockquote>
+              <p>"The comparison feature is brilliant. Students see firsthand that AI isn't magic - it's a tool with limitations."</p>
+              <cite>— James T., High School STEM</cite>
+            </blockquote>
           </article>
         </div>
       </section>
@@ -444,6 +486,49 @@
           <span id="tutorialProgress">1 / 5</span>
           <button id="tutorialNext" class="btn btn-primary" onclick="nextTutorialStep()">Next →</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Age Verification Modal -->
+  <div id="ageVerificationModal" class="modal">
+    <div class="modal-content">
+      <h2>Welcome to Interlink AI! 👋</h2>
+      <p>To provide a safe learning experience, please verify your age.</p>
+      
+      <div id="ageVerificationStep1">
+        <div class="field-group">
+          <label for="birthdate">Date of Birth:</label>
+          <input type="date" id="birthdate" class="input" required />
+        </div>
+        <button class="btn btn-primary full" onclick="verifyAge()">Continue</button>
+      </div>
+
+      <div id="parentalConsentStep" style="display:none;">
+        <p class="alert alert-info">
+          ⚠️ You must be 13 or older to use Interlink AI. Users under 18 require parental consent.
+        </p>
+        <div class="field-group">
+          <label for="parentEmail">Parent/Guardian Email:</label>
+          <input type="email" id="parentEmail" class="input" placeholder="parent@example.com" required />
+        </div>
+        <div class="field-group">
+          <label>
+            <input type="checkbox" id="parentConsent" />
+            My parent/guardian has given me permission to use this platform.
+          </label>
+        </div>
+        <button class="btn btn-primary full" onclick="submitParentalConsent()">Submit</button>
+      </div>
+
+      <div id="ageVerifiedStep" style="display:none;">
+        <p class="alert alert-success">✅ Age verified! Welcome to Interlink AI.</p>
+        <button class="btn btn-primary full" onclick="closeAgeVerification()">Start Learning</button>
+      </div>
+
+      <div id="ageDeniedStep" style="display:none;">
+        <p class="alert alert-error">❌ You must be at least 13 years old to use this platform.</p>
+        <p>Please return when you're older, or ask a parent/teacher to create an account for educational purposes.</p>
       </div>
     </div>
   </div>
