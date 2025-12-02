@@ -703,6 +703,234 @@ async function submitGeneralFeedback() {
   }
 }
 
+// ========== One-on-One Chat ==========
+let currentTutor = null;
+let chatRecognition = null;
+let chatHistory = [];
+let selectedVoice = null;
+
+const tutorProfiles = {
+  einstein: {
+    name: 'Robo Einstein',
+    icon: '🧠',
+    greeting: "Hello! I'm Robo Einstein. Let's explore the wonders of science and physics together!",
+    systemPrompt: 'You are Robo Einstein, a science and physics expert. Explain concepts clearly and enthusiastically, using analogies and examples.'
+  },
+  prof: {
+    name: 'Robo Prof',
+    icon: '📚',
+    greeting: "Welcome! I'm Robo Prof, your academic tutor. What subject shall we study today?",
+    systemPrompt: 'You are Robo Prof, an academic tutor. Help students learn any subject with patience, clarity, and encouragement.'
+  },
+  mentor: {
+    name: 'Robot Mentor',
+    icon: '🤖',
+    greeting: "Hi there! I'm Robot Mentor. Let's talk about your career goals and how to achieve them.",
+    systemPrompt: 'You are Robot Mentor, a career guidance counselor. Provide practical career advice, motivation, and strategic thinking.'
+  },
+  sage: {
+    name: 'AI Sage',
+    icon: '🧙',
+    greeting: "Greetings! I'm AI Sage. Together we'll explore philosophy, wisdom, and the deeper questions of life.",
+    systemPrompt: 'You are AI Sage, a philosophical guide. Discuss deep questions, ethics, and wisdom with thoughtful reflection.'
+  },
+  cyber: {
+    name: 'Cyber Tutor',
+    icon: '💻',
+    greeting: "Hey! I'm Cyber Tutor. Ready to learn about technology, coding, and digital innovation?",
+    systemPrompt: 'You are Cyber Tutor, a tech and coding expert. Teach programming, technology concepts, and problem-solving skills.'
+  }
+};
+
+function selectTutor(avatar) {
+  currentTutor = avatar;
+  const profile = tutorProfiles[avatar];
+  
+  // Update UI
+  document.getElementById('activeTutorIcon').textContent = profile.icon;
+  document.getElementById('activeTutorName').textContent = profile.name;
+  document.getElementById('tutorGreeting').textContent = profile.name;
+  
+  // Show chat interface
+  document.querySelector('.avatar-selection').style.display = 'none';
+  document.getElementById('chatInterface').style.display = 'block';
+  
+  // Populate voices
+  populateChatVoices();
+  
+  // Clear history and add greeting
+  chatHistory = [];
+  const messagesDiv = document.getElementById('chatMessages');
+  messagesDiv.innerHTML = `
+    <div class="chat-message assistant">
+      <div class="message-avatar">${profile.icon}</div>
+      <div class="message-content">
+        <p>${profile.greeting}</p>
+      </div>
+    </div>
+  `;
+  
+  // Initialize voice recognition
+  if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    chatRecognition = new SpeechRecognition();
+    chatRecognition.continuous = false;
+    chatRecognition.interimResults = false;
+    
+    chatRecognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      document.getElementById('chatInput').value = transcript;
+      sendChatMessage();
+    };
+    
+    chatRecognition.onerror = (event) => {
+      console.error('Chat speech recognition error:', event.error);
+      updateChatMicButton(false);
+    };
+    
+    chatRecognition.onend = () => {
+      updateChatMicButton(false);
+    };
+  }
+}
+
+function populateChatVoices() {
+  const voiceSelect = document.getElementById('chatVoice');
+  const voices = window.speechSynthesis.getVoices();
+  
+  voiceSelect.innerHTML = voices.map((voice, idx) => 
+    `<option value="${idx}">${voice.name} (${voice.lang})</option>`
+  ).join('');
+  
+  // Set default voice
+  const defaultIdx = voices.findIndex(v => v.default);
+  if (defaultIdx >= 0) {
+    voiceSelect.value = defaultIdx;
+  }
+}
+
+function toggleChatVoice() {
+  if (!chatRecognition) {
+    alert('Voice input not supported in your browser');
+    return;
+  }
+  
+  const micBtn = document.getElementById('chatMic');
+  const isListening = micBtn.textContent === '🔴';
+  
+  if (isListening) {
+    chatRecognition.stop();
+    updateChatMicButton(false);
+  } else {
+    chatRecognition.start();
+    updateChatMicButton(true);
+  }
+}
+
+function updateChatMicButton(isListening) {
+  const micBtn = document.getElementById('chatMic');
+  micBtn.textContent = isListening ? '🔴' : '🎤';
+  micBtn.title = isListening ? 'Stop listening' : 'Start voice input';
+}
+
+async function sendChatMessage() {
+  const input = document.getElementById('chatInput');
+  const message = input.value.trim();
+  if (!message) return;
+  
+  // Add user message to UI
+  addChatMessage(message, 'user');
+  input.value = '';
+  
+  // Get selected model
+  const modelSelect = document.getElementById('chatModel');
+  const modelId = modelSelect.value;
+  
+  // Add to history
+  const profile = tutorProfiles[currentTutor];
+  chatHistory.push({ role: 'user', content: message });
+  
+  // Build prompt with context
+  const contextPrompt = `${profile.systemPrompt}\n\nConversation history:\n${
+    chatHistory.slice(-5).map(msg => `${msg.role}: ${msg.content}`).join('\n')
+  }\n\nRespond to the user's latest message.`;
+  
+  try {
+    // Show typing indicator
+    const typingId = addChatMessage('...', 'assistant', true);
+    
+    // Call API
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: contextPrompt, model: modelId }),
+    });
+    
+    const data = await res.json();
+    const response = data.response || 'Sorry, I had trouble processing that.';
+    
+    // Remove typing indicator
+    document.getElementById(typingId)?.remove();
+    
+    // Add assistant response
+    addChatMessage(response, 'assistant');
+    chatHistory.push({ role: 'assistant', content: response });
+    
+    // Speak response
+    speakChatMessage(response);
+    
+  } catch (err) {
+    console.error('Chat error:', err);
+    addChatMessage('Sorry, I encountered an error. Please try again.', 'assistant');
+  }
+}
+
+function addChatMessage(text, role, isTyping = false) {
+  const messagesDiv = document.getElementById('chatMessages');
+  const messageId = `msg-${Date.now()}`;
+  const profile = tutorProfiles[currentTutor];
+  
+  const messageHTML = role === 'user' 
+    ? `<div class="chat-message user" id="${messageId}">
+         <div class="message-content"><p>${text}</p></div>
+         <div class="message-avatar">👤</div>
+       </div>`
+    : `<div class="chat-message assistant" id="${messageId}">
+         <div class="message-avatar">${profile.icon}</div>
+         <div class="message-content ${isTyping ? 'typing' : ''}"><p>${text}</p></div>
+       </div>`;
+  
+  messagesDiv.insertAdjacentHTML('beforeend', messageHTML);
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  
+  return messageId;
+}
+
+function speakChatMessage(text) {
+  const voiceSelect = document.getElementById('chatVoice');
+  const voiceIdx = parseInt(voiceSelect.value);
+  const voices = window.speechSynthesis.getVoices();
+  
+  const utterance = new SpeechSynthesisUtterance(text);
+  if (voices[voiceIdx]) {
+    utterance.voice = voices[voiceIdx];
+  }
+  utterance.rate = 1.0;
+  utterance.pitch = 1.0;
+  
+  window.speechSynthesis.speak(utterance);
+}
+
+function endChat() {
+  currentTutor = null;
+  chatHistory = [];
+  document.querySelector('.avatar-selection').style.display = 'block';
+  document.getElementById('chatInterface').style.display = 'none';
+  document.getElementById('chatInput').value = '';
+}
+
+// ==========================================
+
 document.addEventListener('DOMContentLoaded', async () => {
   setYear();
   await fetchModels();
@@ -721,6 +949,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Load voices for TTS
   if ('speechSynthesis' in window) {
     window.speechSynthesis.getVoices();
+    // Reload when voices change (some browsers load async)
+    window.speechSynthesis.onvoiceschanged = () => {
+      if (document.getElementById('chatVoice')) {
+        populateChatVoices();
+      }
+    };
   }
 
   // Show tutorial for first-time users
