@@ -1,0 +1,205 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Interlink AI – Multi-Model Orchestration Hub</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="page" id="top">
+    <header class="nav">
+      <div class="brand">
+        <div class="brand-mark">∞</div>
+        <div class="brand-name">Interlink <span>AI</span></div>
+      </div>
+      <nav class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#playground">Playground</a>
+        <a href="#races">Prompt Races</a>
+        <a href="#pricing">Pricing</a>
+      </nav>
+      <a class="nav-cta" href="#cta">Get Access</a>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <div class="pill">Multi-model orchestration</div>
+          <h1>One prompt. Three minds. Ship the best answer every time.</h1>
+          <p class="hero-sub">
+            Interlink AI lets you send a single prompt to ChatGPT, Claude, and Gemini in one view,
+            run prompt races, and keep the winners for your workflows.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#playground">Try the playground</a>
+            <a class="btn btn-ghost" href="#pricing">See pricing</a>
+          </div>
+          <p class="hero-note">Built for launch: plug your own API keys, add Stripe, deploy on Render.</p>
+        </div>
+
+        <div class="hero-panel">
+          <div class="panel-header">
+            <span class="panel-title">Live multi-model view</span>
+            <span class="panel-status">Ready</span>
+          </div>
+          <label class="field-label" for="heroPrompt">Prompt</label>
+          <textarea id="heroPrompt" class="input" rows="3">Explain Interlink AI in one sentence for a busy founder.</textarea>
+          <button id="heroRun" class="btn btn-primary full">Run in all models</button>
+          <div class="output-grid" id="heroOutputs">
+            <div class="output-card" data-model="openai">
+              <div class="output-header"><span class="tag tag-openai">ChatGPT</span><span class="status">waiting</span></div>
+              <p class="output-text" id="out-openai">—</p>
+            </div>
+            <div class="output-card" data-model="anthropic">
+              <div class="output-header"><span class="tag tag-claude">Claude</span><span class="status">waiting</span></div>
+              <p class="output-text" id="out-anthropic">—</p>
+            </div>
+            <div class="output-card" data-model="gemini">
+              <div class="output-header"><span class="tag tag-gemini">Gemini</span><span class="status">waiting</span></div>
+              <p class="output-text" id="out-gemini">—</p>
+            </div>
+          </div>
+          <p class="stub-note">In production, this fans out to your backend which calls each provider.</p>
+        </div>
+      </section>
+
+      <section class="section" id="features">
+        <div class="section-header">
+          <p class="kicker">Why Interlink AI</p>
+          <h2>Ship prompts with evidence, not hunches.</h2>
+          <p class="section-sub">Side-by-side answers, prompt tournaments, and reusable kits for teams and creators.</p>
+        </div>
+        <div class="feature-grid">
+          <article class="feature-card">
+            <h3>Multi-model in one pane</h3>
+            <p>Send the same prompt to multiple engines with a click. Compare reasoning, tone, and latency.</p>
+          </article>
+          <article class="feature-card">
+            <h3>Prompt races</h3>
+            <p>Turn comparison into a game for TikTok, Twitch, or your team. Keep the winners.</p>
+          </article>
+          <article class="feature-card">
+            <h3>Prompt kits</h3>
+            <p>Save winning prompts as shareable templates so your team reuses what works.</p>
+          </article>
+          <article class="feature-card">
+            <h3>API-key safe</h3>
+            <p>Use your own OpenAI, Claude, and Gemini keys. Nothing is trained on your data.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section section-contrast" id="playground">
+        <div class="section-header">
+          <p class="kicker">Playground</p>
+          <h2>Toggle models, test prompts, keep the best.</h2>
+          <p class="section-sub">Run real prompts with your stack. Turn experiments into repeatable workflows.</p>
+        </div>
+        <div class="playground">
+          <div class="playground-left">
+            <label class="field-label">Models</label>
+            <div id="model-toggles" class="toggle-row"></div>
+            <label class="field-label" for="playgroundPrompt">Prompt</label>
+            <textarea id="playgroundPrompt" class="input" rows="4" placeholder="Type a real prompt you would ship..." ></textarea>
+            <button id="playgroundRun" class="btn btn-primary full">Run experiment</button>
+            <p class="stub-note">Tip: deselect a model to exclude it for this run.</p>
+          </div>
+          <div class="playground-right">
+            <div class="results" id="playgroundResults">
+              <div class="placeholder">Outputs will appear here after you run.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="races">
+        <div class="section-header">
+          <p class="kicker">Prompt races</p>
+          <h2>Host a live challenge and crown a winner.</h2>
+          <p class="section-sub">Great for “find the best deal” battles, research sprints, or live content.</p>
+        </div>
+        <div class="race-grid">
+          <div class="race-config">
+            <label class="field-label" for="raceTitle">Challenge title</label>
+            <input id="raceTitle" class="input" placeholder="e.g., Best round-trip flight SFO -> NYC under $300" />
+            <label class="field-label" for="raceRules">Rules</label>
+            <textarea id="raceRules" class="input" rows="3" placeholder="Constraints, timing, what counts as a win"></textarea>
+            <label class="field-label">Participants</label>
+            <div id="participantList" class="participant-list"></div>
+            <div class="participant-add">
+              <input id="participantName" class="input" placeholder="Name or handle" />
+              <button id="addParticipant" class="btn btn-ghost">Add</button>
+            </div>
+            <button id="startRace" class="btn btn-primary full">Start race</button>
+            <p class="stub-note">In a full app, this persists to your backend so you can share the race link.</p>
+          </div>
+          <div class="race-results">
+            <div class="race-status" id="raceStatus">No race running.</div>
+            <div class="race-entries" id="raceEntries">
+              <div class="placeholder">Run a race to see model answers and timings.</div>
+            </div>
+            <div class="race-winner" id="raceWinner"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="pricing">
+        <div class="section-header">
+          <p class="kicker">Pricing</p>
+          <h2>Simple plans for builders.</h2>
+          <p class="section-sub">Bring your own API keys. We orchestrate the stack.</p>
+        </div>
+        <div class="pricing-grid">
+          <article class="pricing-card">
+            <div class="pricing-label">Starter</div>
+            <div class="pricing-price">$12<span>/mo</span></div>
+            <ul class="pricing-list">
+              <li>1 user</li>
+              <li>3 connected models</li>
+              <li>Unlimited prompt races</li>
+              <li>Local storage of runs</li>
+            </ul>
+            <button class="btn btn-primary full checkout-btn" data-plan="starter">Get started</button>
+          </article>
+          <article class="pricing-card highlight">
+            <div class="pricing-label">Team</div>
+            <div class="pricing-price">$39<span>/mo</span></div>
+            <ul class="pricing-list">
+              <li>Up to 5 users</li>
+              <li>Shared prompt kits</li>
+              <li>Team leaderboards</li>
+              <li>Export to Notion/Slack</li>
+            </ul>
+            <button class="btn btn-outline full checkout-btn" data-plan="team">Start team trial</button>
+          </article>
+        </div>
+      </section>
+
+      <section class="section section-contrast" id="cta">
+        <div class="cta-card">
+          <div>
+            <p class="kicker">Early access</p>
+            <h2>Be there for the first Interlink AI prompt tournaments.</h2>
+            <p>We are onboarding the first wave of builders and creators. Drop your email or jump into the playground above.</p>
+          </div>
+          <div class="cta-actions">
+            <a class="btn btn-primary" href="#playground" id="ctaStart">Open playground</a>
+            <a class="btn btn-ghost" href="mailto:hello@yourcompany.com?subject=Interlink%20AI%20Access">Email us</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-left">© <span id="year"></span> Interlink AI</div>
+      <div class="footer-right">
+        <a href="#top">Home</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#cta">Access</a>
+      </div>
+    </footer>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

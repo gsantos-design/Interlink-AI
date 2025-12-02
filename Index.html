@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Interlink AI – Multi-Model Orchestration Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta
+    name="description"
+    content="Interlink AI – orchestrate multiple AI models in one place with clean routing, shared context, and human-in-the-loop control."
+  />
+  <style>
+    :root {
+      --bg: #050509;
+      --bg-soft: #0b0b12;
+      --bg-elevated: #10101a;
+      --accent-1: #6e8bff;
+      --accent-2: #a86bff;
+      --accent-3: #44d1ff;
+      --text-main: #f7f7ff;
+      --text-soft: #b0b3c7;
+      --border-subtle: rgba(255, 255, 255, 0.06);
+      --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.65);
+      --radius-lg: 18px;
+      --radius-xl: 28px;
+      --radius-full: 999px;
+      --blur-soft: 28px;
+      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Inter", "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: radial-gradient(circle at top, #1a1a30 0, #050509 55%);
+      color: var(--text-main);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 32px 16px 64px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-mark {
+      width: 32px;
+      height: 32px;
+      border-radius: 40%;
+      background: conic-gradient(
+        from 210deg,
+        var(--accent-1),
+        var(--accent-2),
+        var(--accent-3),
+        var(--accent-1)
+      );
+      box-shadow: 0 0 24px rgba(116, 140, 255, 0.9);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .brand-mark::after {
+      content: "";
+      position: absolute;
+      inset: 20%;
+      border-radius: 40%;
+      background: radial-gradient(circle at 30% 15%, #ffffffaa, transparent 55%);
+      opacity: 0.9;
+      mix-blend-mode: screen;
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .brand-name {
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      font-size: 0.98rem;
+    }
+
+    .brand-tagline {
+      font-size: 0.78rem;
+      color: var(--text-soft);
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      font-size: 0.86rem;
+      color: var(--text-soft);
+    }
+
+    nav a {
+      opacity: 0.92;
+      padding: 4px 0;
+    }
+
+    nav a:hover {
+      color: var(--text-main);
+      opacity: 1;
+    }
+
+    .nav-pill {
+      border-radius: var(--radius-full);
+      padding: 6px 14px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: radial-gradient(circle at top left, #2b2b3f 0, #11111b 50%);
+      color: var(--text-main);
+      box-shadow: 0 0 14px rgba(0, 0, 0, 0.5);
+    }
+
+    /* HERO */
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.1fr);
+      gap: 32px;
+      align-items: center;
+      margin-bottom: 56px;
+    }
+
+    @media (max-width: 840px) {
+      .hero {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      nav {
+        flex-wrap: wrap;
+      }
+    }
+
+    .hero-left {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .hero-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 10px 4px 4px;
+      border-radius: var(--radius-full);
+      background: rgba(15, 16, 32, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-soft);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+    }
+
+    .hero-pill-dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 10%, #ffffff, #59d2ff 42%, #953bff 100%);
+      box-shadow: 0 0 16px rgba(92, 162, 255, 0.9);
+    }
+
+    .hero-title {
+      font-size: clamp(2.1rem, 3vw, 2.7rem);
+      line-height: 1.08;
+      letter-spacing: 0.01em;
+    }
+
+    .hero-title span.accent {
+      background: linear-gradient(120deg, var(--accent-1), var(--accent-2), var(--accent-3));
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: 0.98rem;
+      line-height: 1.6;
+      color: var(--text-soft);
+      max-width: 32rem;
+    }
+
+    .hero-cta-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: 6px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      border-radius: var(--radius-full);
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.92rem;
+      font-weight: 500;
+      background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+      color: #ffffff;
+      box-shadow: 0 12px 30px rgba(85, 115, 255, 0.65);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.15s;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 40px rgba(85, 115, 255, 0.9);
+    }
+
+    .btn-secondary {
+      border-radius: var(--radius-full);
+      padding: 9px 18px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      cursor: pointer;
+      font-size: 0.88rem;
+      background: rgba(10, 10, 20, 0.9);
+      color: var(--text-soft);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(25, 25, 40, 1);
+      border-color: rgba(255, 255, 255, 0.22);
+      color: var(--text-main);
+    }
+
+    .hero-meta {
+      margin-top: 14px;
+      font-size: 0.78rem;
+      color: var(--text-soft);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .hero-meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hero-meta-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #51ffb3;
+    }
+
+    /* Right hero graphic */
+
+    .hero-right {
+      position: relative;
+      min-height: 260px;
+    }
+
+    .hero-orbit {
+      position: absolute;
+      inset: 0;
+      border-radius: var(--radius-xl);
+      background: radial-gradient(
+          ellipse at top,
+          rgba(132, 161, 255, 0.18),
+          transparent 65%
+        ),
+        linear-gradient(145deg, #101023, #050509);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: var(--shadow-soft);
+      padding: 20px;
+      overflow: hidden;
+    }
+
+    .hero-orbit::before {
+      content: "";
+      position: absolute;
+      inset: -120px;
+      background:
+        radial-gradient(circle at 10% 20%, rgba(104, 119, 255, 0.2), transparent 50%),
+        radial-gradient(circle at 80% 30%, rgba(176, 122, 255, 0.2), transparent 55%),
+        radial-gradient(circle at 50% 80%, rgba(52, 198, 255, 0.25), transparent 60%);
+      opacity: 0.6;
+      filter: blur(var(--blur-soft));
+      mix-blend-mode: screen;
+    }
+
+    .hero-orbit-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 22px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: radial-gradient(circle at top, rgba(8, 8, 18, 0.9), #050509);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .node-ring {
+      position: absolute;
+      width: 80%;
+      height: 80%;
+      border-radius: 999px;
+      border: 1px dashed rgba(132, 145, 255, 0.35);
+      opacity: 0.85;
+    }
+
+    .node-ring:nth-child(1) {
+      transform: rotate(8deg);
+    }
+    .node-ring:nth-child(2) {
+      width: 62%;
+      height: 62%;
+      transform: rotate(-18deg);
+      border-color: rgba(173, 132, 255, 0.35);
+    }
+
+    .hub-core {
+      position: relative;
+      width: 78px;
+      height: 78px;
+      border-radius: 30%;
+      background: radial-gradient(circle at 25% 15%, #ffffff, #6e8bff, #a86bff 80%);
+      box-shadow:
+        0 0 18px rgba(201, 196, 255, 0.8),
+        0 0 55px rgba(119, 139, 255, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hub-core-label {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: #050509;
+      opacity: 0.9;
+    }
+
+    .node {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 20%, #ffffff, #8ec5ff 40%, #3f7cf7);
+      box-shadow: 0 0 12px rgba(111, 164, 255, 0.9);
+    }
+
+    .node-label {
+      position: absolute;
+      font-size: 0.7rem;
+      color: var(--text-soft);
+      background: rgba(5, 5, 10, 0.85);
+      border-radius: 999px;
+      padding: 4px 8px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      white-space: nowrap;
+    }
+
+    /* Node placements */
+
+    .node.n1 { top: 12%; left: 52%; }
+    .node-label.n1 { top: 6%; left: 62%; }
+
+    .node.n2 { top: 50%; left: 8%; }
+    .node-label.n2 { top: 58%; left: 6%; }
+
+    .node.n3 { bottom: 8%; right: 16%; }
+    .node-label.n3 { bottom: 4%; right: 4%; }
+
+    .node.n4 { top: 22%; left: 18%; }
+    .node-label.n4 { top: 14%; left: 6%; }
+
+    .node.n5 { bottom: 24%; left: 64%; }
+    .node-label.n5 { bottom: 32%; left: 66%; }
+
+    .hero-orbit-footer {
+      position: absolute;
+      inset-inline: 16px;
+      bottom: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.72rem;
+      color: var(--text-soft);
+    }
+
+    .pill-mini {
+      border-radius: 999px;
+      padding: 3px 9px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(8, 8, 16, 0.9);
+    }
+
+    /* FEATURE SECTION */
+
+    .section {
+      margin-bottom: 52px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: 1.18rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-soft);
+    }
+
+    .section-kicker {
+      font-size: 0.86rem;
+      color: var(--text-soft);
+      max-width: 360px;
+      line-height: 1.5;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    @media (max-width: 960px) {
+      .feature-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    @media (max-width: 700px) {
+      .feature-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .feature-card {
+      position: relative;
+      border-radius: var(--radius-lg);
+      padding: 16px 16px 18px;
+      background: radial-gradient(circle at top, #1b1b28, #050509);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-soft);
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(118, 155, 255, 0.2), transparent 50%),
+        radial-gradient(circle at 90% 100%, rgba(162, 118, 255, 0.2), transparent 50%);
+      opacity: 0.28;
+      mix-blend-mode: screen;
+      pointer-events: none;
+    }
+
+    .feature-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 0%, #ffffff, #6e8bff 50%, #a86bff 100%);
+      margin-bottom: 10px;
+      box-shadow: 0 0 16px rgba(132, 158, 255, 0.85);
+    }
+
+    .feature-title {
+      font-size: 0.92rem;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+
+    .feature-body {
+      font-size: 0.82rem;
+      line-height: 1.6;
+      color: var(--text-soft);
+      margin-bottom: 8px;
+    }
+
+    .feature-tag {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: rgba(189, 195, 255, 0.9);
+    }
+
+    /* PRICING */
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    @media (max-width: 900px) {
+      .pricing-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    @media (max-width: 640px) {
+      .pricing-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .pricing-card {
+      border-radius: var(--radius-lg);
+      padding: 18px 16px 20px;
+      background: radial-gradient(circle at top, #1d1d30, #050509);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .pricing-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--text-soft);
+    }
+
+    .pricing-name {
+      font-size: 1.02rem;
+      font-weight: 500;
+    }
+
+    .pricing-price {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-top: 4px;
+    }
+
+    .pricing-price span {
+      font-size: 0.78rem;
+      font-weight: 400;
+      color: var(--text-soft);
+    }
+
+    .pricing-body {
+      font-size: 0.8rem;
+      color: var(--text-soft);
+    }
+
+    .pricing-list {
+      margin: 6px 0 10px;
+      padding-left: 14px;
+      font-size: 0.78rem;
+      color: var(--text-soft);
+    }
+
+    .pricing-list li {
+      margin-bottom: 4px;
+    }
+
+    .pricing-cta {
+      margin-top: auto;
+    }
+
+    .btn-outline {
+      border-radius: var(--radius-full);
+      padding: 8px 14px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(6, 6, 12, 0.9);
+      color: var(--text-main);
+      cursor: pointer;
+      font-size: 0.82rem;
+      width: 100%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: background 0.12s ease, border-color 0.12s ease;
+    }
+
+    .btn-outline:hover {
+      background: rgba(28, 28, 44, 0.95);
+      border-color: rgba(255, 255, 255, 0.28);
+    }
+
+    .pricing-card.highlight {
+      border-color: rgba(120, 160, 255, 0.6);
+      box-shadow:
+        0 0 0 1px rgba(120, 160, 255, 0.35),
+        0 18px 40px rgba(93, 130, 255, 0.9);
+      position: relative;
+    }
+
+    .pricing-card.highlight::before {
+      content: "Most Popular";
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      font-size: 0.64rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+      color: #050509;
+    }
+
+    /* FAQ */
+
+    .faq-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    @media (max-width: 800px) {
+      .faq-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .faq-card {
+      background: var(--bg-elevated);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-subtle);
+      padding: 14px 16px 16px;
+    }
+
+    .faq-q {
+      font-size: 0.86rem;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+
+    .faq-a {
+      font-size: 0.8rem;
+      color: var(--text-soft);
+      line-height: 1.6;
+    }
+
+    footer {
+      margin-top: 32px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 0.76rem;
+      color: var(--text-soft);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      opacity: 0.85;
+    }
+
+    .footer-links a:hover {
+      opacity: 1;
+      color: var(--text-main);
+    }
+
+    /* Smooth scroll helpers */
+    .anchor {
+      scroll-margin-top: 80px;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="brand">
+        <div class="brand-mark"></div>
+        <div class="brand-text">
+          <div class="brand-name">Interlink AI</div>
+          <div class="brand-tagline">Multi-model orchestration, one control pane.</div>
+        </div>
+      </div>
+      <nav>
+        <a href="#features">Features</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#faq">FAQ</a>
+        <a href="#signup" class="nav-pill">Request access</a>
+      </nav>
+    </header>
+
+    <!-- HERO -->
+    <main>
+      <section class="hero">
+        <div class="hero-left">
+          <div class="hero-pill">
+            <div class="hero-pill-dot"></div>
+            <span>INTERLINK AI • MULTI-MODEL ROUTING</span>
+          </div>
+          <h1 class="hero-title">
+            Plug all your <span class="accent">AI models</span> into
+            one <span class="accent">orchestration hub</span>.
+          </h1>
+          <p class="hero-subtitle">
+            Interlink AI lets you route questions to the right model, share context safely,
+            and keep humans in the loop&mdash;without building a custom backend for every
+            experiment.
+          </p>
+          <div class="hero-cta-row" id="signup">
+            <a href="#pricing">
+              <button class="btn-primary">
+                Get early access
+                <span>→</span>
+              </button>
+            </a>
+            <a href="#features">
+              <button class="btn-secondary">
+                View capabilities
+              </button>
+            </a>
+          </div>
+          <div class="hero-meta">
+            <span>
+              <span class="hero-meta-dot"></span>
+              Works with your favorite LLM APIs.
+            </span>
+            <span> No model lock-in. </span>
+          </div>
+        </div>
+
+        <div class="hero-right">
+          <div class="hero-orbit">
+            <div class="hero-orbit-inner">
+              <div class="node-ring"></div>
+              <div class="node-ring"></div>
+
+              <div class="hub-core">
+                <div class="hub-core-label">Hub</div>
+              </div>
+
+              <div class="node n1"></div>
+              <div class="node-label n1">Reasoning model</div>
+
+              <div class="node n2"></div>
+              <div class="node-label n2">Fast chat</div>
+
+              <div class="node n3"></div>
+              <div class="node-label n3">Code expert</div>
+
+              <div class="node n4"></div>
+              <div class="node-label n4">Search &amp; tools</div>
+
+              <div class="node n5"></div>
+              <div class="node-label n5">Guardrails</div>
+
+              <div class="hero-orbit-footer">
+                <div class="pill-mini">Model routing · Shared context</div>
+                <div>LLMs in, one UX out.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FEATURES -->
+      <section class="section anchor" id="features">
+        <div class="section-header">
+          <div>
+            <div class="section-title">FEATURES</div>
+          </div>
+          <div class="section-kicker">
+            Start with a simple unified UX. Under the hood, Interlink AI handles which
+            model to call, how to pass context, and how to keep things safe.
+          </div>
+        </div>
+
+        <div class="feature-grid">
+          <article class="feature-card">
+            <div class="feature-icon"></div>
+            <h3 class="feature-title">One front-end, many models</h3>
+            <p class="feature-body">
+              Plug in multiple LLM APIs and call them from a single interface. Users just
+              ask. Interlink decides which model to route to.
+            </p>
+            <div class="feature-tag">ORCHESTRATION</div>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon"></div>
+            <h3 class="feature-title">Clean context &amp; logging</h3>
+            <p class="feature-body">
+              Keep conversations, prompts, and outputs structured so you can audit,
+              replay, and improve them later &mdash; per model, per user.
+            </p>
+            <div class="feature-tag">OBSERVABILITY</div>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon"></div>
+            <h3 class="feature-title">Human-in-the-loop by design</h3>
+            <p class="feature-body">
+              Route high-risk or ambiguous queries to humans or specialist models,
+              instead of forcing a generic model to improvise.
+            </p>
+            <div class="feature-tag">SAFETY</div>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon"></div>
+            <h3 class="feature-title">Bring your own keys</h3>
+            <p class="feature-body">
+              Your org keeps control of all model API keys. Interlink sits in the middle
+              as a thin orchestration and logging layer.
+            </p>
+            <div class="feature-tag">SECURITY</div>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon"></div>
+            <h3 class="feature-title">Templates &amp; playbooks</h3>
+            <p class="feature-body">
+              Save and share prompt flows, evaluation recipes, and “multi-model plays”
+              for your team without rebuilding them every time.
+            </p>
+            <div class="feature-tag">WORKFLOWS</div>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon"></div>
+            <h3 class="feature-title">Ready for Stripe</h3>
+            <p class="feature-body">
+              Offer plans to your own users. Pricing cards on this page can point
+              directly at your Stripe Checkout links.
+            </p>
+            <div class="feature-tag">MONETIZATION</div>
+          </article>
+        </div>
+      </section>
+
+      <!-- PRICING -->
+      <section class="section anchor" id="pricing">
+        <div class="section-header">
+          <div>
+            <div class="section-title">PRICING</div>
+          </div>
+          <div class="section-kicker">
+            Start small with early users. Upgrade when you’re ready to make Interlink AI
+            part of your core workflow.
+          </div>
+        </div>
+
+        <div class="pricing-grid">
+          <article class="pricing-card">
+            <div class="pricing-label">Starter</div>
+            <div class="pricing-name">Individual</div>
+            <div class="pricing-price">
+              $19<span>/month</span>
+            </div>
+            <p class="pricing-body">
+              For solo builders and consultants experimenting with multi-model workflows.
+            </p>
+            <ul class="pricing-list">
+              <li>Up to 3 connected model APIs</li>
+              <li>Basic logging &amp; history</li>
+              <li>Email support</li>
+            </ul>
+            <div class="pricing-cta">
+              <a href="https://YOUR_STRIPE_CHECKOUT_LINK_STARTER" target="_blank" rel="noopener">
+                <button class="btn-outline">Get Starter</button>
+              </a>
+            </div>
+          </article>
+
+          <article class="pricing-card highlight">
+            <div class="pricing-label">Teams</div>
+            <div class="pricing-name">Studio</div>
+            <div class="pricing-price">
+              $49<span>/user /month</span>
+            </div>
+            <p class="pricing-body">
+              For small teams that need shared templates, guardrails, and collaboration.
+            </p>
+            <ul class="pricing-list">
+              <li>Up to 8 connected model APIs</li>
+              <li>Shared workspaces &amp; templates</li>
+              <li>Basic role-based access control</li>
+            </ul>
+            <div class="pricing-cta">
+              <a href="https://YOUR_STRIPE_CHECKOUT_LINK_STUDIO" target="_blank" rel="noopener">
+                <button class="btn-outline">
+                  Start Studio
+                </button>
+              </a>
+            </div>
+          </article>
+
+          <article class="pricing-card">
+            <div class="pricing-label">Enterprise</div>
+            <div class="pricing-name">Custom</div>
+            <div class="pricing-price">
+              Let’s talk<span></span>
+            </div>
+            <p class="pricing-body">
+              For organizations that need governance, auditability, and custom routing
+              policies.
+            </p>
+            <ul class="pricing-list">
+              <li>Unlimited model APIs</li>
+              <li>Custom SSO &amp; compliance</li>
+              <li>Dedicated support</li>
+            </ul>
+            <div class="pricing-cta">
+              <a href="mailto:hello@yourcompany.com?subject=Interlink%20AI%20Enterprise">
+                <button class="btn-outline">Contact sales</button>
+              </a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section class="section anchor" id="faq">
+        <div class="section-header">
+          <div>
+            <div class="section-title">FAQ</div>
+          </div>
+          <div class="section-kicker">
+            A few of the questions people ask before they plug multiple models into one
+            workflow.
+          </div>
+        </div>
+
+        <div class="faq-grid">
+          <div class="faq-card">
+            <div class="faq-q">Which models does Interlink AI support?</div>
+            <div class="faq-a">
+              You bring your own API keys for the models you already use. Interlink AI
+              acts as a thin orchestration layer on top, so you’re never locked into a
+              single provider.
+            </div>
+          </div>
+          <div class="faq-card">
+            <div class="faq-q">Is my data used to train any models?</div>
+            <div class="faq-a">
+              No. Interlink AI is designed so that your prompts, logs, and routing
+              policies stay within your control. Model training is governed by your
+              agreements with each provider.
+            </div>
+          </div>
+          <div class="faq-card">
+            <div class="faq-q">Can I expose this to my own customers?</div>
+            <div class="faq-a">
+              Yes. The pricing plans on this page are compatible with Stripe Checkout,
+              so you can sell your own Interlink AI workspace as part of a product or
+              service.
+            </div>
+          </div>
+          <div class="faq-card">
+            <div class="faq-q">How do I get access?</div>
+            <div class="faq-a">
+              We’re onboarding a small group first. Click any “Get started” button
+              above, or email us at <strong>hello@yourcompany.com</strong> with
+              “Interlink AI Access” in the subject line.
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div>© <span id="year"></span> Interlink AI. All rights reserved.</div>
+      <div class="footer-links">
+        <a href="#">Status</a>
+        <a href="#">Privacy</a>
+        <a href="#">Security</a>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // Set year
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // Simple smooth scroll for same-page links
+    document.querySelectorAll('a[href^="#"]').forEach(function (link) {
+      link.addEventListener("click", function (e) {
+        const targetId = this.getAttribute("href").slice(1);
+        if (!targetId) return;
+        const target = document.getElementById(targetId);
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
