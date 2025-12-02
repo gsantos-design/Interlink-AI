@@ -1,8 +1,8 @@
 ﻿const defaultModels = [
-  { id: 'openai', label: 'ChatGPT (OpenAI)' },
-  { id: 'anthropic', label: 'Claude (Anthropic)' },
-  { id: 'gemini', label: 'Gemini (Google)' },
-  { id: 'llama', label: 'Llama 3.3 (Meta)' },
+  { id: 'openai', label: 'ChatGPT (OpenAI)', avatar: '🤖', color: '#10a37f' },
+  { id: 'anthropic', label: 'Claude (Anthropic)', avatar: '🔷', color: '#6B4FBB' },
+  { id: 'gemini', label: 'Gemini (Google)', avatar: '✨', color: '#4285f4' },
+  { id: 'llama', label: 'Llama 3.3 (Meta)', avatar: '🦙', color: '#0084ff' },
 ];
 
 let models = [...defaultModels];
@@ -103,10 +103,15 @@ function renderPlaygroundResults(items) {
   }
   const html = items
     .map(
-      (item, idx) => `
+      (item, idx) => {
+        const modelData = models.find(m => m.label === item.label) || {};
+        return `
       <div class="result-item" data-result-idx="${idx}">
         <div class="result-head">
-          <span>${item.label}</span>
+          <div class="model-info">
+            <span class="model-avatar" style="background: ${modelData.color || '#333'}">${modelData.avatar || '🤖'}</span>
+            <span>${item.label}</span>
+          </div>
           <span>${item.status}</span>
         </div>
         <div class="result-body">${item.text}</div>
@@ -122,9 +127,11 @@ function renderPlaygroundResults(items) {
               <option value="refused">Refused to answer</option>
               <option value="biased">Biased</option>
             </select>
+            <button class="advanced-feedback-btn" data-idx="${idx}" title="Advanced feedback">📊</button>
           </div>
         ` : ''}
-      </div>`
+      </div>`;
+      }
     )
     .join('');
   container.innerHTML = html;
@@ -317,7 +324,7 @@ function wireRace() {
 
 let lastPlaygroundResults = [];
 
-async function submitFeedback(modelLabel, rating, issues, prompt, response) {
+async function submitFeedback(modelLabel, rating, issues, prompt, response, extraMetrics = {}) {
   try {
     await fetch('/api/feedback', {
       method: 'POST',
@@ -328,12 +335,51 @@ async function submitFeedback(modelLabel, rating, issues, prompt, response) {
         response,
         rating,
         issues: Array.isArray(issues) ? issues : [issues],
+        hallucinationSeverity: extraMetrics.hallucinationSeverity || 0,
+        confidenceCalibration: extraMetrics.confidenceCalibration || 0,
+        consistencyScore: extraMetrics.consistencyScore || 0,
+        deceptionFlag: extraMetrics.deceptionFlag || false,
+        notes: extraMetrics.notes || '',
       }),
     });
-    console.log('Feedback submitted:', { modelLabel, rating, issues });
+    console.log('Feedback submitted:', { modelLabel, rating, issues, extraMetrics });
   } catch (err) {
     console.error('Feedback error:', err);
   }
+}
+
+function showAdvancedFeedback(idx) {
+  const result = lastPlaygroundResults[idx];
+  if (!result) return;
+
+  const metrics = prompt(
+    `Advanced Feedback for ${result.label}\n\n` +
+    `Enter metrics (comma-separated):\n` +
+    `1. Hallucination Severity (1-5, 5=severe)\n` +
+    `2. Confidence Calibration (1-5, 5=well-calibrated)\n` +
+    `3. Consistency (1-5, 5=very consistent)\n` +
+    `4. Deception Flag (y/n)\n` +
+    `5. Notes (optional)\n\n` +
+    `Example: 2,4,5,n,Seemed accurate`
+  );
+
+  if (!metrics) return;
+
+  const parts = metrics.split(',').map(s => s.trim());
+  const extraMetrics = {
+    hallucinationSeverity: parseInt(parts[0]) || 0,
+    confidenceCalibration: parseInt(parts[1]) || 0,
+    consistencyScore: parseInt(parts[2]) || 0,
+    deceptionFlag: (parts[3] || '').toLowerCase() === 'y',
+    notes: parts[4] || '',
+  };
+
+  submitFeedback(result.label, 3, [], '', result.text, extraMetrics);
+  alert(`Advanced feedback submitted for ${result.label}`);
+}
+
+function downloadFeedbackCSV() {
+  window.location.href = '/api/feedback/download';
 }
 
 function wireFeedbackButtons() {
@@ -358,6 +404,13 @@ function wireFeedbackButtons() {
       await submitFeedback(result.label, 2, [select.value], '', result.text);
       select.value = '';
       alert(`Issue "${select.options[select.selectedIndex].text}" reported for ${result.label}`);
+    });
+  });
+
+  document.querySelectorAll('.advanced-feedback-btn').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      const idx = parseInt(btn.dataset.idx);
+      showAdvancedFeedback(idx);
     });
   });
 }

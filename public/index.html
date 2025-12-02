@@ -103,7 +103,8 @@
             <label class="field-label" for="playgroundPrompt">Prompt</label>
             <textarea id="playgroundPrompt" class="input" rows="4" placeholder="Type a real prompt you would ship..." ></textarea>
             <button id="playgroundRun" class="btn btn-primary full">Run experiment</button>
-            <p class="stub-note">Tip: deselect a model to exclude it for this run.</p>
+            <button onclick="downloadFeedbackCSV()" class="btn btn-ghost full" style="margin-top: 8px;">📥 Download Feedback CSV</button>
+            <p class="stub-note">Tip: deselect a model to exclude it for this run. Use thumbs/issues to track behavior patterns.</p>
           </div>
           <div class="playground-right">
             <div class="results" id="playgroundResults">
