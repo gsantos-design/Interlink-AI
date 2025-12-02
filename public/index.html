@@ -16,10 +16,11 @@
       <nav class="nav-links">
         <a href="#features">Features</a>
         <a href="#playground">Playground</a>
-        <a href="#races">Prompt Races</a>
+        <a href="#resources">Resources</a>
+        <a href="#community">Community</a>
         <a href="#pricing">Pricing</a>
       </nav>
-      <a class="nav-cta" href="#cta">Get Access</a>
+      <a class="nav-cta" href="#cta" onclick="showTutorial(); return false;">Start Tutorial</a>
     </header>
 
     <main>
@@ -167,6 +168,78 @@
         </div>
       </section>
 
+      <section class="section section-contrast" id="resources">
+        <div class="section-header">
+          <p class="kicker">Resources</p>
+          <h2>Tools to sharpen your AI thinking.</h2>
+          <p class="section-sub">Curated resources for critical thinking, responsible AI use, and continuous learning.</p>
+        </div>
+        <div class="resources-grid">
+          <article class="resource-card">
+            <h3>🧠 Critical Thinking Framework</h3>
+            <p><strong>Question Everything:</strong> Don't accept AI responses at face value. Ask: "How does this model know this? What sources would support or contradict this?"</p>
+            <p><strong>Cross-Reference:</strong> Use multiple models and compare. Different perspectives reveal blind spots.</p>
+            <p><strong>Verify Claims:</strong> Check facts with external sources. AI can hallucinate convincingly.</p>
+          </article>
+          <article class="resource-card">
+            <h3>🛠️ Recommended Tools</h3>
+            <ul>
+              <li><strong>Perplexity AI:</strong> Research with cited sources</li>
+              <li><strong>Notion AI:</strong> Knowledge management with AI</li>
+              <li><strong>GitHub Copilot:</strong> Code assistance</li>
+              <li><strong>ElevenLabs:</strong> Voice cloning & TTS</li>
+              <li><strong>Midjourney:</strong> Image generation</li>
+            </ul>
+          </article>
+          <article class="resource-card">
+            <h3>📚 Learning Path</h3>
+            <p><strong>Beginners:</strong> Start with comparison prompts. See how different models approach the same question.</p>
+            <p><strong>Intermediate:</strong> Use feedback tools to track model behavior patterns over time.</p>
+            <p><strong>Advanced:</strong> Experiment with vision, voice, and multi-modal inputs to understand limitations.</p>
+          </article>
+          <article class="resource-card">
+            <h3>⚠️ Spotting Red Flags</h3>
+            <p><strong>Overconfidence:</strong> Model states facts without uncertainty when it should express doubt.</p>
+            <p><strong>Hallucination:</strong> Fabricates data, links, or references that don't exist.</p>
+            <p><strong>Inconsistency:</strong> Gives different answers to the same question in different sessions.</p>
+            <p><strong>Deception:</strong> Creates false scenarios (like Gemini's fake Stripe request!).</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="community">
+        <div class="section-header">
+          <p class="kicker">Community</p>
+          <h2>Join the AI literacy movement.</h2>
+          <p class="section-sub">Connect, learn, and share findings with others building critical thinking skills.</p>
+        </div>
+        <div class="community-grid">
+          <article class="community-card">
+            <h3>📺 YouTube Study Group</h3>
+            <p>Every two weeks, we compare AI model findings live. Analyze real-world scenarios, discuss results, and learn together.</p>
+            <a href="#" class="btn btn-ghost" id="youtubeLink">Coming Soon - Subscribe</a>
+            <p class="stub-note">Channel launches Q1 2026. Be the first to know!</p>
+          </article>
+          <article class="community-card">
+            <h3>📝 Interactive Blog</h3>
+            <p>Deep dives into AI behavior, case studies, and practical guides for responsible AI usage.</p>
+            <a href="#" class="btn btn-ghost" id="blogLink">Coming Soon</a>
+          </article>
+          <article class="community-card">
+            <h3>💡 Share Your Ideas</h3>
+            <p>Help shape the future of Interlink AI. What features would improve your workflow?</p>
+            <textarea id="ideaInput" class="input" rows="3" placeholder="Describe your idea..."></textarea>
+            <button onclick="submitIdea()" class="btn btn-primary full">Submit Idea</button>
+          </article>
+          <article class="community-card">
+            <h3>📢 General Feedback</h3>
+            <p>Found a bug? Have suggestions? We're listening.</p>
+            <textarea id="feedbackInput" class="input" rows="3" placeholder="Your feedback..."></textarea>
+            <button onclick="submitGeneralFeedback()" class="btn btn-primary full">Send Feedback</button>
+          </article>
+        </div>
+      </section>
+
       <section class="section" id="pricing">
         <div class="section-header">
           <p class="kicker">Pricing</p>
@@ -223,6 +296,63 @@
       </div>
     </footer>
   </div>
+
+  <!-- Tutorial Modal -->
+  <div id="tutorialModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeTutorial()">✕</button>
+      <div id="tutorialStep" class="tutorial-step">
+        <h2>Welcome to Interlink AI! 🚀</h2>
+        <p>Learn how to use AI responsibly and think critically.</p>
+        <div class="tutorial-steps">
+          <div class="tutorial-page" data-step="1">
+            <h3>Step 1: Compare Models</h3>
+            <p>Send the same prompt to multiple AI models and see how their responses differ. Each model has unique strengths and blind spots.</p>
+            <p><strong>Try it:</strong> Ask "Explain quantum computing" to ChatGPT, Claude, Gemini, and Llama.</p>
+          </div>
+          <div class="tutorial-page" data-step="2">
+            <h3>Step 2: Use Voice & Vision</h3>
+            <p>🎤 Click "Voice Input" to speak your prompts hands-free.</p>
+            <p>📷 Upload images for troubleshooting, design reviews, or document analysis.</p>
+            <p>🔊 Use the speaker button to hear responses read aloud.</p>
+          </div>
+          <div class="tutorial-page" data-step="3">
+            <h3>Step 3: Track Behavior</h3>
+            <p>Use the feedback tools to document patterns:</p>
+            <ul>
+              <li>👍👎 Quick ratings for response quality</li>
+              <li>🚩 Flag issues like hallucinations or overconfidence</li>
+              <li>📊 Advanced metrics for research</li>
+              <li>📥 Download CSV to analyze trends</li>
+            </ul>
+          </div>
+          <div class="tutorial-page" data-step="4">
+            <h3>Step 4: Think Critically</h3>
+            <p><strong>Don't blindly trust AI.</strong> Ask yourself:</p>
+            <ul>
+              <li>Does this answer cite sources?</li>
+              <li>Are multiple models agreeing or conflicting?</li>
+              <li>Is the model expressing appropriate uncertainty?</li>
+              <li>Can I verify this information elsewhere?</li>
+            </ul>
+          </div>
+          <div class="tutorial-page" data-step="5">
+            <h3>Step 5: Join the Community</h3>
+            <p>📺 Subscribe to our YouTube study group (launching Q1 2026)</p>
+            <p>📚 Explore recommended tools in the Resources section</p>
+            <p>💡 Share your ideas and feedback to help us improve</p>
+            <p><strong>Remember:</strong> AI is a tool to amplify your thinking, not replace it!</p>
+          </div>
+        </div>
+        <div class="tutorial-nav">
+          <button id="tutorialPrev" class="btn btn-ghost" onclick="prevTutorialStep()">← Previous</button>
+          <span id="tutorialProgress">1 / 5</span>
+          <button id="tutorialNext" class="btn btn-primary" onclick="nextTutorialStep()">Next →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="app.js"></script>
 </body>
 </html>

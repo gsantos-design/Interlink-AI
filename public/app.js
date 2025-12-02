@@ -1,8 +1,32 @@
 ﻿const defaultModels = [
-  { id: 'openai', label: 'ChatGPT (OpenAI)', avatar: '🤖', color: '#10a37f' },
-  { id: 'anthropic', label: 'Claude (Anthropic)', avatar: '🔷', color: '#6B4FBB' },
-  { id: 'gemini', label: 'Gemini (Google)', avatar: '✨', color: '#4285f4' },
-  { id: 'llama', label: 'Llama 3.3 (Meta)', avatar: '🦙', color: '#0084ff' },
+  { 
+    id: 'openai', 
+    label: 'ChatGPT (OpenAI)', 
+    avatar: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="3"/><path d="M12 14c-4 0-7 2-7 4v2h14v-2c0-2-3-4-7-4z"/><rect x="8" y="4" width="8" height="2" rx="1"/></svg>', 
+    color: '#10a37f',
+    personality: 'Confident & Knowledgeable'
+  },
+  { 
+    id: 'anthropic', 
+    label: 'Claude (Anthropic)', 
+    avatar: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7v10c0 5.5 3.8 10.7 10 12 6.2-1.3 10-6.5 10-12V7l-10-5zm0 18c-4.4-1-7.5-4.7-7.5-8.5V8.3l7.5-3.8 7.5 3.8v3.2c0 3.8-3.1 7.5-7.5 8.5z"/><circle cx="12" cy="12" r="3"/></svg>', 
+    color: '#6B4FBB',
+    personality: 'Thoughtful & Precise'
+  },
+  { 
+    id: 'gemini', 
+    label: 'Gemini (Google)', 
+    avatar: '<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9"/></svg>', 
+    color: '#4285f4',
+    personality: 'Creative & Unpredictable'
+  },
+  { 
+    id: 'llama', 
+    label: 'Llama 3.3 (Meta)', 
+    avatar: '<svg viewBox="0 0 24 24" fill="currentColor"><ellipse cx="12" cy="10" rx="8" ry="6"/><circle cx="9" cy="9" r="1.5"/><circle cx="15" cy="9" r="1.5"/><path d="M7 12c0 2.8 2.2 5 5 5s5-2.2 5-5"/><rect x="10" y="2" width="4" height="4" rx="2"/></svg>', 
+    color: '#0084ff',
+    personality: 'Fast & Open-Source'
+  },
 ];
 
 let models = [...defaultModels];
@@ -113,7 +137,7 @@ function renderPlaygroundResults(items) {
       <div class="result-item" data-result-idx="${idx}">
         <div class="result-head">
           <div class="model-info">
-            <span class="model-avatar" style="background: ${modelData.color || '#333'}">${modelData.avatar || '🤖'}</span>
+            <span class="model-avatar" style="background: ${modelData.color || '#333'}" title="${modelData.personality || ''}">${modelData.avatar || '🤖'}</span>
             <span>${item.label}</span>
           </div>
           <div class="head-actions">
@@ -592,6 +616,93 @@ function wireVoiceControls() {
   });
 }
 
+// Tutorial functions
+let currentTutorialStep = 1;
+const totalTutorialSteps = 5;
+
+function showTutorial() {
+  currentTutorialStep = 1;
+  updateTutorialStep();
+  document.getElementById('tutorialModal').style.display = 'flex';
+}
+
+function closeTutorial() {
+  document.getElementById('tutorialModal').style.display = 'none';
+  localStorage.setItem('interlinkTutorialSeen', 'true');
+}
+
+function nextTutorialStep() {
+  if (currentTutorialStep < totalTutorialSteps) {
+    currentTutorialStep++;
+    updateTutorialStep();
+  } else {
+    closeTutorial();
+  }
+}
+
+function prevTutorialStep() {
+  if (currentTutorialStep > 1) {
+    currentTutorialStep--;
+    updateTutorialStep();
+  }
+}
+
+function updateTutorialStep() {
+  document.querySelectorAll('.tutorial-page').forEach((page, idx) => {
+    page.style.display = (idx + 1) === currentTutorialStep ? 'block' : 'none';
+  });
+  document.getElementById('tutorialProgress').textContent = `${currentTutorialStep} / ${totalTutorialSteps}`;
+  document.getElementById('tutorialPrev').disabled = currentTutorialStep === 1;
+  document.getElementById('tutorialNext').textContent = currentTutorialStep === totalTutorialSteps ? 'Get Started!' : 'Next →';
+}
+
+// Community functions
+async function submitIdea() {
+  const input = document.getElementById('ideaInput');
+  const idea = input.value.trim();
+  if (!idea) return;
+  
+  try {
+    await fetch('/api/feedback', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'Community',
+        rating: 5,
+        notes: `IDEA: ${idea}`,
+        issues: ['idea']
+      }),
+    });
+    alert('Thank you! Your idea has been submitted. 💡');
+    input.value = '';
+  } catch (err) {
+    alert('Error submitting idea. Please try again.');
+  }
+}
+
+async function submitGeneralFeedback() {
+  const input = document.getElementById('feedbackInput');
+  const feedback = input.value.trim();
+  if (!feedback) return;
+  
+  try {
+    await fetch('/api/feedback', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'Community',
+        rating: 3,
+        notes: `FEEDBACK: ${feedback}`,
+        issues: ['feedback']
+      }),
+    });
+    alert('Thank you! Your feedback helps us improve. 🙏');
+    input.value = '';
+  } catch (err) {
+    alert('Error submitting feedback. Please try again.');
+  }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   setYear();
   await fetchModels();
@@ -610,5 +721,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Load voices for TTS
   if ('speechSynthesis' in window) {
     window.speechSynthesis.getVoices();
+  }
+
+  // Show tutorial for first-time users
+  if (!localStorage.getItem('interlinkTutorialSeen')) {
+    setTimeout(showTutorial, 1000);
   }
 });
