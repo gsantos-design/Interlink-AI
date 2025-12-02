@@ -214,8 +214,8 @@ async function startCheckout(plan) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        successUrl: window.location.origin + '/?checkout=success',
-        cancelUrl: window.location.origin + '/?checkout=cancel',
+        successUrl: 'https://interlink-ai.onrender.com/?checkout=success',
+        cancelUrl: 'https://interlink-ai.onrender.com/?checkout=cancel',
         plan,
       }),
     });
