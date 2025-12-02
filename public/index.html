@@ -362,16 +362,16 @@
           </div>
 
           <!-- Chat Interface -->
-          <div class="chat-interface" id="chatInterface" style="display:none;">
+          <div class="chat-interface phone-interface" id="chatInterface" style="display:none;">
+            <!-- Large Avatar Display (Phone Style) -->
+            <div class="tutor-video-container">
+              <div class="tutor-avatar-large breathing" id="activeTutorIcon">🧠</div>
+              <div class="tutor-name-overlay" id="activeTutorName">Robo Einstein</div>
+              <div class="status-indicator"></div>
+            </div>
+
             <div class="chat-header">
-              <div class="chat-avatar">
-                <div class="tutor-icon-large" id="activeTutorIcon">🧠</div>
-                <div class="tutor-info">
-                  <div class="tutor-name-large" id="activeTutorName">Robo Einstein</div>
-                  <div class="tutor-status">Online</div>
-                </div>
-              </div>
-              <button class="btn btn-ghost" onclick="endChat()">End Chat</button>
+              <button class="btn btn-ghost" onclick="endChat()">← Back</button>
             </div>
 
             <div class="chat-controls">

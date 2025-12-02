@@ -712,9 +712,10 @@ let selectedVoice = null;
 const tutorProfiles = {
   einstein: {
     name: 'Robo Einstein',
-    icon: '🧠',
+    icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Albert_Einstein_Head.jpg/400px-Albert_Einstein_Head.jpg',
+    isImage: true,
     greeting: "Hello! I'm Robo Einstein. Let's explore the wonders of science and physics together!",
-    systemPrompt: 'You are Robo Einstein, a science and physics expert. Explain concepts clearly and enthusiastically, using analogies and examples.'
+    systemPrompt: 'You are Robo Einstein, a friendly and enthusiastic science teacher inspired by Albert Einstein. Explain concepts clearly with warmth and curiosity, using analogies and real-world examples. Keep responses conversational and encouraging.'
   },
   prof: {
     name: 'Robo Prof',
@@ -747,7 +748,12 @@ function selectTutor(avatar) {
   const profile = tutorProfiles[avatar];
   
   // Update UI
-  document.getElementById('activeTutorIcon').textContent = profile.icon;
+  const avatarElement = document.getElementById('activeTutorIcon');
+  if (profile.isImage) {
+    avatarElement.innerHTML = `<img src="${profile.icon}" alt="${profile.name}" class="tutor-avatar-img" />`;
+  } else {
+    avatarElement.textContent = profile.icon;
+  }
   document.getElementById('activeTutorName').textContent = profile.name;
   document.getElementById('tutorGreeting').textContent = profile.name;
   
@@ -761,9 +767,12 @@ function selectTutor(avatar) {
   // Clear history and add greeting
   chatHistory = [];
   const messagesDiv = document.getElementById('chatMessages');
+  const avatarHTML = profile.isImage 
+    ? `<img src="${profile.icon}" alt="${profile.name}" class="message-avatar-img" />`
+    : profile.icon;
   messagesDiv.innerHTML = `
     <div class="chat-message assistant">
-      <div class="message-avatar">${profile.icon}</div>
+      <div class="message-avatar">${avatarHTML}</div>
       <div class="message-content">
         <p>${profile.greeting}</p>
       </div>
@@ -868,7 +877,7 @@ async function sendChatMessage() {
     });
     
     const data = await res.json();
-    const response = data.response || 'Sorry, I had trouble processing that.';
+    const response = data.reply || data.response || 'Sorry, I had trouble processing that.';
     
     // Remove typing indicator
     document.getElementById(typingId)?.remove();
@@ -891,13 +900,17 @@ function addChatMessage(text, role, isTyping = false) {
   const messageId = `msg-${Date.now()}`;
   const profile = tutorProfiles[currentTutor];
   
+  const avatarHTML = profile && profile.isImage 
+    ? `<img src="${profile.icon}" alt="${profile.name}" class="message-avatar-img" />`
+    : (profile ? profile.icon : '🤖');
+  
   const messageHTML = role === 'user' 
     ? `<div class="chat-message user" id="${messageId}">
          <div class="message-content"><p>${text}</p></div>
          <div class="message-avatar">👤</div>
        </div>`
     : `<div class="chat-message assistant" id="${messageId}">
-         <div class="message-avatar">${profile.icon}</div>
+         <div class="message-avatar">${avatarHTML}</div>
          <div class="message-content ${isTyping ? 'typing' : ''}"><p>${text}</p></div>
        </div>`;
   
@@ -915,9 +928,33 @@ function speakChatMessage(text) {
   const utterance = new SpeechSynthesisUtterance(text);
   if (voices[voiceIdx]) {
     utterance.voice = voices[voiceIdx];
+  } else {
+    // Try to find a natural-sounding voice
+    const naturalVoice = voices.find(v => 
+      v.name.includes('Natural') || 
+      v.name.includes('Enhanced') || 
+      v.name.includes('Premium') ||
+      v.name.includes('Google')
+    );
+    if (naturalVoice) {
+      utterance.voice = naturalVoice;
+    }
   }
-  utterance.rate = 1.0;
-  utterance.pitch = 1.0;
+  utterance.rate = 0.95; // Slightly slower for warmth
+  utterance.pitch = 1.05; // Slightly higher for friendliness
+  utterance.volume = 1.0;
+  
+  // Animate avatar while speaking
+  const avatar = document.querySelector('.tutor-avatar-large');
+  if (avatar) {
+    avatar.classList.add('speaking');
+  }
+  
+  utterance.onend = () => {
+    if (avatar) {
+      avatar.classList.remove('speaking');
+    }
+  };
   
   window.speechSynthesis.speak(utterance);
 }
