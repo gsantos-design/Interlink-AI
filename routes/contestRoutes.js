@@ -23,17 +23,19 @@ function normalize(model) {
 async function runOne(modelId, prompt) {
   const info = modelConfig[modelId];
   if (!info) {
-    return { model: modelId, latencyMs: 0, text: `[unsupported model: ${modelId}]` };
+    return { model: modelId, latencyMs: 0, text: `[unsupported model: ${modelId}]`, error: true };
   }
   const started = Date.now();
   try {
     const text = await info.fn(prompt);
-    return { model: info.label, latencyMs: Date.now() - started, text };
+    const isError = text && (text.startsWith('[stub:') || text.startsWith('[error') || text.startsWith('[Gemini error]'));
+    return { model: info.label, latencyMs: Date.now() - started, text, error: isError };
   } catch (err) {
     return {
       model: info.label,
       latencyMs: Date.now() - started,
       text: `[error] ${err.message || 'unknown error'}`,
+      error: true,
     };
   }
 }

@@ -171,8 +171,17 @@ function renderRaceEntries(payload) {
     return;
   }
   const { results, totalLatencyMs } = payload;
-  const fastest = results.reduce((min, r) => (r.latencyMs < min.latencyMs ? r : min), results[0]);
-  if (status) status.textContent = `Race complete. Total time: ${totalLatencyMs} ms. Fastest: ${fastest.model}.`;
+  const successful = results.filter(r => !r.error);
+  const fastest = successful.length > 0 
+    ? successful.reduce((min, r) => (r.latencyMs < min.latencyMs ? r : min), successful[0])
+    : null;
+  if (status) {
+    if (fastest) {
+      status.textContent = `Race complete. Total time: ${totalLatencyMs} ms. Fastest: ${fastest.model}.`;
+    } else {
+      status.textContent = `Race complete. All models failed or returned errors.`;
+    }
+  }
   const html = results
     .map(
       (r) => `
@@ -183,7 +192,7 @@ function renderRaceEntries(payload) {
     )
     .join('');
   entries.innerHTML = html;
-  if (winner) winner.textContent = `Winner: ${fastest.model}`;
+  if (winner) winner.textContent = fastest ? `Winner: ${fastest.model}` : 'No winner - all failed';
 }
 
 async function handleRaceStart() {
