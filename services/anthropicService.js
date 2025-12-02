@@ -11,11 +11,20 @@ async function callAnthropic(prompt, imageData = null) {
     const content = [];
     if (imageData) {
       const base64Data = imageData.split(',')[1] || imageData;
+      // Auto-detect image format from data URL
+      let mediaType = 'image/jpeg';
+      if (imageData.startsWith('data:image/png')) {
+        mediaType = 'image/png';
+      } else if (imageData.startsWith('data:image/webp')) {
+        mediaType = 'image/webp';
+      } else if (imageData.startsWith('data:image/gif')) {
+        mediaType = 'image/gif';
+      }
       content.push({
         type: 'image',
         source: {
           type: 'base64',
-          media_type: 'image/jpeg',
+          media_type: mediaType,
           data: base64Data,
         },
       });
@@ -25,7 +34,7 @@ async function callAnthropic(prompt, imageData = null) {
     const res = await axios.post(
       'https://api.anthropic.com/v1/messages',
       {
-        model: 'claude-3-5-sonnet-20241022',
+        model: 'claude-3-5-sonnet-latest',
         max_tokens: 500,
         messages: [{ role: 'user', content }],
       },
@@ -35,6 +44,7 @@ async function callAnthropic(prompt, imageData = null) {
           'anthropic-version': '2023-06-01',
           'content-type': 'application/json',
         },
+        timeout: 30000,
       }
     );
     return res.data?.content?.[0]?.text?.trim() || 'No response from Claude.';
