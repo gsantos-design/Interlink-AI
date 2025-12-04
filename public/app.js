@@ -32,6 +32,22 @@
 let models = [...defaultModels];
 let participants = [];
 
+const languageOptions = [
+  { code: 'en-US', label: 'English (US)' },
+  { code: 'en-GB', label: 'English (UK)' },
+  { code: 'es-ES', label: 'Spanish (ES)' },
+  { code: 'es-MX', label: 'Spanish (LatAm)' },
+  { code: 'pt-BR', label: 'Portuguese (BR)' },
+  { code: 'fr-FR', label: 'French' },
+  { code: 'de-DE', label: 'German' },
+  { code: 'hi-IN', label: 'Hindi' },
+  { code: 'ja-JP', label: 'Japanese' },
+  { code: 'zh-CN', label: 'Chinese (Mandarin)' },
+  { code: 'ar-SA', label: 'Arabic' },
+];
+
+let selectedVoiceLanguage = languageOptions[0].code;
+
 function setYear() {
   const el = document.getElementById('year');
   if (el) el.textContent = new Date().getFullYear();
@@ -452,6 +468,58 @@ function wireFeedbackButtons() {
 let recognition = null;
 let isListening = false;
 
+function populateLanguageSelect(selectId, value = selectedVoiceLanguage) {
+  const select = document.getElementById(selectId);
+  if (!select) return;
+  select.innerHTML = languageOptions.map((opt) => `<option value="${opt.code}">${opt.label}</option>`).join('');
+  select.value = value;
+}
+
+function matchesVoiceLang(voice, langCode) {
+  if (!voice || !voice.lang || !langCode) return false;
+  const target = voice.lang.toLowerCase();
+  const normalized = langCode.toLowerCase();
+  const base = normalized.split('-')[0];
+  return target === normalized || target.startsWith(normalized) || target.startsWith(base);
+}
+
+function waitForVoices() {
+  return new Promise((resolve) => {
+    if (!('speechSynthesis' in window)) {
+      resolve([]);
+      return;
+    }
+    const voices = window.speechSynthesis.getVoices();
+    if (voices && voices.length) {
+      resolve(voices);
+      return;
+    }
+    const timeout = setTimeout(() => {
+      resolve(window.speechSynthesis.getVoices());
+    }, 1200);
+    const handler = () => {
+      clearTimeout(timeout);
+      resolve(window.speechSynthesis.getVoices());
+      window.speechSynthesis.removeEventListener('voiceschanged', handler);
+    };
+    window.speechSynthesis.addEventListener('voiceschanged', handler);
+  });
+}
+
+async function populateVoiceOutputSelect(lang = selectedVoiceLanguage) {
+  const select = document.getElementById('voiceOutputVoice');
+  if (!select) return;
+  const voices = await waitForVoices();
+  const matches = voices.filter((v) => matchesVoiceLang(v, lang));
+  const candidates = matches.length ? matches : voices;
+  const label = languageOptions.find((l) => l.code === lang)?.label || lang;
+  const options = [
+    `<option value="">Best voice for ${label}</option>`,
+    ...candidates.map((v) => `<option value="${v.name}" data-lang="${v.lang}">${v.name} (${v.lang})</option>`),
+  ];
+  select.innerHTML = options.join('');
+}
+
 function initVoiceRecognition() {
   if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
     console.warn('Speech recognition not supported');
@@ -461,7 +529,7 @@ function initVoiceRecognition() {
   recognition = new SpeechRecognition();
   recognition.continuous = false;
   recognition.interimResults = false;
-  recognition.lang = 'en-US';
+  recognition.lang = selectedVoiceLanguage;
   
   recognition.onresult = (event) => {
     const transcript = event.results[0][0].transcript;
@@ -494,6 +562,7 @@ function toggleVoiceInput() {
     }
   }
   
+  recognition.lang = selectedVoiceLanguage;
   if (isListening) {
     recognition.stop();
     isListening = false;
@@ -508,28 +577,68 @@ function updateMicButton() {
   const btn = document.getElementById('voiceInputBtn');
   if (btn) {
     btn.textContent = isListening ? '🔴 Listening...' : '🎤 Voice Input';
-    btn.style.background = isListening ? '#ff4444' : '';
+    btn.classList.toggle('active', isListening);
   }
 }
 
-function speakText(text) {
+function getPreferredVoice(lang, voiceName = '') {
+  if (!('speechSynthesis' in window)) return null;
+  const voices = window.speechSynthesis.getVoices();
+  if (!voices.length) return null;
+  if (voiceName) {
+    const explicit = voices.find((v) => v.name === voiceName);
+    if (explicit) return explicit;
+  }
+  const natural = voices.find(
+    (v) =>
+      matchesVoiceLang(v, lang) &&
+      (/natural/i.test(v.name) || /neural/i.test(v.name) || /premium/i.test(v.name) || /studio/i.test(v.name) || /google/i.test(v.name))
+  );
+  if (natural) return natural;
+  const match = voices.find((v) => matchesVoiceLang(v, lang));
+  return match || voices[0];
+}
+
+function speakText(text, langOverride, voiceNameOverride) {
   if (!('speechSynthesis' in window)) {
     console.warn('Text-to-speech not supported');
     return;
   }
-  
+
+  const lang = langOverride || document.getElementById('voiceLanguage')?.value || selectedVoiceLanguage;
+  const requestedVoice = voiceNameOverride || document.getElementById('voiceOutputVoice')?.value || '';
+  const voices = window.speechSynthesis.getVoices();
+  if (!voices.length) {
+    waitForVoices().then((loaded) => {
+      if (loaded.length) {
+        speakText(text, lang, requestedVoice);
+      } else {
+        console.warn('No system voices available for playback.');
+      }
+    });
+    return;
+  }
+
   window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.rate = 1.0;
-  utterance.pitch = 1.0;
-  utterance.volume = 1.0;
-  
-  const voices = window.speechSynthesis.getVoices();
-  if (voices.length > 0) {
-    utterance.voice = voices[0];
+  utterance.lang = lang;
+  const voice = getPreferredVoice(lang, requestedVoice);
+  if (voice) {
+    utterance.voice = voice;
   }
-  
+  utterance.rate = 0.95;
+  utterance.pitch = 1.02;
+  utterance.volume = 1.0;
   window.speechSynthesis.speak(utterance);
+}
+
+async function initVoiceUI() {
+  populateLanguageSelect('voiceLanguage', selectedVoiceLanguage);
+  populateLanguageSelect('chatVoiceLang', selectedVoiceLanguage);
+  await populateVoiceOutputSelect(selectedVoiceLanguage);
+  await populateChatVoices();
+  updateMicButton();
+  updateChatMicButton(false);
 }
 
 // Example prompts
@@ -588,6 +697,27 @@ function wireVoiceControls() {
   if (voiceBtn) {
     voiceBtn.addEventListener('click', toggleVoiceInput);
   }
+
+  const voiceLangSelect = document.getElementById('voiceLanguage');
+  if (voiceLangSelect) {
+    voiceLangSelect.addEventListener('change', (e) => {
+      selectedVoiceLanguage = e.target.value || selectedVoiceLanguage;
+      if (recognition) {
+        recognition.lang = selectedVoiceLanguage;
+      }
+      populateVoiceOutputSelect(selectedVoiceLanguage);
+    });
+  }
+  
+  const chatVoiceLangSelect = document.getElementById('chatVoiceLang');
+  if (chatVoiceLangSelect) {
+    chatVoiceLangSelect.addEventListener('change', (e) => {
+      populateChatVoices();
+      if (chatRecognition) {
+        chatRecognition.lang = e.target.value;
+      }
+    });
+  }
   
   const exampleSelect = document.getElementById('exampleSelect');
   if (exampleSelect) {
@@ -610,7 +740,9 @@ function wireVoiceControls() {
       const idx = parseInt(e.target.dataset.idx);
       const result = lastPlaygroundResults[idx];
       if (result && result.text) {
-        speakText(result.text);
+        const lang = document.getElementById('voiceLanguage')?.value || selectedVoiceLanguage;
+        const voiceName = document.getElementById('voiceOutputVoice')?.value || '';
+        speakText(result.text, lang, voiceName);
       }
     }
   });
@@ -707,7 +839,7 @@ async function submitGeneralFeedback() {
 let currentTutor = null;
 let chatRecognition = null;
 let chatHistory = [];
-let selectedVoice = null;
+let chatMicActive = false;
 
 const tutorProfiles = {
   einstein: {
@@ -746,6 +878,10 @@ const tutorProfiles = {
 function selectTutor(avatar) {
   currentTutor = avatar;
   const profile = tutorProfiles[avatar];
+  const voiceLangSelect = document.getElementById('chatVoiceLang');
+  if (voiceLangSelect && !voiceLangSelect.value) {
+    voiceLangSelect.value = selectedVoiceLanguage;
+  }
   
   // Update UI
   const avatarElement = document.getElementById('activeTutorIcon');
@@ -785,6 +921,7 @@ function selectTutor(avatar) {
     chatRecognition = new SpeechRecognition();
     chatRecognition.continuous = false;
     chatRecognition.interimResults = false;
+    chatRecognition.lang = voiceLangSelect?.value || selectedVoiceLanguage;
     
     chatRecognition.onresult = (event) => {
       const transcript = event.results[0][0].transcript;
@@ -803,19 +940,27 @@ function selectTutor(avatar) {
   }
 }
 
-function populateChatVoices() {
+async function populateChatVoices() {
   const voiceSelect = document.getElementById('chatVoice');
-  const voices = window.speechSynthesis.getVoices();
-  
-  voiceSelect.innerHTML = voices.map((voice, idx) => 
-    `<option value="${idx}">${voice.name} (${voice.lang})</option>`
-  ).join('');
-  
-  // Set default voice
-  const defaultIdx = voices.findIndex(v => v.default);
-  if (defaultIdx >= 0) {
-    voiceSelect.value = defaultIdx;
+  if (!voiceSelect) return;
+  const langSelect = document.getElementById('chatVoiceLang');
+  const lang = langSelect?.value || selectedVoiceLanguage;
+  const voices = await waitForVoices();
+
+  if (!voices.length) {
+    voiceSelect.innerHTML = '<option value="">No system voices found</option>';
+    return;
   }
+
+  const matches = voices.filter((voice) => matchesVoiceLang(voice, lang));
+  const list = matches.length ? matches : voices;
+
+  voiceSelect.innerHTML = list
+    .map((voice) => `<option value="${voice.name}" data-lang="${voice.lang}">${voice.name} (${voice.lang})</option>`)
+    .join('');
+
+  const preferred = list.find((voice) => matchesVoiceLang(voice, lang)) || list[0];
+  voiceSelect.value = preferred?.name || '';
 }
 
 function toggleChatVoice() {
@@ -824,10 +969,9 @@ function toggleChatVoice() {
     return;
   }
   
-  const micBtn = document.getElementById('chatMic');
-  const isListening = micBtn.textContent === '🔴';
-  
-  if (isListening) {
+  const lang = document.getElementById('chatVoiceLang')?.value || selectedVoiceLanguage;
+  chatRecognition.lang = lang;
+  if (chatMicActive) {
     chatRecognition.stop();
     updateChatMicButton(false);
   } else {
@@ -837,9 +981,12 @@ function toggleChatVoice() {
 }
 
 function updateChatMicButton(isListening) {
+  chatMicActive = !!isListening;
   const micBtn = document.getElementById('chatMic');
-  micBtn.textContent = isListening ? '🔴' : '🎤';
-  micBtn.title = isListening ? 'Stop listening' : 'Start voice input';
+  if (!micBtn) return;
+  micBtn.textContent = chatMicActive ? 'Listening…' : '🎤';
+  micBtn.classList.toggle('active', chatMicActive);
+  micBtn.title = chatMicActive ? 'Stop listening' : 'Start voice input';
 }
 
 async function sendChatMessage() {
@@ -921,42 +1068,39 @@ function addChatMessage(text, role, isTyping = false) {
 }
 
 function speakChatMessage(text) {
-  const voiceSelect = document.getElementById('chatVoice');
-  const voiceIdx = parseInt(voiceSelect.value);
-  const voices = window.speechSynthesis.getVoices();
-  
-  const utterance = new SpeechSynthesisUtterance(text);
-  if (voices[voiceIdx]) {
-    utterance.voice = voices[voiceIdx];
-  } else {
-    // Try to find a natural-sounding voice
-    const naturalVoice = voices.find(v => 
-      v.name.includes('Natural') || 
-      v.name.includes('Enhanced') || 
-      v.name.includes('Premium') ||
-      v.name.includes('Google')
-    );
-    if (naturalVoice) {
-      utterance.voice = naturalVoice;
-    }
-  }
-  utterance.rate = 0.95; // Slightly slower for warmth
-  utterance.pitch = 1.05; // Slightly higher for friendliness
-  utterance.volume = 1.0;
-  
-  // Animate avatar while speaking
+  if (!('speechSynthesis' in window)) return;
+  const lang = document.getElementById('chatVoiceLang')?.value || selectedVoiceLanguage;
+  const voiceName = document.getElementById('chatVoice')?.value || '';
   const avatar = document.querySelector('.tutor-avatar-large');
-  if (avatar) {
-    avatar.classList.add('speaking');
-  }
   
-  utterance.onend = () => {
-    if (avatar) {
-      avatar.classList.remove('speaking');
+  waitForVoices().then((voices) => {
+    if (!voices.length) {
+      console.warn('No system voices available for chat playback.');
+      return;
     }
-  };
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = lang;
+    const voice = getPreferredVoice(lang, voiceName);
+    if (voice) {
+      utterance.voice = voice;
+    }
+    utterance.rate = 0.95;
+    utterance.pitch = 1.05;
+    utterance.volume = 1.0;
   
-  window.speechSynthesis.speak(utterance);
+    if (avatar) {
+      avatar.classList.add('speaking');
+    }
+  
+    utterance.onend = () => {
+      if (avatar) {
+        avatar.classList.remove('speaking');
+      }
+    };
+  
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utterance);
+  });
 }
 
 function endChat() {
@@ -1065,15 +1209,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   wireCTA();
   wireParticipants();
   wireVoiceControls();
+  await initVoiceUI();
   
   // Load voices for TTS
   if ('speechSynthesis' in window) {
     window.speechSynthesis.getVoices();
     // Reload when voices change (some browsers load async)
     window.speechSynthesis.onvoiceschanged = () => {
-      if (document.getElementById('chatVoice')) {
-        populateChatVoices();
-      }
+      populateVoiceOutputSelect(document.getElementById('voiceLanguage')?.value || selectedVoiceLanguage);
+      populateChatVoices();
     };
   }
 

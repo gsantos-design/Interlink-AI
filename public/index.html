@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Interlink AI – Multi-Model Orchestration Hub</title>
+  <title>Interlink AI - Multi-Model Orchestration Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -39,6 +42,20 @@
             <a class="btn btn-ghost" href="#pricing">See pricing</a>
           </div>
           <p class="hero-note">Built for launch: plug your own API keys, add Stripe, deploy on Render.</p>
+          <div class="hero-metrics">
+            <div class="metric">
+              <div class="metric-number">3x</div>
+              <div class="metric-label">models side-by-side</div>
+            </div>
+            <div class="metric">
+              <div class="metric-number">60s</div>
+              <div class="metric-label">to ship a prompt race</div>
+            </div>
+            <div class="metric">
+              <div class="metric-number">Voice</div>
+              <div class="metric-label">multilingual + natural</div>
+            </div>
+          </div>
         </div>
 
         <div class="hero-panel">
@@ -118,6 +135,19 @@
             <div class="prompt-controls">
               <textarea id="playgroundPrompt" class="input" rows="4" placeholder="Type or speak your prompt..." ></textarea>
               <button id="voiceInputBtn" class="btn btn-icon">🎤 Voice Input</button>
+            </div>
+            <div class="voice-grid">
+              <div class="voice-field">
+                <label class="field-label" for="voiceLanguage">Voice language</label>
+                <select id="voiceLanguage" class="input"></select>
+              </div>
+              <div class="voice-field">
+                <label class="field-label" for="voiceOutputVoice">Playback voice</label>
+                <select id="voiceOutputVoice" class="input">
+                  <option value="">Best voice for selected language</option>
+                </select>
+                <p class="microcopy">Used for read-aloud and one-on-one tutors.</p>
+              </div>
             </div>
             
             <label class="field-label">Vision (Optional)</label>
@@ -383,6 +413,10 @@
                   <option value="gemini">Gemini 2.0 Flash</option>
                   <option value="groq">Llama 3.3</option>
                 </select>
+              </div>
+              <div class="control-group">
+                <label for="chatVoiceLang">Voice language:</label>
+                <select id="chatVoiceLang" class="input"></select>
               </div>
               <div class="control-group">
                 <label for="chatVoice">Voice:</label>
