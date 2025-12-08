@@ -47,6 +47,8 @@ const languageOptions = [
 ];
 
 let selectedVoiceLanguage = languageOptions[0].code;
+const NATURAL_HINT = /(natural|neural|premium|studio|enhanced|hq|high quality|hd)/i;
+const PROVIDER_HINT = /(microsoft|google|apple|amazon|openai)/i;
 
 function setYear() {
   const el = document.getElementById('year');
@@ -468,6 +470,14 @@ function wireFeedbackButtons() {
 let recognition = null;
 let isListening = false;
 
+function scoreVoiceForLang(voice, lang) {
+  if (!voice) return 0;
+  const langMatch = matchesVoiceLang(voice, lang) ? 4 : 0;
+  const naturalBonus = NATURAL_HINT.test(voice.name) ? 3 : 0;
+  const providerBonus = PROVIDER_HINT.test(voice.name) ? 1 : 0;
+  return langMatch + naturalBonus + providerBonus;
+}
+
 function populateLanguageSelect(selectId, value = selectedVoiceLanguage) {
   const select = document.getElementById(selectId);
   if (!select) return;
@@ -510,14 +520,18 @@ async function populateVoiceOutputSelect(lang = selectedVoiceLanguage) {
   const select = document.getElementById('voiceOutputVoice');
   if (!select) return;
   const voices = await waitForVoices();
-  const matches = voices.filter((v) => matchesVoiceLang(v, lang));
-  const candidates = matches.length ? matches : voices;
+  const sorted = [...voices].sort((a, b) => scoreVoiceForLang(b, lang) - scoreVoiceForLang(a, lang));
+  const candidates = sorted.length ? sorted : voices;
   const label = languageOptions.find((l) => l.code === lang)?.label || lang;
   const options = [
     `<option value="">Best voice for ${label}</option>`,
     ...candidates.map((v) => `<option value="${v.name}" data-lang="${v.lang}">${v.name} (${v.lang})</option>`),
   ];
   select.innerHTML = options.join('');
+  const preferred = candidates[0];
+  if (preferred) {
+    select.value = preferred.name;
+  }
 }
 
 function initVoiceRecognition() {
@@ -585,18 +599,12 @@ function getPreferredVoice(lang, voiceName = '') {
   if (!('speechSynthesis' in window)) return null;
   const voices = window.speechSynthesis.getVoices();
   if (!voices.length) return null;
+  const ranked = [...voices].sort((a, b) => scoreVoiceForLang(b, lang) - scoreVoiceForLang(a, lang));
   if (voiceName) {
     const explicit = voices.find((v) => v.name === voiceName);
     if (explicit) return explicit;
   }
-  const natural = voices.find(
-    (v) =>
-      matchesVoiceLang(v, lang) &&
-      (/natural/i.test(v.name) || /neural/i.test(v.name) || /premium/i.test(v.name) || /studio/i.test(v.name) || /google/i.test(v.name))
-  );
-  if (natural) return natural;
-  const match = voices.find((v) => matchesVoiceLang(v, lang));
-  return match || voices[0];
+  return ranked[0] || voices[0];
 }
 
 function speakText(text, langOverride, voiceNameOverride) {
@@ -952,14 +960,13 @@ async function populateChatVoices() {
     return;
   }
 
-  const matches = voices.filter((voice) => matchesVoiceLang(voice, lang));
-  const list = matches.length ? matches : voices;
+  const ranked = [...voices].sort((a, b) => scoreVoiceForLang(b, lang) - scoreVoiceForLang(a, lang));
 
-  voiceSelect.innerHTML = list
+  voiceSelect.innerHTML = ranked
     .map((voice) => `<option value="${voice.name}" data-lang="${voice.lang}">${voice.name} (${voice.lang})</option>`)
     .join('');
 
-  const preferred = list.find((voice) => matchesVoiceLang(voice, lang)) || list[0];
+  const preferred = ranked[0];
   voiceSelect.value = preferred?.name || '';
 }
 
