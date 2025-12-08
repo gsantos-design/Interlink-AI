@@ -44,6 +44,7 @@ router.post('/login', (req, res) => {
   res.json({ msg: 'Login successful (placeholder)' });
 });
 
+<<<<<<< Updated upstream
 /**
  * @route   POST /api/auth/login
  * @desc    Authenticate user & get token
@@ -65,3 +66,6 @@ router.post('/login', (req, res) => {
 });
 
 module.exports = router;
+=======
+module.exports = router;
+>>>>>>> Stashed changes
