@@ -333,7 +333,7 @@
               <li>Unlimited prompt races</li>
               <li>Feedback & behavior tracking</li>
             </ul>
-            <button class="btn btn-primary full checkout-btn" data-plan="starter">Get started</button>
+            <button class="btn btn-primary full" onclick="showRegistration()">Get started</button>
           </article>
           <article class="pricing-card highlight">
             <div class="pricing-label">Team</div>
@@ -347,7 +347,7 @@
               <li>Priority support</li>
               <li>Export to Notion/Slack</li>
             </ul>
-            <button class="btn btn-outline full checkout-btn" data-plan="team">Start team trial</button>
+            <button class="btn btn-outline full" onclick="showRegistration()">Start team trial</button>
           </article>
         </div>
       </section>
@@ -527,6 +527,31 @@
           <button id="tutorialNext" class="btn btn-primary" onclick="nextTutorialStep()">Next →</button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Registration Modal -->
+  <div id="registrationModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeRegistration()">✕</button>
+      <h2>Create Your Account</h2>
+      <p>Join Interlink AI and start orchestrating models today.</p>
+      <form id="registrationForm" onsubmit="handleRegistration(event)">
+        <div class="field-group">
+          <label for="regName">Full Name</label>
+          <input type="text" id="regName" class="input" required />
+        </div>
+        <div class="field-group">
+          <label for="regEmail">Email Address</label>
+          <input type="email" id="regEmail" class="input" required />
+        </div>
+        <div class="field-group">
+          <label for="regPassword">Password</label>
+          <input type="password" id="regPassword" class="input" minlength="8" required />
+        </div>
+        <button type="submit" class="btn btn-primary full">Create Account</button>
+      </form>
+      <p id="registrationStatus" class="stub-note" style="margin-top: 1rem;"></p>
     </div>
   </div>
 
