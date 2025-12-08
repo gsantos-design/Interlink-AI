@@ -714,16 +714,26 @@ function wireVoiceControls() {
         recognition.lang = selectedVoiceLanguage;
       }
       populateVoiceOutputSelect(selectedVoiceLanguage);
+      const chatLangSelect = document.getElementById('chatVoiceLang');
+      if (chatLangSelect) {
+        chatLangSelect.value = selectedVoiceLanguage;
+        populateChatVoices();
+      }
     });
   }
   
   const chatVoiceLangSelect = document.getElementById('chatVoiceLang');
   if (chatVoiceLangSelect) {
     chatVoiceLangSelect.addEventListener('change', (e) => {
+      const newLang = e.target.value || selectedVoiceLanguage;
+      selectedVoiceLanguage = newLang;
       populateChatVoices();
+      populateVoiceOutputSelect(newLang);
       if (chatRecognition) {
-        chatRecognition.lang = e.target.value;
+        chatRecognition.lang = newLang;
       }
+      const voiceLang = document.getElementById('voiceLanguage');
+      if (voiceLang) voiceLang.value = newLang;
     });
   }
   
