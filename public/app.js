@@ -781,6 +781,11 @@ function closeTutorial() {
   localStorage.setItem('interlinkTutorialSeen', 'true');
 }
 
+function replayTutorial() {
+  localStorage.removeItem('interlinkTutorialSeen');
+  showTutorial();
+}
+
 function nextTutorialStep() {
   if (currentTutorialStep < totalTutorialSteps) {
     currentTutorialStep++;
