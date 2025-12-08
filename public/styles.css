@@ -16,7 +16,7 @@
   --glow-2: rgba(122, 167, 255, 0.26);
   --panel-blur: 12px;
   --font-sans: "Space Grotesk", "Inter", system-ui, -apple-system, sans-serif;
-  --hero-img: url("Einstein hero.png");
+  --hero-img: url("einstein-hero.png");
 }
 
 * {
@@ -1734,6 +1734,7 @@ a {
     flex: 1;
   }
 }
+
 
 
 
