@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -13,14 +13,14 @@
   <div class="page" id="top">
     <header class="nav">
       <div class="brand">
-        <div class="brand-mark">∞</div>
+        <div class="brand-mark">8</div>
         <div class="brand-name">Interlink <span>AI</span></div>
       </div>
       <nav class="nav-links">
         <a href="#features">Features</a>
         <a href="#playground">Playground</a>
-        <a href="#one-on-one">One-on-One</a>
-        <a href="#educators">For Teachers</a>
+        <a href="#races">Races</a>
+        <a href="#one-on-one">Expert Mode</a>
         <a href="#resources">Resources</a>
         <a href="#community">Community</a>
         <a href="#pricing">Pricing</a>
@@ -31,57 +31,71 @@
     <main>
       <section class="hero">
         <div class="hero-copy">
-          <div class="pill">Multi-model orchestration</div>
-          <h1>One prompt. Three minds. Ship the best answer every time.</h1>
+          <div class="pill">Research-grade orchestration</div>
+          <h1>One prompt. Three minds. Evidence-grade answers.</h1>
           <p class="hero-sub">
-            Interlink AI lets you send a single prompt to ChatGPT, Claude, and Gemini in one view,
-            run prompt races, and keep the winners for your workflows.
+            Interlink AI is the test bench for serious builders. Fan out a single prompt to ChatGPT, Claude, and Gemini,
+            stage prompt races, and lock in winners for repeatable workflows.
           </p>
           <div class="hero-actions">
-            <a class="btn btn-primary" href="#playground">Try the playground</a>
-            <a class="btn btn-ghost" href="#pricing">See pricing</a>
+            <a class="btn btn-primary" href="#playground">Open playground</a>
+            <a class="btn btn-ghost" href="#races">Run a prompt race</a>
             <button class="btn btn-ghost btn-compact" onclick="replayTutorial(); return false;">Replay tutorial</button>
           </div>
-          <p class="hero-note">Built for launch: plug your own API keys, add Stripe, deploy on Render.</p>
+          <p class="hero-note">Built for focused research and production: your API keys, your guardrails, export to your stack.</p>
           <div class="hero-metrics">
             <div class="metric">
               <div class="metric-number">3x</div>
-              <div class="metric-label">models side-by-side</div>
+              <div class="metric-label">models, one prompt</div>
             </div>
             <div class="metric">
-              <div class="metric-number">60s</div>
-              <div class="metric-label">to ship a prompt race</div>
+              <div class="metric-number">Under 60s</div>
+              <div class="metric-label">to ship a race</div>
             </div>
             <div class="metric">
-              <div class="metric-number">Voice</div>
-              <div class="metric-label">multilingual + natural</div>
+              <div class="metric-number">Voice/Vision</div>
+              <div class="metric-label">multimodal ready</div>
             </div>
           </div>
         </div>
 
-        <div class="hero-panel">
-          <div class="panel-header">
-            <span class="panel-title">Live multi-model view</span>
-            <span class="panel-status">Ready</span>
-          </div>
-          <label class="field-label" for="heroPrompt">Prompt</label>
-          <textarea id="heroPrompt" class="input" rows="3">Explain Interlink AI in one sentence for a busy founder.</textarea>
-          <button id="heroRun" class="btn btn-primary full">Run in all models</button>
-          <div class="output-grid" id="heroOutputs">
-            <div class="output-card" data-model="openai">
-              <div class="output-header"><span class="tag tag-openai">ChatGPT</span><span class="status">waiting</span></div>
-              <p class="output-text" id="out-openai">—</p>
-            </div>
-            <div class="output-card" data-model="anthropic">
-              <div class="output-header"><span class="tag tag-claude">Claude</span><span class="status">waiting</span></div>
-              <p class="output-text" id="out-anthropic">—</p>
-            </div>
-            <div class="output-card" data-model="gemini">
-              <div class="output-header"><span class="tag tag-gemini">Gemini</span><span class="status">waiting</span></div>
-              <p class="output-text" id="out-gemini">—</p>
+        <div class="hero-visual">
+          <div class="einstein-card">
+            <div class="einstein-img" aria-hidden="true"></div>
+            <div class="einstein-overlay">
+              <div class="overlay-title">Research avatar, 3D ready</div>
+              <div class="overlay-meta">Swap in your 3D Einstein or any glTF hero.</div>
+              <div class="overlay-chips">
+                <span>Model fanout</span>
+                <span>Voice + vision</span>
+                <span>Latency heatmap</span>
+              </div>
             </div>
           </div>
-          <p class="stub-note">In production, this fans out to your backend which calls each provider.</p>
+          <div class="hero-panel">
+            <div class="panel-header">
+              <span class="panel-title">Live multi-model view</span>
+              <span class="panel-status">Ready</span>
+            </div>
+            <label class="field-label" for="heroPrompt">Prompt</label>
+            <textarea id="heroPrompt" class="input" rows="3">Summarize three angles for a founder evaluating Interlink AI today.</textarea>
+            <button id="heroRun" class="btn btn-primary full">Fan out to all models</button>
+            <div class="output-grid" id="heroOutputs">
+              <div class="output-card" data-model="openai">
+                <div class="output-header"><span class="tag tag-openai">ChatGPT</span><span class="status">waiting</span></div>
+                <p class="output-text" id="out-openai">-</p>
+              </div>
+              <div class="output-card" data-model="anthropic">
+                <div class="output-header"><span class="tag tag-claude">Claude</span><span class="status">waiting</span></div>
+                <p class="output-text" id="out-anthropic">-</p>
+              </div>
+              <div class="output-card" data-model="gemini">
+                <div class="output-header"><span class="tag tag-gemini">Gemini</span><span class="status">waiting</span></div>
+                <p class="output-text" id="out-gemini">-</p>
+              </div>
+            </div>
+            <p class="stub-note">Production: your backend fans out to providers; we return the winner.</p>
+          </div>
         </div>
       </section>
 
@@ -122,20 +136,20 @@
             <label class="field-label">Models</label>
             <div id="model-toggles" class="toggle-row"></div>
             
-            <label class="field-label">Examples</label>
+                        <label class="field-label">Examples</label>
             <select id="exampleSelect" class="input">
               <option value="">Load an example prompt...</option>
-              <option value="spanish-learning">🇪🇸 Learn Basic Spanish Phrases</option>
-              <option value="troubleshooting">🐛 Debug React Error</option>
-              <option value="design-review">🎨 Review Landing Page Design</option>
-              <option value="code-refactor">⚡ Refactor Code for Efficiency</option>
-              <option value="product-compare">⚖️ PostgreSQL vs MongoDB</option>
+              <option value="spanish-learning">Research summary: multimodal RAG setup</option>
+              <option value="troubleshooting">Debug React error</option>
+              <option value="design-review">Review landing page design</option>
+              <option value="code-refactor">Refactor code for efficiency</option>
+              <option value="product-compare">PostgreSQL vs MongoDB</option>
             </select>
             
             <label class="field-label" for="playgroundPrompt">Prompt</label>
             <div class="prompt-controls">
               <textarea id="playgroundPrompt" class="input" rows="4" placeholder="Type or speak your prompt..." ></textarea>
-              <button id="voiceInputBtn" class="btn btn-icon">🎤 Voice Input</button>
+              <button id="voiceInputBtn" class="btn btn-icon">?? Voice Input</button>
             </div>
             <div class="voice-grid">
               <div class="voice-field">
@@ -154,12 +168,12 @@
             <label class="field-label">Vision (Optional)</label>
             <div class="vision-upload">
               <input type="file" id="visionUpload" accept="image/*" style="display:none;">
-              <button onclick="document.getElementById('visionUpload').click()" class="btn btn-ghost full">📷 Upload Image</button>
+              <button onclick="document.getElementById('visionUpload').click()" class="btn btn-ghost full">?? Upload Image</button>
               <div id="imagePreview" class="image-preview"></div>
             </div>
             
             <button id="playgroundRun" class="btn btn-primary full">Run experiment</button>
-            <button onclick="downloadFeedbackCSV()" class="btn btn-ghost full download-csv-btn">📥 Download Feedback CSV</button>
+            <button onclick="downloadFeedbackCSV()" class="btn btn-ghost full download-csv-btn">?? Download Feedback CSV</button>
             <p class="stub-note">Tip: Use voice input, examples, or type your own. Track model behavior with feedback tools.</p>
           </div>
           <div class="playground-right">
@@ -174,7 +188,7 @@
         <div class="section-header">
           <p class="kicker">Prompt races</p>
           <h2>Host a live challenge and crown a winner.</h2>
-          <p class="section-sub">Great for “find the best deal” battles, research sprints, or live content.</p>
+          <p class="section-sub">Great for �find the best deal� battles, research sprints, or live content.</p>
         </div>
         <div class="race-grid">
           <div class="race-config">
@@ -209,13 +223,13 @@
         </div>
         <div class="resources-grid">
           <article class="resource-card">
-            <h3>🧠 Critical Thinking Framework</h3>
+            <h3>?? Critical Thinking Framework</h3>
             <p><strong>Question Everything:</strong> Don't accept AI responses at face value. Ask: "How does this model know this? What sources would support or contradict this?"</p>
             <p><strong>Cross-Reference:</strong> Use multiple models and compare. Different perspectives reveal blind spots.</p>
             <p><strong>Verify Claims:</strong> Check facts with external sources. AI can hallucinate convincingly.</p>
           </article>
           <article class="resource-card">
-            <h3>🛠️ Recommended Tools</h3>
+            <h3>??? Recommended Tools</h3>
             <ul>
               <li><strong>Perplexity AI:</strong> Research with cited sources</li>
               <li><strong>Notion AI:</strong> Knowledge management with AI</li>
@@ -225,63 +239,20 @@
             </ul>
           </article>
           <article class="resource-card">
-            <h3>📚 Learning Path</h3>
+            <h3>?? Learning Path</h3>
             <p><strong>Beginners:</strong> Start with comparison prompts. See how different models approach the same question.</p>
             <p><strong>Intermediate:</strong> Use feedback tools to track model behavior patterns over time.</p>
             <p><strong>Advanced:</strong> Experiment with vision, voice, and multi-modal inputs to understand limitations.</p>
           </article>
           <article class="resource-card">
-            <h3>⚠️ Spotting Red Flags</h3>
+            <h3>?? Spotting Red Flags</h3>
             <p><strong>Overconfidence:</strong> Model states facts without uncertainty when it should express doubt.</p>
             <p><strong>Hallucination:</strong> Fabricates data, links, or references that don't exist.</p>
             <p><strong>Inconsistency:</strong> Gives different answers to the same question in different sessions.</p>
             <p><strong>Deception:</strong> Creates false scenarios (like Gemini's fake Stripe request!).</p>
           </article>
         </div>
-      </section>
-
-      <section class="section section-contrast" id="educators">
-        <div class="section-header">
-          <p class="kicker">For Educators</p>
-          <h2>Empower your classroom with AI literacy.</h2>
-          <p class="section-sub">Built by a former 1st & 5th grade teacher who believes AI should strengthen critical thinking, not replace it.</p>
-        </div>
-        <div class="educator-grid">
-          <article class="educator-card">
-            <h3>🎓 Classroom Ready</h3>
-            <p><strong>Compare & Contrast:</strong> Have students analyze how different AI models answer the same question. Perfect for critical thinking lessons.</p>
-            <p><strong>Research Skills:</strong> Use feedback tools to teach fact-checking, source verification, and detecting misinformation.</p>
-            <p><strong>Safe Environment:</strong> Built-in content filtering and parental controls for K-12 use.</p>
-          </article>
-          <article class="educator-card">
-            <h3>📋 Free Lesson Plans</h3>
-            <p><strong>Elementary:</strong> "Which AI Tutor is Right?" - Students pick avatars and learn about AI personalities.</p>
-            <p><strong>Middle School:</strong> "Spot the Hallucination" - Identify when AI makes mistakes or fabricates information.</p>
-            <p><strong>High School:</strong> "Model Behavior Analysis" - Track patterns in AI responses across multiple sessions.</p>
-            <a href="#" class="btn btn-ghost" onclick="alert('Lesson plan library coming soon!'); return false;">Download Plans</a>
-          </article>
-          <article class="educator-card">
-            <h3>💰 Educator Pricing</h3>
-            <p><strong>Free Tier:</strong> Up to 30 students per classroom with basic features.</p>
-            <p><strong>School License:</strong> Unlimited students, advanced analytics, admin dashboard - $299/year per school.</p>
-            <p><strong>District Partnership:</strong> Custom pricing, training workshops, ongoing support.</p>
-            <a href="mailto:educators@interlinkAI.com?subject=School%20Partnership%20Inquiry" class="btn btn-primary">Request School Demo</a>
-          </article>
-          <article class="educator-card">
-            <h3>🤝 Why Teachers Love It</h3>
-            <blockquote>
-              <p>"Finally, a tool that teaches kids HOW to think about AI, not just how to use it. My 5th graders now question everything they see online."</p>
-              <cite>— Sarah M., Elementary Teacher</cite>
-            </blockquote>
-            <blockquote>
-              <p>"The comparison feature is brilliant. Students see firsthand that AI isn't magic - it's a tool with limitations."</p>
-              <cite>— James T., High School STEM</cite>
-            </blockquote>
-          </article>
-        </div>
-      </section>
-
-      <section class="section" id="community">
+      </section>\n<section class="section" id="community">
         <div class="section-header">
           <p class="kicker">Community</p>
           <h2>Join the AI literacy movement.</h2>
@@ -289,24 +260,24 @@
         </div>
         <div class="community-grid">
           <article class="community-card">
-            <h3>📺 YouTube Study Group</h3>
+            <h3>?? YouTube Study Group</h3>
             <p>Every two weeks, we compare AI model findings live. Analyze real-world scenarios, discuss results, and learn together.</p>
             <a href="#" class="btn btn-ghost" id="youtubeLink">Coming Soon - Subscribe</a>
             <p class="stub-note">Channel launches Q1 2026. Be the first to know!</p>
           </article>
           <article class="community-card">
-            <h3>📝 Interactive Blog</h3>
+            <h3>?? Interactive Blog</h3>
             <p>Deep dives into AI behavior, case studies, and practical guides for responsible AI usage.</p>
             <a href="#" class="btn btn-ghost" id="blogLink">Coming Soon</a>
           </article>
           <article class="community-card">
-            <h3>💡 Share Your Ideas</h3>
+            <h3>?? Share Your Ideas</h3>
             <p>Help shape the future of Interlink AI. What features would improve your workflow?</p>
             <textarea id="ideaInput" class="input" rows="3" placeholder="Describe your idea..."></textarea>
             <button onclick="submitIdea()" class="btn btn-primary full">Submit Idea</button>
           </article>
           <article class="community-card">
-            <h3>📢 General Feedback</h3>
+            <h3>?? General Feedback</h3>
             <p>Found a bug? Have suggestions? We're listening.</p>
             <textarea id="feedbackInput" class="input" rows="3" placeholder="Your feedback..."></textarea>
             <button onclick="submitGeneralFeedback()" class="btn btn-primary full">Send Feedback</button>
@@ -314,80 +285,78 @@
         </div>
       </section>
 
-      <section class="section" id="pricing">
+            <section class="section" id="pricing">
         <div class="section-header">
           <p class="kicker">Pricing</p>
-          <h2>Simple plans for builders.</h2>
-          <p class="section-sub">Bring your own API keys. We orchestrate the stack.</p>
+          <h2>Profit-friendly plans for research teams.</h2>
+          <p class="section-sub">Your API keys. No usage skims. Built for measurable testing and production orchestration.</p>
         </div>
         <div class="pricing-grid">
           <article class="pricing-card">
-            <div class="pricing-label">Starter</div>
-            <div class="pricing-price">$19.99<span>/mo</span></div>
+            <div class="pricing-label">Solo</div>
+            <div class="pricing-price"><span>/mo</span></div>
             <ul class="pricing-list">
-              <li>1 user</li>
-              <li>4 AI models (GPT, Claude, Gemini, Llama)</li>
-              <li>Voice input & output</li>
-              <li>Vision & image analysis</li>
-              <li>One-on-One AI tutors</li>
+              <li>1 seat</li>
+              <li>3+ AI models (GPT, Claude, Gemini)</li>
               <li>Unlimited prompt races</li>
-              <li>Feedback & behavior tracking</li>
+              <li>Voice & vision fanout</li>
+              <li>Feedback + CSV export</li>
+              <li>Local API key vault</li>
             </ul>
-            <button class="btn btn-primary full" onclick="showRegistration()">Get started</button>
+            <button class="btn btn-primary full" onclick="showRegistration()">Start Solo</button>
           </article>
           <article class="pricing-card highlight">
-            <div class="pricing-label">Team</div>
-            <div class="pricing-price">$79.99<span>/mo</span></div>
+            <div class="pricing-label">Pro / Team</div>
+            <div class="pricing-price"><span>/mo</span></div>
             <ul class="pricing-list">
-              <li>Up to 5 users</li>
-              <li>All Starter features</li>
-              <li>Shared prompt kits</li>
-              <li>Team leaderboards</li>
-              <li>CSV feedback export</li>
-              <li>Priority support</li>
-              <li>Export to Notion/Slack</li>
+              <li>Up to 5 seats (flexible add-ons)</li>
+              <li>Shared prompt kits & approvals</li>
+              <li>Latency heatmaps & audits</li>
+              <li>Usage limits & guardrails</li>
+              <li>Notion / Slack export</li>
+              <li>Priority support & rollout help</li>
             </ul>
-            <button class="btn btn-outline full" onclick="showRegistration()">Start team trial</button>
+            <button class="btn btn-outline full" onclick="showRegistration()">Start Team Trial</button>
           </article>
         </div>
       </section>
 
       <section class="section" id="one-on-one">
         <div class="section-header">
-          <p class="kicker">Personalized Learning</p>
-          <h2>One-on-One with Your AI Tutor</h2>
-          <p class="section-sub">Choose your favorite AI avatar and have a FaceTime-style conversation with personalized voice.</p>
+          <p class="kicker">Expert Mode</p>
+          <h2>One-on-One with your research avatar</h2>
+          <p class="section-sub">Switch into a focused, FaceTime-style assistant for deep dives, code reviews, or strategy runs.</p>
         </div>
 
         <div class="one-on-one-container">
           <!-- Avatar Selection -->
           <div class="avatar-selection">
-            <h3>Choose Your Tutor</h3>
+            <h3>Choose your avatar</h3>
             <div class="avatar-grid">
               <div class="tutor-avatar" data-avatar="einstein" onclick="selectTutor('einstein')">
-                <div class="tutor-icon">🧠</div>
+                <div class="tutor-icon">??</div>
                 <div class="tutor-name">Robo Einstein</div>
-                <div class="tutor-bio">Science & Physics Expert</div>
+                <div class="tutor-bio">Physics + systems thinking</div>
               </div>
               <div class="tutor-avatar" data-avatar="prof" onclick="selectTutor('prof')">
-                <div class="tutor-icon">📚</div>
+                <div class="tutor-icon">??</div>
                 <div class="tutor-name">Robo Prof</div>
-                <div class="tutor-bio">Academic Tutor</div>
+                <div class="tutor-bio">Research strategist</div>
               </div>
               <div class="tutor-avatar" data-avatar="mentor" onclick="selectTutor('mentor')">
-                <div class="tutor-icon">🤖</div>
+                <div class="tutor-icon">??</div>
                 <div class="tutor-name">Robot Mentor</div>
-                <div class="tutor-bio">Career Guidance</div>
+                <div class="tutor-bio">Delivery & PM guidance</div>
               </div>
               <div class="tutor-avatar" data-avatar="sage" onclick="selectTutor('sage')">
-                <div class="tutor-icon">🧙</div>
+                <div class="tutor-icon">??</div>
                 <div class="tutor-name">AI Sage</div>
-                <div class="tutor-bio">Philosophy & Wisdom</div>
+                <div class="tutor-bio">Philosophy & critical thinking</div>
               </div>
               <div class="tutor-avatar" data-avatar="cyber" onclick="selectTutor('cyber')">
-                <div class="tutor-icon">💻</div>
+                <div class="tutor-icon">??</div>
                 <div class="tutor-name">Cyber Tutor</div>
-                <div class="tutor-bio">Tech & Coding</div>
+                <div class="tutor-bio">Security & coding</div>
               </div>
             </div>
           </div>
@@ -398,7 +367,7 @@
             <div class="tutor-video-container">
               <div class="video-rings"><span></span><span></span><span></span></div>
               <div class="video-noise"></div>
-              <div class="tutor-avatar-large breathing" id="activeTutorIcon">🧠</div>
+              <div class="tutor-avatar-large breathing" id="activeTutorIcon">??</div>
               <div class="video-live-pill"><span class="dot"></span>Live</div>
               <div class="video-signal"><span></span><span></span><span></span><span></span></div>
               <div class="video-hypno"></div>
@@ -407,7 +376,7 @@
             </div>
 
             <div class="chat-header">
-              <button class="btn btn-ghost" onclick="endChat()">← Back</button>
+              <button class="btn btn-ghost" onclick="endChat()">? Back</button>
             </div>
 
             <div class="chat-controls">
@@ -441,7 +410,7 @@
             </div>
 
             <div class="chat-input-area">
-              <button class="btn btn-icon" id="chatMic" onclick="toggleChatVoice()">🎤</button>
+              <button class="btn btn-icon" id="chatMic" onclick="toggleChatVoice()">??</button>
               <input type="text" id="chatInput" class="input" placeholder="Type your message or use voice..." />
               <button class="btn btn-primary" onclick="sendChatMessage()">Send</button>
             </div>
@@ -465,7 +434,7 @@
     </main>
 
     <footer class="footer">
-      <div class="footer-left">© <span id="year"></span> Interlink AI</div>
+      <div class="footer-left">� <span id="year"></span> Interlink AI</div>
       <div class="footer-right">
         <a href="#top">Home</a>
         <a href="#pricing">Pricing</a>
@@ -477,9 +446,9 @@
   <!-- Tutorial Modal -->
   <div id="tutorialModal" class="modal">
     <div class="modal-content">
-      <button class="modal-close" onclick="closeTutorial()">✕</button>
+      <button class="modal-close" onclick="closeTutorial()">?</button>
       <div id="tutorialStep" class="tutorial-step">
-        <h2>Welcome to Interlink AI! 🚀</h2>
+        <h2>Welcome to Interlink AI! ??</h2>
         <p>Learn how to use AI responsibly and think critically.</p>
         <div class="tutorial-steps">
           <div class="tutorial-page" data-step="1">
@@ -489,18 +458,18 @@
           </div>
           <div class="tutorial-page" data-step="2">
             <h3>Step 2: Use Voice & Vision</h3>
-            <p>🎤 Click "Voice Input" to speak your prompts hands-free.</p>
-            <p>📷 Upload images for troubleshooting, design reviews, or document analysis.</p>
-            <p>🔊 Use the speaker button to hear responses read aloud.</p>
+            <p>?? Click "Voice Input" to speak your prompts hands-free.</p>
+            <p>?? Upload images for troubleshooting, design reviews, or document analysis.</p>
+            <p>?? Use the speaker button to hear responses read aloud.</p>
           </div>
           <div class="tutorial-page" data-step="3">
             <h3>Step 3: Track Behavior</h3>
             <p>Use the feedback tools to document patterns:</p>
             <ul>
-              <li>👍👎 Quick ratings for response quality</li>
-              <li>🚩 Flag issues like hallucinations or overconfidence</li>
-              <li>📊 Advanced metrics for research</li>
-              <li>📥 Download CSV to analyze trends</li>
+              <li>???? Quick ratings for response quality</li>
+              <li>?? Flag issues like hallucinations or overconfidence</li>
+              <li>?? Advanced metrics for research</li>
+              <li>?? Download CSV to analyze trends</li>
             </ul>
           </div>
           <div class="tutorial-page" data-step="4">
@@ -515,16 +484,16 @@
           </div>
           <div class="tutorial-page" data-step="5">
             <h3>Step 5: Join the Community</h3>
-            <p>📺 Subscribe to our YouTube study group (launching Q1 2026)</p>
-            <p>📚 Explore recommended tools in the Resources section</p>
-            <p>💡 Share your ideas and feedback to help us improve</p>
+            <p>?? Subscribe to our YouTube study group (launching Q1 2026)</p>
+            <p>?? Explore recommended tools in the Resources section</p>
+            <p>?? Share your ideas and feedback to help us improve</p>
             <p><strong>Remember:</strong> AI is a tool to amplify your thinking, not replace it!</p>
           </div>
         </div>
         <div class="tutorial-nav">
-          <button id="tutorialPrev" class="btn btn-ghost" onclick="prevTutorialStep()">← Previous</button>
+          <button id="tutorialPrev" class="btn btn-ghost" onclick="prevTutorialStep()">? Previous</button>
           <span id="tutorialProgress">1 / 5</span>
-          <button id="tutorialNext" class="btn btn-primary" onclick="nextTutorialStep()">Next →</button>
+          <button id="tutorialNext" class="btn btn-primary" onclick="nextTutorialStep()">Next ?</button>
         </div>
       </div>
     </div>
@@ -533,7 +502,7 @@
   <!-- Registration Modal -->
   <div id="registrationModal" class="modal">
     <div class="modal-content">
-      <button class="modal-close" onclick="closeRegistration()">✕</button>
+      <button class="modal-close" onclick="closeRegistration()">?</button>
       <h2>Create Your Account</h2>
       <p>Join Interlink AI and start orchestrating models today.</p>
       <form id="registrationForm" onsubmit="handleRegistration(event)">
@@ -558,8 +527,8 @@
   <!-- Age Verification Modal -->
   <div id="ageVerificationModal" class="modal">
     <div class="modal-content">
-      <h2>Welcome to Interlink AI! 👋</h2>
-      <p>To provide a safe learning experience, please verify your age.</p>
+      <h2>Welcome to Interlink AI! ??</h2>
+      <p>To provide a safe experience, please verify your age.</p>
       
       <div id="ageVerificationStep1">
         <div class="field-group">
@@ -571,7 +540,7 @@
 
       <div id="parentalConsentStep" style="display:none;">
         <p class="alert alert-info">
-          ⚠️ You must be 13 or older to use Interlink AI. Users under 18 require parental consent.
+          ?? You must be 13 or older to use Interlink AI. Users under 18 require parental consent.
         </p>
         <div class="field-group">
           <label for="parentEmail">Parent/Guardian Email:</label>
@@ -587,13 +556,13 @@
       </div>
 
       <div id="ageVerifiedStep" style="display:none;">
-        <p class="alert alert-success">✅ Age verified! Welcome to Interlink AI.</p>
+        <p class="alert alert-success">? Age verified! Welcome to Interlink AI.</p>
         <button class="btn btn-primary full" onclick="closeAgeVerification()">Start Learning</button>
       </div>
 
       <div id="ageDeniedStep" style="display:none;">
-        <p class="alert alert-error">❌ You must be at least 13 years old to use this platform.</p>
-        <p>Please return when you're older, or ask a parent/teacher to create an account for educational purposes.</p>
+        <p class="alert alert-error">? You must be at least 13 years old to use this platform.</p>
+        <p>Please return when you are older, or have an adult create an account.</p>
       </div>
     </div>
   </div>
@@ -601,3 +570,8 @@
   <script src="app.js"></script>
 </body>
 </html>
+
+
+
+
+
