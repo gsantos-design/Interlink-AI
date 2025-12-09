@@ -22,10 +22,38 @@
   },
   { 
     id: 'llama', 
-    label: 'Llama 3.3 (Meta)', 
+    label: 'Llama 3.3 70B (Groq)', 
     avatar: '<svg viewBox="0 0 24 24" fill="currentColor"><ellipse cx="12" cy="10" rx="8" ry="6"/><circle cx="9" cy="9" r="1.5"/><circle cx="15" cy="9" r="1.5"/><path d="M7 12c0 2.8 2.2 5 5 5s5-2.2 5-5"/><rect x="10" y="2" width="4" height="4" rx="2"/></svg>', 
     color: '#0084ff',
-    personality: 'Fast & Open-Source'
+    personality: 'Fast & Balanced'
+  },
+  { 
+    id: 'kimi', 
+    label: 'Kimi-K2 (Groq)', 
+    avatar: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L4 6v6c0 5.5 3.8 10.7 8 12 4.2-1.3 8-6.5 8-12V6l-8-4z"/><path d="M10 10l2 2 4-4" stroke="#02030a" stroke-width="1.5" fill="none"/></svg>', 
+    color: '#ff6b35',
+    personality: 'Agentic Reasoning Expert'
+  },
+  { 
+    id: 'gptoss120b', 
+    label: 'GPT-OSS 120B (Groq)', 
+    avatar: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/></svg>', 
+    color: '#8b5cf6',
+    personality: 'High-Capability Reasoning'
+  },
+  { 
+    id: 'gptoss20b', 
+    label: 'GPT-OSS 20B (Groq)', 
+    avatar: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="5" height="5" rx="1"/><rect x="13" y="6" width="5" height="5" rx="1"/><rect x="6" y="13" width="5" height="5" rx="1"/><rect x="13" y="13" width="5" height="5" rx="1"/></svg>', 
+    color: '#06b6d4',
+    personality: 'Compact & Efficient'
+  },
+  { 
+    id: 'compound', 
+    label: 'Compound Beta (Groq)', 
+    avatar: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="3"/><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/><line x1="12" y1="9" x2="12" y2="6" stroke="currentColor" stroke-width="1.5"/><line x1="15" y1="12" x2="18" y2="12" stroke="currentColor" stroke-width="1.5"/><line x1="9" y1="12" x2="6" y2="12" stroke="currentColor" stroke-width="1.5"/><line x1="12" y1="15" x2="12" y2="18" stroke="currentColor" stroke-width="1.5"/></svg>', 
+    color: '#ec4899',
+    personality: 'Multi-Model Orchestrator'
   },
 ];
 

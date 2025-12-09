@@ -14,6 +14,10 @@ function normalizeModel(model) {
   if (['claude', 'anthropic'].includes(key)) return 'anthropic';
   if (['gemini', 'google'].includes(key)) return 'gemini';
   if (['llama', 'groq', 'meta'].includes(key)) return 'llama';
+  if (['kimi', 'kimi-k2'].includes(key)) return 'kimi';
+  if (['gptoss120b', 'gpt-oss-120b'].includes(key)) return 'gptoss120b';
+  if (['gptoss20b', 'gpt-oss-20b'].includes(key)) return 'gptoss20b';
+  if (['compound', 'compound-beta'].includes(key)) return 'compound';
   return key;
 }
 
@@ -43,7 +47,19 @@ router.post('/', contentFilterMiddleware, async (req, res) => {
         reply = await callGemini(prompt, image);
         break;
       case 'llama':
-        reply = await callGroq(prompt);
+        reply = await callGroq(prompt, 'llama');
+        break;
+      case 'kimi':
+        reply = await callGroq(prompt, 'kimi');
+        break;
+      case 'gptoss120b':
+        reply = await callGroq(prompt, 'gptoss120b');
+        break;
+      case 'gptoss20b':
+        reply = await callGroq(prompt, 'gptoss20b');
+        break;
+      case 'compound':
+        reply = await callGroq(prompt, 'compound');
         break;
       default:
         return res.status(400).json({ error: `Unsupported model: ${target}` });
