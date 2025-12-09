@@ -60,6 +60,27 @@
 let models = [...defaultModels];
 let participants = [];
 
+// A/B Testing Configuration
+function initABTesting() {
+  // Check if user already has a variant assigned
+  let variant = localStorage.getItem('ab_variant');
+  
+  // If not, randomly assign variant A or B (50/50 split)
+  if (!variant) {
+    variant = Math.random() < 0.5 ? 'a' : 'b';
+    localStorage.setItem('ab_variant', variant);
+    
+    // Track variant assignment
+    console.log(`A/B Test: User assigned to variant ${variant.toUpperCase()}`);
+  }
+  
+  // Apply variant class to body
+  document.body.classList.add(`variant-${variant}`);
+  
+  // Optional: Send analytics event
+  // trackEvent('ab_test_assignment', { variant });
+}
+
 const languageOptions = [
   { code: 'en-US', label: 'English (US)' },
   { code: 'en-GB', label: 'English (UK)' },
@@ -1246,6 +1267,9 @@ function checkSafeMode() {
 // ==========================================
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // A/B Testing: Randomly assign variant
+  initABTesting();
+  
   setYear();
   await fetchModels();
   renderModelToggles();

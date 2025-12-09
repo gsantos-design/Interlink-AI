@@ -550,7 +550,37 @@ a {
   border-radius: var(--radius-pill);
   border: 1px solid var(--border);
   background: rgba(255, 255, 255, 0.03);
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.toggle-row label:has(input:checked) {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: var(--accent);
   color: var(--text);
+}
+
+.toggle-row input[type="checkbox"],
+.toggle-row input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--accent);
+}
+
+.toggle-row select {
+  background: var(--bg-contrast);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 4px 8px;
+  font-size: 0.88rem;
+  cursor: pointer;
+  font-family: var(--font-sans);
+}
+
+.toggle-row select:hover {
+  border-color: var(--accent);
 }
 
 .results {
@@ -853,7 +883,7 @@ a {
 }
 
 .pricing-card {
-  background: var(--bg-panel);
+  background: linear-gradient(145deg, rgba(59, 130, 246, 0.02), rgba(6, 182, 212, 0.015)), var(--bg-panel);
   border: 1px solid var(--border);
   border-radius: 16px;
   padding: 16px;
@@ -1227,8 +1257,8 @@ a {
 }
 
 .tutor-avatar-large {
-  width: 180px;
-  height: 180px;
+  width: 140px;
+  height: 140px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1448,6 +1478,32 @@ a {
 
 @keyframes barPulse {
   0%, 100% { transform: scaleY(0.8); opacity: 0.5; }
+  50% { transform: scaleY(1); opacity: 1; }
+}
+
+/* A/B Testing Variants */
+.variant-a .hero {
+  /* Variant A: Current subtle blue design (default) */
+}
+
+.variant-b .hero {
+  /* Variant B: More vibrant cyan/blue swap */
+  --accent: #06b6d4;
+  --accent-2: #3b82f6;
+}
+
+.variant-b .brand-mark {
+  background: linear-gradient(135deg, #06b6d4, #3b82f6);
+  animation: pulse 3s ease-in-out infinite;
+}
+
+.variant-b .btn-primary {
+  background: linear-gradient(135deg, #06b6d4, #3b82f6);
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.9; }
   50% { transform: scaleY(1.2); opacity: 1; }
 }
 
