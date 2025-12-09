@@ -204,6 +204,7 @@ a {
   padding: 14px 16px;
   background: linear-gradient(180deg, rgba(4, 6, 15, 0) 0%, rgba(4, 6, 15, 0.75) 46%, rgba(4, 6, 15, 0.9) 100%);
   z-index: 2;
+  -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
 }
 
@@ -1191,6 +1192,7 @@ a {
   border: 2px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 32px 80px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.02);
   isolation: isolate;
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
 }
 
@@ -1281,6 +1283,7 @@ a {
   font-size: 1.1rem;
   font-weight: 600;
   z-index: 2;
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
 }
 
