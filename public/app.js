@@ -1303,3 +1303,5 @@ document.addEventListener('DOMContentLoaded', async () => {
     setTimeout(showTutorial, 1000);
   }
 });
+
+// Force rebuild
