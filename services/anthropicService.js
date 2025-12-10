@@ -34,7 +34,7 @@ async function callAnthropic(prompt, imageData = null) {
     const res = await axios.post(
       'https://api.anthropic.com/v1/messages',
       {
-        model: 'claude-3-5-sonnet-20240620',
+        model: 'claude-3-5-sonnet-latest',
         max_tokens: 500,
         messages: [{ role: 'user', content }],
       },
