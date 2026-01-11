@@ -1,86 +1,82 @@
-﻿const defaultModels = [
+// Interlink AI - Enhanced Application JavaScript
+// Version 2.0
+
+const defaultModels = [
   { 
     id: 'openai', 
     label: 'ChatGPT (OpenAI)', 
     avatar: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="3"/><path d="M12 14c-4 0-7 2-7 4v2h14v-2c0-2-3-4-7-4z"/><rect x="8" y="4" width="8" height="2" rx="1"/></svg>', 
     color: '#10a37f',
-    personality: 'Confident & Knowledgeable'
+    personality: 'Confident & Knowledgeable',
+    tagClass: 'tag-openai'
   },
   { 
     id: 'anthropic', 
     label: 'Claude (Anthropic)', 
     avatar: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7v10c0 5.5 3.8 10.7 10 12 6.2-1.3 10-6.5 10-12V7l-10-5zm0 18c-4.4-1-7.5-4.7-7.5-8.5V8.3l7.5-3.8 7.5 3.8v3.2c0 3.8-3.1 7.5-7.5 8.5z"/><circle cx="12" cy="12" r="3"/></svg>', 
     color: '#6B4FBB',
-    personality: 'Thoughtful & Precise'
+    personality: 'Thoughtful & Precise',
+    tagClass: 'tag-claude'
   },
   { 
     id: 'gemini', 
     label: 'Gemini (Google)', 
     avatar: '<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9"/></svg>', 
     color: '#4285f4',
-    personality: 'Creative & Unpredictable'
+    personality: 'Creative & Unpredictable',
+    tagClass: 'tag-gemini'
   },
   { 
     id: 'llama', 
     label: 'Llama 3.3 70B (Groq)', 
     avatar: '<svg viewBox="0 0 24 24" fill="currentColor"><ellipse cx="12" cy="10" rx="8" ry="6"/><circle cx="9" cy="9" r="1.5"/><circle cx="15" cy="9" r="1.5"/><path d="M7 12c0 2.8 2.2 5 5 5s5-2.2 5-5"/><rect x="10" y="2" width="4" height="4" rx="2"/></svg>', 
     color: '#0084ff',
-    personality: 'Fast & Balanced'
+    personality: 'Fast & Balanced',
+    tagClass: 'tag-llama'
   },
   { 
     id: 'kimi', 
     label: 'Kimi-K2 (Groq)', 
     avatar: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L4 6v6c0 5.5 3.8 10.7 8 12 4.2-1.3 8-6.5 8-12V6l-8-4z"/><path d="M10 10l2 2 4-4" stroke="#02030a" stroke-width="1.5" fill="none"/></svg>', 
     color: '#ff6b35',
-    personality: 'Agentic Reasoning Expert'
+    personality: 'Agentic Reasoning Expert',
+    tagClass: 'tag-kimi'
   },
   { 
     id: 'gptoss120b', 
     label: 'GPT-OSS 120B (Groq)', 
     avatar: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/></svg>', 
     color: '#8b5cf6',
-    personality: 'High-Capability Reasoning'
+    personality: 'High-Capability Reasoning',
+    tagClass: 'tag-gptoss120b'
   },
   { 
     id: 'gptoss20b', 
     label: 'GPT-OSS 20B (Groq)', 
     avatar: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="5" height="5" rx="1"/><rect x="13" y="6" width="5" height="5" rx="1"/><rect x="6" y="13" width="5" height="5" rx="1"/><rect x="13" y="13" width="5" height="5" rx="1"/></svg>', 
     color: '#06b6d4',
-    personality: 'Compact & Efficient'
+    personality: 'Compact & Efficient',
+    tagClass: 'tag-gptoss20b'
   },
   { 
     id: 'compound', 
     label: 'Compound Beta (Groq)', 
     avatar: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="3"/><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/><line x1="12" y1="9" x2="12" y2="6" stroke="currentColor" stroke-width="1.5"/><line x1="15" y1="12" x2="18" y2="12" stroke="currentColor" stroke-width="1.5"/><line x1="9" y1="12" x2="6" y2="12" stroke="currentColor" stroke-width="1.5"/><line x1="12" y1="15" x2="12" y2="18" stroke="currentColor" stroke-width="1.5"/></svg>', 
     color: '#ec4899',
-    personality: 'Multi-Model Orchestrator'
+    personality: 'Multi-Model Orchestrator',
+    tagClass: 'tag-compound'
   },
 ];
 
 let models = [...defaultModels];
 let participants = [];
+let lastPlaygroundResults = [];
+let uploadedImageData = null;
+let currentTutorialStep = 1;
+let selectedTutor = null;
+let chatHistory = [];
 
-// A/B Testing Configuration
-function initABTesting() {
-  // Check if user already has a variant assigned
-  let variant = localStorage.getItem('ab_variant');
-  
-  // If not, randomly assign variant A or B (50/50 split)
-  if (!variant) {
-    variant = Math.random() < 0.5 ? 'a' : 'b';
-    localStorage.setItem('ab_variant', variant);
-    
-    // Track variant assignment
-    console.log(`A/B Test: User assigned to variant ${variant.toUpperCase()}`);
-  }
-  
-  // Apply variant class to body
-  document.body.classList.add(`variant-${variant}`);
-  
-  // Optional: Send analytics event
-  // trackEvent('ab_test_assignment', { variant });
-}
-
+// Language options for voice
 const languageOptions = [
   { code: 'en-US', label: 'English (US)' },
   { code: 'en-GB', label: 'English (UK)' },
@@ -99,10 +95,83 @@ let selectedVoiceLanguage = languageOptions[0].code;
 const NATURAL_HINT = /(natural|neural|premium|studio|enhanced|hq|high quality|hd)/i;
 const PROVIDER_HINT = /(microsoft|google|apple|amazon|openai)/i;
 
+// Tutor configurations
+const tutors = {
+  einstein: {
+    name: 'Robo Einstein',
+    icon: 'E',
+    color: 'linear-gradient(135deg, #f59e0b, #d97706)',
+    systemPrompt: 'You are Robo Einstein, a physics expert with deep systems thinking. Explain concepts using analogies from physics and mathematics. Be curious and encourage exploration of ideas.'
+  },
+  prof: {
+    name: 'Robo Prof',
+    icon: 'P',
+    color: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
+    systemPrompt: 'You are Robo Prof, a research strategist. Help users develop research methodologies, analyze papers, and think critically about academic work.'
+  },
+  mentor: {
+    name: 'Robot Mentor',
+    icon: 'M',
+    color: 'linear-gradient(135deg, #10b981, #059669)',
+    systemPrompt: 'You are Robot Mentor, a delivery and project management expert. Help users plan projects, manage timelines, and navigate team dynamics.'
+  },
+  sage: {
+    name: 'AI Sage',
+    icon: 'S',
+    color: 'linear-gradient(135deg, #3b82f6, #2563eb)',
+    systemPrompt: 'You are AI Sage, a philosophy and critical thinking expert. Help users examine assumptions, explore ethical implications, and think deeply about complex topics.'
+  },
+  cyber: {
+    name: 'Cyber Tutor',
+    icon: 'C',
+    color: 'linear-gradient(135deg, #ef4444, #dc2626)',
+    systemPrompt: 'You are Cyber Tutor, a security and coding expert. Help users understand cybersecurity concepts, write secure code, and debug programming issues.'
+  }
+};
+
+// Feedback storage
+let feedbackData = [];
+
+// ==========================================
+// Utility Functions
+// ==========================================
+
 function setYear() {
   const el = document.getElementById('year');
   if (el) el.textContent = new Date().getFullYear();
 }
+
+function showNotification(message, type = 'info') {
+  // Create notification element
+  const notification = document.createElement('div');
+  notification.className = `notification notification-${type}`;
+  notification.innerHTML = `
+    <span>${message}</span>
+    <button onclick="this.parentElement.remove()">×</button>
+  `;
+  notification.style.cssText = `
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    background: var(--bg-panel);
+    border: 1px solid ${type === 'success' ? 'var(--success)' : type === 'error' ? 'var(--error)' : 'var(--accent)'};
+    border-radius: 12px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 1001;
+    animation: fadeIn 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  `;
+  document.body.appendChild(notification);
+  setTimeout(() => notification.remove(), 4000);
+}
+
+// ==========================================
+// Model API Functions
+// ==========================================
 
 async function fetchModels() {
   try {
@@ -161,6 +230,10 @@ async function callModel(modelId, prompt, imageData = null) {
   return data.reply || '';
 }
 
+// ==========================================
+// Hero Section
+// ==========================================
+
 function setHeroState(modelId, statusText, content) {
   const card = document.querySelector(`.output-card[data-model="${modelId}"]`);
   if (!card) return;
@@ -175,8 +248,10 @@ async function handleHeroRun() {
   if (!promptEl) return;
   const prompt = promptEl.value.trim();
   if (!prompt) return;
-  const targets = models.map((m) => m.id);
+  
+  const targets = ['openai', 'anthropic', 'gemini'];
   targets.forEach((id) => setHeroState(id, 'running...', '')); 
+  
   await Promise.all(
     targets.map(async (id) => {
       try {
@@ -189,18 +264,32 @@ async function handleHeroRun() {
   );
 }
 
+function wireHero() {
+  const btn = document.getElementById('heroRun');
+  if (btn) btn.addEventListener('click', handleHeroRun);
+}
+
+// ==========================================
+// Playground Section
+// ==========================================
+
 function renderPlaygroundResults(items) {
   const container = document.getElementById('playgroundResults');
   if (!container) return;
   if (!items || !items.length) {
-    container.innerHTML = '<div class="placeholder">Outputs will appear here after you run.</div>';
+    container.innerHTML = `
+      <div class="placeholder">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.5">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        <p>Outputs will appear here after you run.</p>
+      </div>`;
     return;
   }
-  const html = items
-    .map(
-      (item, idx) => {
-        const modelData = models.find(m => m.label === item.label) || {};
-        return `
+  
+  const html = items.map((item, idx) => {
+    const modelData = models.find(m => m.label === item.label || m.id === item.label) || {};
+    return `
       <div class="result-item" data-result-idx="${idx}">
         <div class="result-head">
           <div class="model-info">
@@ -212,7 +301,7 @@ function renderPlaygroundResults(items) {
             <span>${item.status}</span>
           </div>
         </div>
-        <div class="result-body">${item.text}</div>
+        <div class="result-body">${escapeHtml(item.text)}</div>
         ${item.status === 'done' ? `
           <div class="feedback-bar">
             <button class="feedback-btn thumbs-up" data-idx="${idx}" title="Good response">👍</button>
@@ -229,23 +318,39 @@ function renderPlaygroundResults(items) {
           </div>
         ` : ''}
       </div>`;
-      }
-    )
-    .join('');
+  }).join('');
+  
   container.innerHTML = html;
   wireFeedbackButtons();
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
 }
 
 async function handlePlaygroundRun() {
   const promptEl = document.getElementById('playgroundPrompt');
   if (!promptEl) return;
   const prompt = promptEl.value.trim();
-  if (!prompt) return;
+  if (!prompt) {
+    showNotification('Please enter a prompt', 'error');
+    return;
+  }
+  
   const selected = getSelectedModelIds();
-  if (!selected.length) return;
+  if (!selected.length) {
+    showNotification('Please select at least one model', 'error');
+    return;
+  }
   
   const imageNote = uploadedImageData ? ' (with image)' : '';
-  renderPlaygroundResults(selected.map((id) => ({ label: id, status: 'running...' + imageNote, text: '' })));
+  renderPlaygroundResults(selected.map((id) => {
+    const meta = models.find((m) => m.id === id) || { label: id };
+    return { label: meta.label, status: 'running...' + imageNote, text: '' };
+  }));
+  
   const results = [];
   for (const id of selected) {
     const meta = models.find((m) => m.id === id) || { label: id };
@@ -255,467 +360,46 @@ async function handlePlaygroundRun() {
     } catch (err) {
       results.push({ label: meta.label, status: 'error', text: err.message });
     }
+    // Update UI progressively
+    renderPlaygroundResults([...results, ...selected.slice(results.length).map(rid => {
+      const m = models.find((m) => m.id === rid) || { label: rid };
+      return { label: m.label, status: 'waiting...', text: '' };
+    })]);
   }
+  
   lastPlaygroundResults = results;
   renderPlaygroundResults(results);
-}
-
-function renderParticipants() {
-  const list = document.getElementById('participantList');
-  if (!list) return;
-  if (!participants.length) {
-    list.innerHTML = '<div class="placeholder">No participants yet.</div>';
-    return;
-  }
-  list.innerHTML = '';
-  participants.forEach((name) => {
-    const chip = document.createElement('div');
-    chip.className = 'participant-chip';
-    chip.textContent = name;
-    list.appendChild(chip);
-  });
-}
-
-function addParticipant() {
-  const input = document.getElementById('participantName');
-  if (!input) return;
-  const name = input.value.trim();
-  if (!name) return;
-  participants.push(name);
-  input.value = '';
-  renderParticipants();
-}
-
-function renderRaceEntries(payload) {
-  const entries = document.getElementById('raceEntries');
-  const status = document.getElementById('raceStatus');
-  const winner = document.getElementById('raceWinner');
-  if (!entries) return;
-  if (!payload || !Array.isArray(payload.results) || !payload.results.length) {
-    entries.innerHTML = '<div class="placeholder">Run a race to see model answers and timings.</div>';
-    if (status) status.textContent = 'No race running.';
-    if (winner) winner.textContent = '';
-    return;
-  }
-  const { results, totalLatencyMs } = payload;
-  const successful = results.filter(r => !r.error);
-  const fastest = successful.length > 0 
-    ? successful.reduce((min, r) => (r.latencyMs < min.latencyMs ? r : min), successful[0])
-    : null;
-  if (status) {
-    if (fastest) {
-      status.textContent = `Race complete. Total time: ${totalLatencyMs} ms. Fastest: ${fastest.model}.`;
-    } else {
-      status.textContent = `Race complete. All models failed or returned errors.`;
-    }
-  }
-  const html = results
-    .map(
-      (r) => `
-        <div class="result-item">
-          <div class="result-head"><span>${r.model}</span><span>${r.latencyMs} ms</span></div>
-          <div class="result-body">${r.text || ''}</div>
-        </div>`
-    )
-    .join('');
-  entries.innerHTML = html;
-  if (winner) winner.textContent = fastest ? `Winner: ${fastest.model}` : 'No winner - all failed';
-}
-
-async function handleRaceStart() {
-  const title = document.getElementById('raceTitle')?.value.trim() || '';
-  const rules = document.getElementById('raceRules')?.value.trim() || '';
-  const raceStatus = document.getElementById('raceStatus');
-  const prompt = title || rules ? `Challenge: ${title}\nRules: ${rules}` : 'Prompt race';
-  if (!raceStatus) return;
-  raceStatus.textContent = 'Running race...';
-  try {
-    const res = await fetch('/api/contest', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt, models: getSelectedModelIds() }),
-    });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(data.error || 'Server error');
-    renderRaceEntries(data);
-  } catch (err) {
-    raceStatus.textContent = 'Race failed. Check server logs.';
-    console.error(err);
-  }
-}
-
-async function startCheckout(plan) {
-  try {
-    const res = await fetch('/api/billing/create-checkout-session', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        successUrl: 'https://interlink-ai.onrender.com/?checkout=success',
-        cancelUrl: 'https://interlink-ai.onrender.com/?checkout=cancel',
-        plan,
-      }),
-    });
-    const data = await res.json().catch(() => ({}));
-    if (data.url) {
-      window.location.href = data.url;
-    } else {
-      alert('Stripe is not configured yet. Add STRIPE keys on the backend.');
-    }
-  } catch (err) {
-    alert('Error starting checkout.');
-  }
-}
-
-function wirePricingButtons() {
-  document.querySelectorAll('.checkout-btn').forEach((btn) => {
-    btn.addEventListener('click', () => startCheckout(btn.dataset.plan || 'starter'));
-  });
-}
-
-function wireCTA() {
-  const cta = document.getElementById('ctaStart');
-  if (cta) {
-    cta.addEventListener('click', (e) => {
-      e.preventDefault();
-      document.getElementById('playground')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-  }
-}
-
-function wireParticipants() {
-  const addBtn = document.getElementById('addParticipant');
-  if (addBtn) {
-    addBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      addParticipant();
-    });
-  }
-}
-
-function wireHero() {
-  const btn = document.getElementById('heroRun');
-  if (btn) {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      handleHeroRun();
-    });
-  }
+  showNotification('Experiment complete!', 'success');
 }
 
 function wirePlayground() {
   const btn = document.getElementById('playgroundRun');
-  if (btn) {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      handlePlaygroundRun();
-    });
-  }
-}
-
-function wireRace() {
-  const btn = document.getElementById('startRace');
-  if (btn) {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      handleRaceStart();
-    });
-  }
-}
-
-let lastPlaygroundResults = [];
-
-async function submitFeedback(modelLabel, rating, issues, prompt, response, extraMetrics = {}) {
-  try {
-    await fetch('/api/feedback', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: modelLabel,
-        prompt,
-        response,
-        rating,
-        issues: Array.isArray(issues) ? issues : [issues],
-        hallucinationSeverity: extraMetrics.hallucinationSeverity || 0,
-        confidenceCalibration: extraMetrics.confidenceCalibration || 0,
-        consistencyScore: extraMetrics.consistencyScore || 0,
-        deceptionFlag: extraMetrics.deceptionFlag || false,
-        notes: extraMetrics.notes || '',
-      }),
-    });
-    console.log('Feedback submitted:', { modelLabel, rating, issues, extraMetrics });
-  } catch (err) {
-    console.error('Feedback error:', err);
-  }
-}
-
-function showAdvancedFeedback(idx) {
-  const result = lastPlaygroundResults[idx];
-  if (!result) return;
-
-  const metrics = prompt(
-    `Advanced Feedback for ${result.label}\n\n` +
-    `Enter metrics (comma-separated):\n` +
-    `1. Hallucination Severity (1-5, 5=severe)\n` +
-    `2. Confidence Calibration (1-5, 5=well-calibrated)\n` +
-    `3. Consistency (1-5, 5=very consistent)\n` +
-    `4. Deception Flag (y/n)\n` +
-    `5. Notes (optional)\n\n` +
-    `Example: 2,4,5,n,Seemed accurate`
-  );
-
-  if (!metrics) return;
-
-  const parts = metrics.split(',').map(s => s.trim());
-  const extraMetrics = {
-    hallucinationSeverity: parseInt(parts[0]) || 0,
-    confidenceCalibration: parseInt(parts[1]) || 0,
-    consistencyScore: parseInt(parts[2]) || 0,
-    deceptionFlag: (parts[3] || '').toLowerCase() === 'y',
-    notes: parts[4] || '',
-  };
-
-  submitFeedback(result.label, 3, [], '', result.text, extraMetrics);
-  alert(`Advanced feedback submitted for ${result.label}`);
-}
-
-function downloadFeedbackCSV() {
-  window.location.href = '/api/feedback/download';
-}
-
-function wireFeedbackButtons() {
-  document.querySelectorAll('.feedback-btn').forEach((btn) => {
-    btn.addEventListener('click', async (e) => {
-      const idx = parseInt(btn.dataset.idx);
-      const result = lastPlaygroundResults[idx];
-      if (!result) return;
-      
-      const rating = btn.classList.contains('thumbs-up') ? 5 : 1;
-      btn.style.opacity = '0.5';
-      await submitFeedback(result.label, rating, [], '', result.text);
-    });
-  });
-
-  document.querySelectorAll('.issue-select').forEach((select) => {
-    select.addEventListener('change', async (e) => {
-      const idx = parseInt(select.dataset.idx);
-      const result = lastPlaygroundResults[idx];
-      if (!result || !select.value) return;
-      
-      await submitFeedback(result.label, 2, [select.value], '', result.text);
-      select.value = '';
-      alert(`Issue "${select.options[select.selectedIndex].text}" reported for ${result.label}`);
-    });
-  });
-
-  document.querySelectorAll('.advanced-feedback-btn').forEach((btn) => {
-    btn.addEventListener('click', (e) => {
-      const idx = parseInt(btn.dataset.idx);
-      showAdvancedFeedback(idx);
-    });
-  });
-}
-
-// Voice input/output
-let recognition = null;
-let isListening = false;
-
-function scoreVoiceForLang(voice, lang) {
-  if (!voice) return 0;
-  const langMatch = matchesVoiceLang(voice, lang) ? 4 : 0;
-  const naturalBonus = NATURAL_HINT.test(voice.name) ? 3 : 0;
-  const providerBonus = PROVIDER_HINT.test(voice.name) ? 1 : 0;
-  return langMatch + naturalBonus + providerBonus;
-}
-
-function populateLanguageSelect(selectId, value = selectedVoiceLanguage) {
-  const select = document.getElementById(selectId);
-  if (!select) return;
-  select.innerHTML = languageOptions.map((opt) => `<option value="${opt.code}">${opt.label}</option>`).join('');
-  select.value = value;
-}
-
-function matchesVoiceLang(voice, langCode) {
-  if (!voice || !voice.lang || !langCode) return false;
-  const target = voice.lang.toLowerCase();
-  const normalized = langCode.toLowerCase();
-  const base = normalized.split('-')[0];
-  return target === normalized || target.startsWith(normalized) || target.startsWith(base);
-}
-
-function waitForVoices() {
-  return new Promise((resolve) => {
-    if (!('speechSynthesis' in window)) {
-      resolve([]);
-      return;
-    }
-    const voices = window.speechSynthesis.getVoices();
-    if (voices && voices.length) {
-      resolve(voices);
-      return;
-    }
-    const timeout = setTimeout(() => {
-      resolve(window.speechSynthesis.getVoices());
-    }, 1200);
-    const handler = () => {
-      clearTimeout(timeout);
-      resolve(window.speechSynthesis.getVoices());
-      window.speechSynthesis.removeEventListener('voiceschanged', handler);
-    };
-    window.speechSynthesis.addEventListener('voiceschanged', handler);
-  });
-}
-
-async function populateVoiceOutputSelect(lang = selectedVoiceLanguage) {
-  const select = document.getElementById('voiceOutputVoice');
-  if (!select) return;
-  const voices = await waitForVoices();
-  const sorted = [...voices].sort((a, b) => scoreVoiceForLang(b, lang) - scoreVoiceForLang(a, lang));
-  const candidates = sorted.length ? sorted : voices;
-  const label = languageOptions.find((l) => l.code === lang)?.label || lang;
-  const options = [
-    `<option value="">Best voice for ${label}</option>`,
-    ...candidates.map((v) => `<option value="${v.name}" data-lang="${v.lang}">${v.name} (${v.lang})</option>`),
-  ];
-  select.innerHTML = options.join('');
-  const preferred = candidates[0];
-  if (preferred) {
-    select.value = preferred.name;
-  }
-}
-
-function initVoiceRecognition() {
-  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-    console.warn('Speech recognition not supported');
-    return null;
-  }
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  recognition = new SpeechRecognition();
-  recognition.continuous = false;
-  recognition.interimResults = false;
-  recognition.lang = selectedVoiceLanguage;
+  if (btn) btn.addEventListener('click', handlePlaygroundRun);
   
-  recognition.onresult = (event) => {
-    const transcript = event.results[0][0].transcript;
-    const promptEl = document.getElementById('playgroundPrompt');
-    if (promptEl) {
-      promptEl.value = transcript;
-    }
-  };
-  
-  recognition.onerror = (event) => {
-    console.error('Speech recognition error:', event.error);
-    isListening = false;
-    updateMicButton();
-  };
-  
-  recognition.onend = () => {
-    isListening = false;
-    updateMicButton();
-  };
-  
-  return recognition;
-}
-
-function toggleVoiceInput() {
-  if (!recognition) {
-    recognition = initVoiceRecognition();
-    if (!recognition) {
-      alert('Voice input not supported in your browser. Try Chrome or Edge.');
-      return;
-    }
-  }
-  
-  recognition.lang = selectedVoiceLanguage;
-  if (isListening) {
-    recognition.stop();
-    isListening = false;
-  } else {
-    recognition.start();
-    isListening = true;
-  }
-  updateMicButton();
-}
-
-function updateMicButton() {
-  const btn = document.getElementById('voiceInputBtn');
-  if (btn) {
-    btn.textContent = isListening ? '🔴 Listening...' : '🎤 Voice Input';
-    btn.classList.toggle('active', isListening);
-  }
-}
-
-function getPreferredVoice(lang, voiceName = '') {
-  if (!('speechSynthesis' in window)) return null;
-  const voices = window.speechSynthesis.getVoices();
-  if (!voices.length) return null;
-  const ranked = [...voices].sort((a, b) => scoreVoiceForLang(b, lang) - scoreVoiceForLang(a, lang));
-  if (voiceName) {
-    const explicit = voices.find((v) => v.name === voiceName);
-    if (explicit) return explicit;
-  }
-  return ranked[0] || voices[0];
-}
-
-function speakText(text, langOverride, voiceNameOverride) {
-  if (!('speechSynthesis' in window)) {
-    console.warn('Text-to-speech not supported');
-    return;
-  }
-
-  const lang = langOverride || document.getElementById('voiceLanguage')?.value || selectedVoiceLanguage;
-  const requestedVoice = voiceNameOverride || document.getElementById('voiceOutputVoice')?.value || '';
-  const voices = window.speechSynthesis.getVoices();
-  if (!voices.length) {
-    waitForVoices().then((loaded) => {
-      if (loaded.length) {
-        speakText(text, lang, requestedVoice);
-      } else {
-        console.warn('No system voices available for playback.');
+  const exampleSelect = document.getElementById('exampleSelect');
+  if (exampleSelect) {
+    exampleSelect.addEventListener('change', () => {
+      const promptEl = document.getElementById('playgroundPrompt');
+      if (!promptEl) return;
+      const examples = {
+        'spanish-learning': 'Summarize the key steps to set up a multimodal RAG pipeline using LangChain and a vector database. Include code snippets.',
+        'troubleshooting': 'I\'m getting "Cannot read property \'map\' of undefined" in my React component. The data comes from an API call. How do I debug and fix this?',
+        'design-review': 'Review this landing page design for a SaaS product. What are the UX issues and how can we improve conversion?',
+        'code-refactor': 'Refactor this function for better performance and readability:\n\nfunction processData(arr) {\n  let result = [];\n  for(let i = 0; i < arr.length; i++) {\n    if(arr[i].active === true) {\n      result.push(arr[i].name.toUpperCase());\n    }\n  }\n  return result;\n}',
+        'product-compare': 'Compare PostgreSQL vs MongoDB for a real-time analytics dashboard that needs to handle 10M events/day with complex aggregations.'
+      };
+      if (examples[exampleSelect.value]) {
+        promptEl.value = examples[exampleSelect.value];
       }
     });
-    return;
   }
-
-  window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = lang;
-  const voice = getPreferredVoice(lang, requestedVoice);
-  if (voice) {
-    utterance.voice = voice;
-  }
-  utterance.rate = 0.95;
-  utterance.pitch = 1.02;
-  utterance.volume = 1.0;
-  window.speechSynthesis.speak(utterance);
-}
-
-async function initVoiceUI() {
-  populateLanguageSelect('voiceLanguage', selectedVoiceLanguage);
-  populateLanguageSelect('chatVoiceLang', selectedVoiceLanguage);
-  await populateVoiceOutputSelect(selectedVoiceLanguage);
-  await populateChatVoices();
-  updateMicButton();
-  updateChatMicButton(false);
-}
-
-// Example prompts
-const examplePrompts = {
-  'spanish-learning': 'Teach me 10 basic Spanish phrases for travelers with pronunciation tips.',
-  'troubleshooting': 'I\'m getting a "Cannot read property of undefined" error in my React app. The error occurs when I try to access user.profile.name. How do I fix this?',
-  'design-review': 'Review this landing page design: minimalist hero section, purple gradient background, sans-serif fonts. Is it modern enough for a SaaS product in 2025?',
-  'code-refactor': 'Refactor this function to be more efficient: function findDuplicates(arr) { let dups = []; for(let i=0; i<arr.length; i++) { for(let j=i+1; j<arr.length; j++) { if(arr[i] === arr[j]) dups.push(arr[i]); } } return dups; }',
-  'product-compare': 'Compare the pros and cons of using PostgreSQL vs MongoDB for a real-time chat application with 100k users.',
-};
-
-function loadExamplePrompt(key) {
-  const promptEl = document.getElementById('playgroundPrompt');
-  if (promptEl && examplePrompts[key]) {
-    promptEl.value = examplePrompts[key];
+  
+  // Image upload handling
+  const visionUpload = document.getElementById('visionUpload');
+  if (visionUpload) {
+    visionUpload.addEventListener('change', handleImageUpload);
   }
 }
-
-// Vision/Image upload
-let uploadedImageData = null;
 
 function handleImageUpload(event) {
   const file = event.target.files[0];
@@ -728,500 +412,805 @@ function handleImageUpload(event) {
     if (preview) {
       preview.innerHTML = `
         <div class="image-preview-content">
-          <img src="${uploadedImageData}" alt="Uploaded image">
-          <button class="remove-image-btn" onclick="clearImage()">✕ Remove</button>
+          <img src="${uploadedImageData}" alt="Uploaded image" />
+          <button class="remove-image-btn" onclick="removeUploadedImage()">Remove</button>
         </div>
       `;
     }
+    showNotification('Image uploaded successfully', 'success');
   };
   reader.readAsDataURL(file);
 }
 
-function clearImage() {
+function removeUploadedImage() {
   uploadedImageData = null;
   const preview = document.getElementById('imagePreview');
-  if (preview) {
-    preview.innerHTML = '';
-  }
+  if (preview) preview.innerHTML = '';
   const input = document.getElementById('visionUpload');
-  if (input) {
-    input.value = '';
+  if (input) input.value = '';
+}
+
+// ==========================================
+// Race Section
+// ==========================================
+
+function renderParticipants() {
+  const list = document.getElementById('participantList');
+  if (!list) return;
+  if (!participants.length) {
+    list.innerHTML = '<span style="color: var(--muted);">No participants yet.</span>';
+    return;
+  }
+  list.innerHTML = participants.map(name => `
+    <span class="participant-chip" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: var(--bg-contrast); border: 1px solid var(--border); border-radius: 999px; font-size: 0.88rem;">
+      ${escapeHtml(name)}
+      <button onclick="removeParticipant('${escapeHtml(name)}')" style="background: none; border: none; color: var(--muted); cursor: pointer; padding: 0;">×</button>
+    </span>
+  `).join(' ');
+}
+
+function addParticipant() {
+  const input = document.getElementById('participantName');
+  if (!input) return;
+  const name = input.value.trim();
+  if (!name) return;
+  if (participants.includes(name)) {
+    showNotification('Participant already added', 'error');
+    return;
+  }
+  participants.push(name);
+  input.value = '';
+  renderParticipants();
+}
+
+function removeParticipant(name) {
+  participants = participants.filter(p => p !== name);
+  renderParticipants();
+}
+
+function renderRaceEntries(payload) {
+  const entries = document.getElementById('raceEntries');
+  const status = document.getElementById('raceStatus');
+  const winner = document.getElementById('raceWinner');
+  
+  if (!entries) return;
+  
+  if (!payload || !Array.isArray(payload.results) || !payload.results.length) {
+    entries.innerHTML = `
+      <div class="placeholder">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.5">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 16 14"/>
+        </svg>
+        <p>Run a race to see model answers and timings.</p>
+      </div>`;
+    if (status) status.textContent = 'No race running.';
+    if (winner) winner.textContent = '';
+    return;
+  }
+  
+  const { results, totalLatencyMs } = payload;
+  
+  if (status) {
+    status.innerHTML = `<span style="color: var(--success);">Race complete!</span> Total time: ${totalLatencyMs}ms`;
+  }
+  
+  entries.innerHTML = results.map((r, i) => {
+    const modelData = models.find(m => m.id === r.modelId) || {};
+    return `
+      <div class="result-item">
+        <div class="result-head">
+          <div class="model-info">
+            <span style="font-weight: 700; color: ${i === 0 ? 'var(--success)' : 'var(--muted)'};">#${i + 1}</span>
+            <span class="model-avatar" style="background: ${modelData.color || '#333'}">${modelData.avatar || '🤖'}</span>
+            <span>${r.modelId}</span>
+          </div>
+          <span style="color: var(--accent);">${r.latencyMs}ms</span>
+        </div>
+        <div class="result-body">${escapeHtml(r.text || r.error || '')}</div>
+      </div>
+    `;
+  }).join('');
+  
+  if (winner && results.length > 0) {
+    winner.innerHTML = `<div style="margin-top: 16px; padding: 16px; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success); border-radius: 12px; text-align: center;">
+      <span style="font-size: 1.5rem;">🏆</span>
+      <strong>${results[0].modelId}</strong> wins with ${results[0].latencyMs}ms!
+    </div>`;
   }
 }
+
+async function handleStartRace() {
+  const titleEl = document.getElementById('raceTitle');
+  const rulesEl = document.getElementById('raceRules');
+  
+  const title = titleEl?.value.trim() || 'Untitled Race';
+  const rules = rulesEl?.value.trim() || '';
+  
+  const selected = getSelectedModelIds();
+  if (selected.length < 2) {
+    showNotification('Select at least 2 models for a race', 'error');
+    return;
+  }
+  
+  const prompt = `${title}\n\n${rules}`.trim();
+  
+  document.getElementById('raceStatus').textContent = 'Race in progress...';
+  document.getElementById('raceEntries').innerHTML = `
+    <div class="placeholder">
+      <div style="width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+      <p>Models are racing...</p>
+    </div>
+    <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+  `;
+  
+  const startTime = Date.now();
+  const results = [];
+  
+  await Promise.all(selected.map(async (modelId) => {
+    const modelStart = Date.now();
+    try {
+      const reply = await callModel(modelId, prompt);
+      results.push({
+        modelId,
+        text: reply,
+        latencyMs: Date.now() - modelStart
+      });
+    } catch (err) {
+      results.push({
+        modelId,
+        error: err.message,
+        latencyMs: Date.now() - modelStart
+      });
+    }
+  }));
+  
+  // Sort by latency
+  results.sort((a, b) => a.latencyMs - b.latencyMs);
+  
+  renderRaceEntries({
+    results,
+    totalLatencyMs: Date.now() - startTime
+  });
+}
+
+function wireRace() {
+  const startBtn = document.getElementById('startRace');
+  if (startBtn) startBtn.addEventListener('click', handleStartRace);
+}
+
+function wireParticipants() {
+  const addBtn = document.getElementById('addParticipant');
+  if (addBtn) addBtn.addEventListener('click', addParticipant);
+  
+  const input = document.getElementById('participantName');
+  if (input) {
+    input.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') addParticipant();
+    });
+  }
+}
+
+// ==========================================
+// Feedback System
+// ==========================================
+
+function wireFeedbackButtons() {
+  // Thumbs up/down
+  document.querySelectorAll('.thumbs-up').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = btn.dataset.idx;
+      recordFeedback(idx, 'thumbs_up');
+      btn.style.background = 'var(--success)';
+      showNotification('Thanks for the feedback!', 'success');
+    });
+  });
+  
+  document.querySelectorAll('.thumbs-down').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = btn.dataset.idx;
+      recordFeedback(idx, 'thumbs_down');
+      btn.style.background = 'var(--error)';
+      showNotification('Thanks for the feedback!', 'success');
+    });
+  });
+  
+  // Issue select
+  document.querySelectorAll('.issue-select').forEach(select => {
+    select.addEventListener('change', () => {
+      const idx = select.dataset.idx;
+      if (select.value) {
+        recordFeedback(idx, 'issue', select.value);
+        showNotification(`Issue flagged: ${select.value}`, 'info');
+      }
+    });
+  });
+  
+  // Speak buttons
+  document.querySelectorAll('.speak-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.dataset.idx);
+      if (lastPlaygroundResults[idx]) {
+        speakText(lastPlaygroundResults[idx].text);
+      }
+    });
+  });
+  
+  // Advanced feedback
+  document.querySelectorAll('.advanced-feedback-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = btn.dataset.idx;
+      showAdvancedFeedback(idx);
+    });
+  });
+}
+
+function recordFeedback(idx, type, value = null) {
+  const result = lastPlaygroundResults[parseInt(idx)];
+  if (!result) return;
+  
+  const feedback = {
+    timestamp: new Date().toISOString(),
+    model: result.label,
+    prompt: document.getElementById('playgroundPrompt')?.value || '',
+    response: result.text,
+    feedbackType: type,
+    feedbackValue: value
+  };
+  
+  feedbackData.push(feedback);
+  localStorage.setItem('interlinkFeedback', JSON.stringify(feedbackData));
+}
+
+function showAdvancedFeedback(idx) {
+  const result = lastPlaygroundResults[parseInt(idx)];
+  if (!result) return;
+  
+  const modal = document.createElement('div');
+  modal.className = 'modal active';
+  modal.innerHTML = `
+    <div class="modal-content">
+      <button class="modal-close" onclick="this.closest('.modal').remove()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+      <h2>Advanced Feedback</h2>
+      <p>Rate this response from ${result.label}</p>
+      
+      <div class="field-group">
+        <label>Accuracy (1-5)</label>
+        <input type="range" min="1" max="5" value="3" id="advAccuracy" class="input" />
+      </div>
+      
+      <div class="field-group">
+        <label>Helpfulness (1-5)</label>
+        <input type="range" min="1" max="5" value="3" id="advHelpfulness" class="input" />
+      </div>
+      
+      <div class="field-group">
+        <label>Clarity (1-5)</label>
+        <input type="range" min="1" max="5" value="3" id="advClarity" class="input" />
+      </div>
+      
+      <div class="field-group">
+        <label>Notes</label>
+        <textarea id="advNotes" class="input" rows="3" placeholder="Any additional comments..."></textarea>
+      </div>
+      
+      <button class="btn btn-primary full" onclick="submitAdvancedFeedback(${idx}, this.closest('.modal'))">Submit Feedback</button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+}
+
+function submitAdvancedFeedback(idx, modal) {
+  const result = lastPlaygroundResults[parseInt(idx)];
+  if (!result) return;
+  
+  const feedback = {
+    timestamp: new Date().toISOString(),
+    model: result.label,
+    prompt: document.getElementById('playgroundPrompt')?.value || '',
+    response: result.text,
+    feedbackType: 'advanced',
+    accuracy: document.getElementById('advAccuracy')?.value,
+    helpfulness: document.getElementById('advHelpfulness')?.value,
+    clarity: document.getElementById('advClarity')?.value,
+    notes: document.getElementById('advNotes')?.value
+  };
+  
+  feedbackData.push(feedback);
+  localStorage.setItem('interlinkFeedback', JSON.stringify(feedbackData));
+  
+  modal.remove();
+  showNotification('Advanced feedback recorded!', 'success');
+}
+
+function downloadFeedbackCSV() {
+  if (!feedbackData.length) {
+    showNotification('No feedback data to export', 'error');
+    return;
+  }
+  
+  const headers = ['timestamp', 'model', 'prompt', 'response', 'feedbackType', 'feedbackValue', 'accuracy', 'helpfulness', 'clarity', 'notes'];
+  const rows = feedbackData.map(f => headers.map(h => `"${(f[h] || '').toString().replace(/"/g, '""')}"`).join(','));
+  const csv = [headers.join(','), ...rows].join('\n');
+  
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `interlink-feedback-${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  
+  showNotification('Feedback CSV downloaded!', 'success');
+}
+
+// ==========================================
+// Voice Functions
+// ==========================================
+
+async function initVoiceUI() {
+  // Populate language selects
+  const langSelects = [document.getElementById('voiceLanguage'), document.getElementById('chatVoiceLang')];
+  langSelects.forEach(select => {
+    if (!select) return;
+    select.innerHTML = languageOptions.map(opt => 
+      `<option value="${opt.code}">${opt.label}</option>`
+    ).join('');
+    select.addEventListener('change', () => {
+      selectedVoiceLanguage = select.value;
+      populateVoiceOutputSelect(select.value);
+    });
+  });
+  
+  populateVoiceOutputSelect(selectedVoiceLanguage);
+  populateChatVoices();
+}
+
+function populateVoiceOutputSelect(langCode) {
+  const select = document.getElementById('voiceOutputVoice');
+  if (!select) return;
+  
+  const voices = window.speechSynthesis?.getVoices() || [];
+  const filtered = voices.filter(v => v.lang.startsWith(langCode.split('-')[0]));
+  
+  select.innerHTML = '<option value="">Best voice for selected language</option>' +
+    filtered.map(v => `<option value="${v.name}">${v.name}</option>`).join('');
+}
+
+function populateChatVoices() {
+  const select = document.getElementById('chatVoice');
+  if (!select) return;
+  
+  const voices = window.speechSynthesis?.getVoices() || [];
+  select.innerHTML = '<option value="">Default voice</option>' +
+    voices.map(v => `<option value="${v.name}">${v.name} (${v.lang})</option>`).join('');
+}
+
+function speakText(text) {
+  if (!('speechSynthesis' in window)) {
+    showNotification('Speech synthesis not supported', 'error');
+    return;
+  }
+  
+  window.speechSynthesis.cancel();
+  
+  const utterance = new SpeechSynthesisUtterance(text);
+  const voiceSelect = document.getElementById('voiceOutputVoice');
+  const voices = window.speechSynthesis.getVoices();
+  
+  if (voiceSelect?.value) {
+    const voice = voices.find(v => v.name === voiceSelect.value);
+    if (voice) utterance.voice = voice;
+  }
+  
+  utterance.lang = selectedVoiceLanguage;
+  window.speechSynthesis.speak(utterance);
+}
+
+let isRecording = false;
+let recognition = null;
 
 function wireVoiceControls() {
   const voiceBtn = document.getElementById('voiceInputBtn');
   if (voiceBtn) {
     voiceBtn.addEventListener('click', toggleVoiceInput);
   }
+}
 
-  const voiceLangSelect = document.getElementById('voiceLanguage');
-  if (voiceLangSelect) {
-    voiceLangSelect.addEventListener('change', (e) => {
-      selectedVoiceLanguage = e.target.value || selectedVoiceLanguage;
-      if (recognition) {
-        recognition.lang = selectedVoiceLanguage;
-      }
-      populateVoiceOutputSelect(selectedVoiceLanguage);
-      const chatLangSelect = document.getElementById('chatVoiceLang');
-      if (chatLangSelect) {
-        chatLangSelect.value = selectedVoiceLanguage;
-        populateChatVoices();
-      }
-    });
+function toggleVoiceInput() {
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    showNotification('Speech recognition not supported in this browser', 'error');
+    return;
   }
   
-  const chatVoiceLangSelect = document.getElementById('chatVoiceLang');
-  if (chatVoiceLangSelect) {
-    chatVoiceLangSelect.addEventListener('change', (e) => {
-      const newLang = e.target.value || selectedVoiceLanguage;
-      selectedVoiceLanguage = newLang;
-      populateChatVoices();
-      populateVoiceOutputSelect(newLang);
-      if (chatRecognition) {
-        chatRecognition.lang = newLang;
-      }
-      const voiceLang = document.getElementById('voiceLanguage');
-      if (voiceLang) voiceLang.value = newLang;
-    });
+  const btn = document.getElementById('voiceInputBtn');
+  
+  if (isRecording) {
+    if (recognition) recognition.stop();
+    isRecording = false;
+    btn.classList.remove('active');
+    btn.innerHTML = `
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+        <line x1="12" y1="19" x2="12" y2="23"/>
+      </svg>
+      Voice Input
+    `;
+    return;
   }
   
-  const exampleSelect = document.getElementById('exampleSelect');
-  if (exampleSelect) {
-    exampleSelect.addEventListener('change', (e) => {
-      if (e.target.value) {
-        loadExamplePrompt(e.target.value);
-        e.target.value = '';
-      }
-    });
-  }
-
-  const visionUpload = document.getElementById('visionUpload');
-  if (visionUpload) {
-    visionUpload.addEventListener('change', handleImageUpload);
-  }
-
-  // Add speak buttons to results
-  document.addEventListener('click', (e) => {
-    if (e.target.classList.contains('speak-btn')) {
-      const idx = parseInt(e.target.dataset.idx);
-      const result = lastPlaygroundResults[idx];
-      if (result && result.text) {
-        const lang = document.getElementById('voiceLanguage')?.value || selectedVoiceLanguage;
-        const voiceName = document.getElementById('voiceOutputVoice')?.value || '';
-        speakText(result.text, lang, voiceName);
-      }
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.lang = selectedVoiceLanguage;
+  
+  recognition.onstart = () => {
+    isRecording = true;
+    btn.classList.add('active');
+    btn.innerHTML = `
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="6" y="4" width="12" height="16" rx="2"/>
+      </svg>
+      Stop Recording
+    `;
+  };
+  
+  recognition.onresult = (event) => {
+    const promptEl = document.getElementById('playgroundPrompt');
+    if (!promptEl) return;
+    
+    let transcript = '';
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      transcript += event.results[i][0].transcript;
     }
+    promptEl.value = transcript;
+  };
+  
+  recognition.onerror = (event) => {
+    console.error('Speech recognition error:', event.error);
+    showNotification(`Voice input error: ${event.error}`, 'error');
+    isRecording = false;
+    btn.classList.remove('active');
+  };
+  
+  recognition.onend = () => {
+    isRecording = false;
+    btn.classList.remove('active');
+    btn.innerHTML = `
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+        <line x1="12" y1="19" x2="12" y2="23"/>
+      </svg>
+      Voice Input
+    `;
+  };
+  
+  recognition.start();
+}
+
+// ==========================================
+// Expert Mode / One-on-One Chat
+// ==========================================
+
+function selectTutor(tutorId) {
+  selectedTutor = tutorId;
+  const tutor = tutors[tutorId];
+  if (!tutor) return;
+  
+  // Update avatar selection UI
+  document.querySelectorAll('.tutor-avatar').forEach(el => {
+    el.classList.remove('active');
   });
-}
-
-// Tutorial functions
-let currentTutorialStep = 1;
-const totalTutorialSteps = 5;
-
-function showTutorial() {
-  currentTutorialStep = 1;
-  updateTutorialStep();
-  document.getElementById('tutorialModal').style.display = 'flex';
-}
-
-function closeTutorial() {
-  document.getElementById('tutorialModal').style.display = 'none';
-  localStorage.setItem('interlinkTutorialSeen', 'true');
-}
-
-function replayTutorial() {
-  localStorage.removeItem('interlinkTutorialSeen');
-  showTutorial();
-}
-
-function nextTutorialStep() {
-  if (currentTutorialStep < totalTutorialSteps) {
-    currentTutorialStep++;
-    updateTutorialStep();
-  } else {
-    closeTutorial();
-  }
-}
-
-function prevTutorialStep() {
-  if (currentTutorialStep > 1) {
-    currentTutorialStep--;
-    updateTutorialStep();
-  }
-}
-
-function updateTutorialStep() {
-  document.querySelectorAll('.tutorial-page').forEach((page, idx) => {
-    page.style.display = (idx + 1) === currentTutorialStep ? 'block' : 'none';
-  });
-  document.getElementById('tutorialProgress').textContent = `${currentTutorialStep} / ${totalTutorialSteps}`;
-  document.getElementById('tutorialPrev').disabled = currentTutorialStep === 1;
-  document.getElementById('tutorialNext').textContent = currentTutorialStep === totalTutorialSteps ? 'Get Started!' : 'Next →';
-}
-
-// Community functions
-async function submitIdea() {
-  const input = document.getElementById('ideaInput');
-  const idea = input.value.trim();
-  if (!idea) return;
-  
-  try {
-    await fetch('/api/feedback', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'Community',
-        rating: 5,
-        notes: `IDEA: ${idea}`,
-        issues: ['idea']
-      }),
-    });
-    alert('Thank you! Your idea has been submitted. 💡');
-    input.value = '';
-  } catch (err) {
-    alert('Error submitting idea. Please try again.');
-  }
-}
-
-async function submitGeneralFeedback() {
-  const input = document.getElementById('feedbackInput');
-  const feedback = input.value.trim();
-  if (!feedback) return;
-  
-  try {
-    await fetch('/api/feedback', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'Community',
-        rating: 3,
-        notes: `FEEDBACK: ${feedback}`,
-        issues: ['feedback']
-      }),
-    });
-    alert('Thank you! Your feedback helps us improve. 🙏');
-    input.value = '';
-  } catch (err) {
-    alert('Error submitting feedback. Please try again.');
-  }
-}
-
-// ========== One-on-One Chat ==========
-let currentTutor = null;
-let chatRecognition = null;
-let chatHistory = [];
-let chatMicActive = false;
-
-const tutorProfiles = {
-  einstein: {
-    name: 'Robo Einstein',
-    icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Albert_Einstein_Head.jpg/400px-Albert_Einstein_Head.jpg',
-    isImage: true,
-    greeting: "Hello! I'm Robo Einstein. Let's explore the wonders of science and physics together!",
-    systemPrompt: 'You are Robo Einstein, a friendly and enthusiastic science teacher inspired by Albert Einstein. Explain concepts clearly with warmth and curiosity, using analogies and real-world examples. Keep responses conversational and encouraging.'
-  },
-  prof: {
-    name: 'Robo Prof',
-    icon: '📚',
-    greeting: "Welcome! I'm Robo Prof, your academic tutor. What subject shall we study today?",
-    systemPrompt: 'You are Robo Prof, an academic tutor. Help students learn any subject with patience, clarity, and encouragement.'
-  },
-  mentor: {
-    name: 'Robot Mentor',
-    icon: '🤖',
-    greeting: "Hi there! I'm Robot Mentor. Let's talk about your career goals and how to achieve them.",
-    systemPrompt: 'You are Robot Mentor, a career guidance counselor. Provide practical career advice, motivation, and strategic thinking.'
-  },
-  sage: {
-    name: 'AI Sage',
-    icon: '🧙',
-    greeting: "Greetings! I'm AI Sage. Together we'll explore philosophy, wisdom, and the deeper questions of life.",
-    systemPrompt: 'You are AI Sage, a philosophical guide. Discuss deep questions, ethics, and wisdom with thoughtful reflection.'
-  },
-  cyber: {
-    name: 'Cyber Tutor',
-    icon: '💻',
-    greeting: "Hey! I'm Cyber Tutor. Ready to learn about technology, coding, and digital innovation?",
-    systemPrompt: 'You are Cyber Tutor, a tech and coding expert. Teach programming, technology concepts, and problem-solving skills.'
-  }
-};
-
-function selectTutor(avatar) {
-  currentTutor = avatar;
-  const profile = tutorProfiles[avatar];
-  const voiceLangSelect = document.getElementById('chatVoiceLang');
-  if (voiceLangSelect && !voiceLangSelect.value) {
-    voiceLangSelect.value = selectedVoiceLanguage;
-  }
-  
-  // Update UI
-  const avatarElement = document.getElementById('activeTutorIcon');
-  if (profile.isImage) {
-    avatarElement.innerHTML = `<img src="${profile.icon}" alt="${profile.name}" class="tutor-avatar-img" />`;
-  } else {
-    avatarElement.textContent = profile.icon;
-  }
-  document.getElementById('activeTutorName').textContent = profile.name;
-  document.getElementById('tutorGreeting').textContent = profile.name;
+  document.querySelector(`.tutor-avatar[data-avatar="${tutorId}"]`)?.classList.add('active');
   
   // Show chat interface
-  document.querySelector('.avatar-selection').style.display = 'none';
-  document.getElementById('chatInterface').style.display = 'block';
+  const chatInterface = document.getElementById('chatInterface');
+  if (chatInterface) {
+    chatInterface.style.display = 'block';
+  }
   
-  // Populate voices
-  populateChatVoices();
+  // Update tutor display
+  const avatarLarge = document.getElementById('activeTutorIcon');
+  const tutorName = document.getElementById('activeTutorName');
+  const tutorGreeting = document.getElementById('tutorGreeting');
   
-  // Clear history and add greeting
+  if (avatarLarge) {
+    avatarLarge.textContent = tutor.icon;
+    avatarLarge.style.background = tutor.color;
+  }
+  if (tutorName) tutorName.textContent = tutor.name;
+  if (tutorGreeting) tutorGreeting.textContent = tutor.name;
+  
+  // Reset chat
   chatHistory = [];
-  const messagesDiv = document.getElementById('chatMessages');
-  const avatarHTML = profile.isImage 
-    ? `<img src="${profile.icon}" alt="${profile.name}" class="message-avatar-img" />`
-    : profile.icon;
-  messagesDiv.innerHTML = `
-    <div class="chat-message assistant">
-      <div class="message-avatar">${avatarHTML}</div>
-      <div class="message-content">
-        <p>${profile.greeting}</p>
+  const messagesContainer = document.getElementById('chatMessages');
+  if (messagesContainer) {
+    messagesContainer.innerHTML = `
+      <div class="chat-message assistant">
+        <div class="message-content">
+          <p>Hello! I'm ${tutor.name}. What would you like to learn about today?</p>
+        </div>
       </div>
-    </div>
-  `;
+    `;
+  }
+}
+
+function endChat() {
+  const chatInterface = document.getElementById('chatInterface');
+  if (chatInterface) {
+    chatInterface.style.display = 'none';
+  }
+  selectedTutor = null;
+  chatHistory = [];
   
-  // Initialize voice recognition
-  if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    chatRecognition = new SpeechRecognition();
-    chatRecognition.continuous = false;
-    chatRecognition.interimResults = false;
-    chatRecognition.lang = voiceLangSelect?.value || selectedVoiceLanguage;
-    
-    chatRecognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
-      document.getElementById('chatInput').value = transcript;
-      sendChatMessage();
-    };
-    
-    chatRecognition.onerror = (event) => {
-      console.error('Chat speech recognition error:', event.error);
-      updateChatMicButton(false);
-    };
-    
-    chatRecognition.onend = () => {
-      updateChatMicButton(false);
-    };
-  }
-}
-
-async function populateChatVoices() {
-  const voiceSelect = document.getElementById('chatVoice');
-  if (!voiceSelect) return;
-  const langSelect = document.getElementById('chatVoiceLang');
-  const lang = langSelect?.value || selectedVoiceLanguage;
-  const voices = await waitForVoices();
-
-  if (!voices.length) {
-    voiceSelect.innerHTML = '<option value="">No system voices found</option>';
-    return;
-  }
-
-  const ranked = [...voices].sort((a, b) => scoreVoiceForLang(b, lang) - scoreVoiceForLang(a, lang));
-
-  voiceSelect.innerHTML = ranked
-    .map((voice) => `<option value="${voice.name}" data-lang="${voice.lang}">${voice.name} (${voice.lang})</option>`)
-    .join('');
-
-  const preferred = ranked[0];
-  voiceSelect.value = preferred?.name || '';
-}
-
-function toggleChatVoice() {
-  if (!chatRecognition) {
-    alert('Voice input not supported in your browser');
-    return;
-  }
-  
-  const lang = document.getElementById('chatVoiceLang')?.value || selectedVoiceLanguage;
-  chatRecognition.lang = lang;
-  if (chatMicActive) {
-    chatRecognition.stop();
-    updateChatMicButton(false);
-  } else {
-    chatRecognition.start();
-    updateChatMicButton(true);
-  }
-}
-
-function updateChatMicButton(isListening) {
-  chatMicActive = !!isListening;
-  const micBtn = document.getElementById('chatMic');
-  if (!micBtn) return;
-  micBtn.textContent = chatMicActive ? 'Listening…' : '🎤';
-  micBtn.classList.toggle('active', chatMicActive);
-  micBtn.title = chatMicActive ? 'Stop listening' : 'Start voice input';
+  document.querySelectorAll('.tutor-avatar').forEach(el => {
+    el.classList.remove('active');
+  });
 }
 
 async function sendChatMessage() {
   const input = document.getElementById('chatInput');
+  const messagesContainer = document.getElementById('chatMessages');
+  const modelSelect = document.getElementById('chatModel');
+  
+  if (!input || !messagesContainer || !selectedTutor) return;
+  
   const message = input.value.trim();
   if (!message) return;
   
-  // Add user message to UI
-  addChatMessage(message, 'user');
+  const tutor = tutors[selectedTutor];
+  const modelId = modelSelect?.value || 'openai';
+  
+  // Add user message
+  messagesContainer.innerHTML += `
+    <div class="chat-message user">
+      <div class="message-content">
+        <p>${escapeHtml(message)}</p>
+      </div>
+    </div>
+  `;
+  
   input.value = '';
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
   
-  // Get selected model
-  const modelSelect = document.getElementById('chatModel');
-  const modelId = modelSelect.value;
+  // Add typing indicator
+  messagesContainer.innerHTML += `
+    <div class="chat-message assistant typing-indicator">
+      <div class="message-content">
+        <p>Thinking...</p>
+      </div>
+    </div>
+  `;
   
-  // Add to history
-  const profile = tutorProfiles[currentTutor];
-  chatHistory.push({ role: 'user', content: message });
-  
-  // Build prompt with context
-  const contextPrompt = `${profile.systemPrompt}\n\nConversation history:\n${
-    chatHistory.slice(-5).map(msg => `${msg.role}: ${msg.content}`).join('\n')
-  }\n\nRespond to the user's latest message.`;
+  // Build prompt with system context
+  const fullPrompt = `${tutor.systemPrompt}\n\nUser: ${message}`;
   
   try {
-    // Show typing indicator
-    const typingId = addChatMessage('...', 'assistant', true);
-    
-    // Call API with Safe Mode check
-    const safeMode = checkSafeMode();
-    const res = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: contextPrompt, model: modelId, safeMode }),
-    });
-    
-    const data = await res.json();
-    const response = data.reply || data.response || 'Sorry, I had trouble processing that.';
+    const reply = await callModel(modelId, fullPrompt);
     
     // Remove typing indicator
-    document.getElementById(typingId)?.remove();
+    messagesContainer.querySelector('.typing-indicator')?.remove();
     
     // Add assistant response
-    addChatMessage(response, 'assistant');
-    chatHistory.push({ role: 'assistant', content: response });
+    messagesContainer.innerHTML += `
+      <div class="chat-message assistant">
+        <div class="message-content">
+          <p>${escapeHtml(reply)}</p>
+        </div>
+      </div>
+    `;
     
-    // Speak response
-    speakChatMessage(response);
+    // Speak response if voice is enabled
+    const voiceSelect = document.getElementById('chatVoice');
+    if (voiceSelect?.value) {
+      speakText(reply);
+    }
+    
+    chatHistory.push({ role: 'user', content: message });
+    chatHistory.push({ role: 'assistant', content: reply });
     
   } catch (err) {
-    console.error('Chat error:', err);
-    addChatMessage('Sorry, I encountered an error. Please try again.', 'assistant');
+    messagesContainer.querySelector('.typing-indicator')?.remove();
+    messagesContainer.innerHTML += `
+      <div class="chat-message assistant">
+        <div class="message-content" style="color: var(--error);">
+          <p>Sorry, I encountered an error: ${escapeHtml(err.message)}</p>
+        </div>
+      </div>
+    `;
+  }
+  
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+let chatRecording = false;
+let chatRecognition = null;
+
+function toggleChatVoice() {
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    showNotification('Speech recognition not supported', 'error');
+    return;
+  }
+  
+  const btn = document.getElementById('chatMic');
+  
+  if (chatRecording) {
+    if (chatRecognition) chatRecognition.stop();
+    chatRecording = false;
+    btn.classList.remove('active');
+    return;
+  }
+  
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  chatRecognition = new SpeechRecognition();
+  chatRecognition.continuous = false;
+  chatRecognition.interimResults = false;
+  chatRecognition.lang = document.getElementById('chatVoiceLang')?.value || 'en-US';
+  
+  chatRecognition.onstart = () => {
+    chatRecording = true;
+    btn.classList.add('active');
+  };
+  
+  chatRecognition.onresult = (event) => {
+    const transcript = event.results[0][0].transcript;
+    const input = document.getElementById('chatInput');
+    if (input) {
+      input.value = transcript;
+      sendChatMessage();
+    }
+  };
+  
+  chatRecognition.onend = () => {
+    chatRecording = false;
+    btn.classList.remove('active');
+  };
+  
+  chatRecognition.onerror = (event) => {
+    console.error('Chat voice error:', event.error);
+    chatRecording = false;
+    btn.classList.remove('active');
+  };
+  
+  chatRecognition.start();
+}
+
+// ==========================================
+// Tutorial Modal
+// ==========================================
+
+function showTutorial() {
+  const modal = document.getElementById('tutorialModal');
+  if (modal) {
+    modal.classList.add('active');
+    currentTutorialStep = 1;
+    updateTutorialStep();
   }
 }
 
-function addChatMessage(text, role, isTyping = false) {
-  const messagesDiv = document.getElementById('chatMessages');
-  const messageId = `msg-${Date.now()}`;
-  const profile = tutorProfiles[currentTutor];
-  
-  const avatarHTML = profile && profile.isImage 
-    ? `<img src="${profile.icon}" alt="${profile.name}" class="message-avatar-img" />`
-    : (profile ? profile.icon : '🤖');
-  
-  const messageHTML = role === 'user' 
-    ? `<div class="chat-message user" id="${messageId}">
-         <div class="message-content"><p>${text}</p></div>
-         <div class="message-avatar">👤</div>
-       </div>`
-    : `<div class="chat-message assistant" id="${messageId}">
-         <div class="message-avatar">${avatarHTML}</div>
-         <div class="message-content ${isTyping ? 'typing' : ''}"><p>${text}</p></div>
-       </div>`;
-  
-  messagesDiv.insertAdjacentHTML('beforeend', messageHTML);
-  messagesDiv.scrollTop = messagesDiv.scrollHeight;
-  
-  return messageId;
+function closeTutorial() {
+  const modal = document.getElementById('tutorialModal');
+  if (modal) {
+    modal.classList.remove('active');
+  }
+  localStorage.setItem('interlinkTutorialSeen', 'true');
 }
 
-function speakChatMessage(text) {
-  if (!('speechSynthesis' in window)) return;
-  const lang = document.getElementById('chatVoiceLang')?.value || selectedVoiceLanguage;
-  const voiceName = document.getElementById('chatVoice')?.value || '';
-  const avatar = document.querySelector('.tutor-avatar-large');
-  
-  waitForVoices().then((voices) => {
-    if (!voices.length) {
-      console.warn('No system voices available for chat playback.');
-      return;
-    }
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = lang;
-    const voice = getPreferredVoice(lang, voiceName);
-    if (voice) {
-      utterance.voice = voice;
-    }
-    utterance.rate = 0.95;
-    utterance.pitch = 1.05;
-    utterance.volume = 1.0;
-  
-    if (avatar) {
-      avatar.classList.add('speaking');
-    }
-  
-    utterance.onend = () => {
-      if (avatar) {
-        avatar.classList.remove('speaking');
-      }
-    };
-  
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(utterance);
+function updateTutorialStep() {
+  document.querySelectorAll('.tutorial-page').forEach(page => {
+    page.classList.remove('active');
   });
+  
+  const currentPage = document.querySelector(`.tutorial-page[data-step="${currentTutorialStep}"]`);
+  if (currentPage) currentPage.classList.add('active');
+  
+  const progress = document.getElementById('tutorialProgress');
+  if (progress) progress.textContent = `${currentTutorialStep} / 5`;
+  
+  const prevBtn = document.getElementById('tutorialPrev');
+  const nextBtn = document.getElementById('tutorialNext');
+  
+  if (prevBtn) prevBtn.style.visibility = currentTutorialStep === 1 ? 'hidden' : 'visible';
+  if (nextBtn) {
+    nextBtn.textContent = currentTutorialStep === 5 ? 'Start Learning' : 'Next';
+    nextBtn.innerHTML = currentTutorialStep === 5 ? 'Start Learning' : `Next <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>`;
+  }
 }
 
-function endChat() {
-  currentTutor = null;
-  chatHistory = [];
-  document.querySelector('.avatar-selection').style.display = 'block';
-  document.getElementById('chatInterface').style.display = 'none';
-  document.getElementById('chatInput').value = '';
+function nextTutorialStep() {
+  if (currentTutorialStep >= 5) {
+    closeTutorial();
+    return;
+  }
+  currentTutorialStep++;
+  updateTutorialStep();
 }
 
-// ========== Age Verification & Safety ==========
+function prevTutorialStep() {
+  if (currentTutorialStep <= 1) return;
+  currentTutorialStep--;
+  updateTutorialStep();
+}
+
+// ==========================================
+// Registration Modal
+// ==========================================
+
+function showRegistration() {
+  const modal = document.getElementById('registrationModal');
+  if (modal) modal.classList.add('active');
+}
+
+function closeRegistration() {
+  const modal = document.getElementById('registrationModal');
+  if (modal) modal.classList.remove('active');
+}
+
+function handleRegistration(event) {
+  event.preventDefault();
+  
+  const name = document.getElementById('regName')?.value;
+  const email = document.getElementById('regEmail')?.value;
+  const password = document.getElementById('regPassword')?.value;
+  
+  // Store locally (in production, send to backend)
+  localStorage.setItem('interlinkUser', JSON.stringify({ name, email }));
+  
+  const status = document.getElementById('registrationStatus');
+  if (status) {
+    status.innerHTML = '<span style="color: var(--success);">Account created! Welcome to Interlink AI.</span>';
+  }
+  
+  setTimeout(() => {
+    closeRegistration();
+    showNotification(`Welcome, ${name}!`, 'success');
+  }, 1500);
+}
+
+// ==========================================
+// Age Verification
+// ==========================================
+
 function showAgeVerification() {
   const modal = document.getElementById('ageVerificationModal');
   if (modal) {
     modal.style.display = 'flex';
+    modal.classList.add('active');
   }
 }
 
 function verifyAge() {
   const birthdateInput = document.getElementById('birthdate');
-  const birthdate = new Date(birthdateInput.value);
-  
-  if (!birthdateInput.value) {
-    alert('Please enter your date of birth.');
+  if (!birthdateInput?.value) {
+    showNotification('Please enter your date of birth', 'error');
     return;
   }
   
+  const birthdate = new Date(birthdateInput.value);
   const today = new Date();
   const age = today.getFullYear() - birthdate.getFullYear();
   const monthDiff = today.getMonth() - birthdate.getMonth();
   const dayDiff = today.getDate() - birthdate.getDate();
-  
-  // Adjust age if birthday hasn't occurred this year
   const actualAge = (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) ? age - 1 : age;
   
-  // Store age verification
   localStorage.setItem('interlinkAgeVerified', 'true');
   localStorage.setItem('interlinkUserAge', actualAge);
   
   if (actualAge < 13) {
-    // Under 13 - deny access
     document.getElementById('ageVerificationStep1').style.display = 'none';
     document.getElementById('ageDeniedStep').style.display = 'block';
   } else if (actualAge < 18) {
-    // 13-17 - require parental consent
     localStorage.setItem('interlinkSafeMode', 'true');
     document.getElementById('ageVerificationStep1').style.display = 'none';
     document.getElementById('parentalConsentStep').style.display = 'block';
   } else {
-    // 18+ - full access
     localStorage.setItem('interlinkSafeMode', 'false');
     document.getElementById('ageVerificationStep1').style.display = 'none';
     document.getElementById('ageVerifiedStep').style.display = 'block';
@@ -1229,46 +1218,137 @@ function verifyAge() {
 }
 
 function submitParentalConsent() {
-  const parentEmail = document.getElementById('parentEmail').value;
-  const consentChecked = document.getElementById('parentConsent').checked;
+  const parentEmail = document.getElementById('parentEmail')?.value;
+  const consentChecked = document.getElementById('parentConsent')?.checked;
   
   if (!parentEmail || !consentChecked) {
-    alert('Please provide your parent/guardian email and confirm consent.');
+    showNotification('Please provide parent email and confirm consent', 'error');
     return;
   }
   
-  // Store parental consent (in production, send verification email)
   localStorage.setItem('interlinkParentEmail', parentEmail);
   localStorage.setItem('interlinkParentalConsent', 'true');
   
   document.getElementById('parentalConsentStep').style.display = 'none';
   document.getElementById('ageVerifiedStep').style.display = 'block';
-  
-  // In production: Send verification email to parent
-  console.log('Parental consent collected for:', parentEmail);
 }
 
 function closeAgeVerification() {
   const modal = document.getElementById('ageVerificationModal');
   if (modal) {
     modal.style.display = 'none';
+    modal.classList.remove('active');
   }
   
-  // Show tutorial for first-time users
   if (!localStorage.getItem('interlinkTutorialSeen')) {
     setTimeout(showTutorial, 500);
   }
 }
 
-function checkSafeMode() {
-  return localStorage.getItem('interlinkSafeMode') === 'true';
+// ==========================================
+// Community Functions
+// ==========================================
+
+function submitIdea() {
+  const input = document.getElementById('ideaInput');
+  if (!input?.value.trim()) {
+    showNotification('Please describe your idea', 'error');
+    return;
+  }
+  
+  // Store locally (in production, send to backend)
+  const ideas = JSON.parse(localStorage.getItem('interlinkIdeas') || '[]');
+  ideas.push({
+    text: input.value,
+    timestamp: new Date().toISOString()
+  });
+  localStorage.setItem('interlinkIdeas', JSON.stringify(ideas));
+  
+  input.value = '';
+  showNotification('Thanks for sharing your idea!', 'success');
+}
+
+function submitGeneralFeedback() {
+  const input = document.getElementById('feedbackInput');
+  if (!input?.value.trim()) {
+    showNotification('Please enter your feedback', 'error');
+    return;
+  }
+  
+  // Store locally (in production, send to backend)
+  const feedback = JSON.parse(localStorage.getItem('interlinkGeneralFeedback') || '[]');
+  feedback.push({
+    text: input.value,
+    timestamp: new Date().toISOString()
+  });
+  localStorage.setItem('interlinkGeneralFeedback', JSON.stringify(feedback));
+  
+  input.value = '';
+  showNotification('Thanks for your feedback!', 'success');
 }
 
 // ==========================================
+// Navigation
+// ==========================================
+
+function wireNavigation() {
+  const toggle = document.getElementById('navToggle');
+  const links = document.getElementById('navLinks');
+  
+  if (toggle && links) {
+    toggle.addEventListener('click', () => {
+      links.classList.toggle('active');
+    });
+    
+    // Close menu when clicking a link
+    links.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        links.classList.remove('active');
+      });
+    });
+  }
+  
+  // Smooth scroll for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', (e) => {
+      const href = anchor.getAttribute('href');
+      if (href === '#' || href === '#top') return;
+      
+      const target = document.querySelector(href);
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+}
+
+// ==========================================
+// CTA and Pricing
+// ==========================================
+
+function wirePricingButtons() {
+  // Pricing buttons are wired via onclick in HTML
+}
+
+function wireCTA() {
+  // CTA buttons are wired via href in HTML
+}
+
+// ==========================================
+// Initialization
+// ==========================================
 
 document.addEventListener('DOMContentLoaded', async () => {
-  // A/B Testing: Randomly assign variant
-  initABTesting();
+  // Load saved feedback
+  const savedFeedback = localStorage.getItem('interlinkFeedback');
+  if (savedFeedback) {
+    try {
+      feedbackData = JSON.parse(savedFeedback);
+    } catch (e) {
+      feedbackData = [];
+    }
+  }
   
   setYear();
   await fetchModels();
@@ -1283,25 +1363,1760 @@ document.addEventListener('DOMContentLoaded', async () => {
   wireCTA();
   wireParticipants();
   wireVoiceControls();
+  wireNavigation();
   await initVoiceUI();
   
   // Load voices for TTS
   if ('speechSynthesis' in window) {
     window.speechSynthesis.getVoices();
-    // Reload when voices change (some browsers load async)
     window.speechSynthesis.onvoiceschanged = () => {
       populateVoiceOutputSelect(document.getElementById('voiceLanguage')?.value || selectedVoiceLanguage);
       populateChatVoices();
     };
   }
-
-  // Check age verification on first visit
-  if (!localStorage.getItem('interlinkAgeVerified')) {
-    setTimeout(showAgeVerification, 500);
-  } else if (!localStorage.getItem('interlinkTutorialSeen')) {
-    // Show tutorial for verified users who haven't seen it
-    setTimeout(showTutorial, 1000);
+  
+  // Wire chat input
+  const chatInput = document.getElementById('chatInput');
+  if (chatInput) {
+    chatInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') sendChatMessage();
+    });
+  }
+  
+  // Check age verification on first visit (disabled by default for better UX)
+  // Uncomment to enable:
+  // if (!localStorage.getItem('interlinkAgeVerified')) {
+  //   setTimeout(showAgeVerification, 500);
+  // } else if (!localStorage.getItem('interlinkTutorialSeen')) {
+  //   setTimeout(showTutorial, 1000);
+  // }
+  
+  // Show tutorial for first-time users (optional)
+  if (!localStorage.getItem('interlinkTutorialSeen')) {
+    setTimeout(showTutorial, 2000);
   }
 });
 
-// Force rebuild
+// Make functions globally available
+window.selectTutor = selectTutor;
+window.endChat = endChat;
+window.sendChatMessage = sendChatMessage;
+window.toggleChatVoice = toggleChatVoice;
+window.showTutorial = showTutorial;
+window.closeTutorial = closeTutorial;
+window.nextTutorialStep = nextTutorialStep;
+window.prevTutorialStep = prevTutorialStep;
+window.showRegistration = showRegistration;
+window.closeRegistration = closeRegistration;
+window.handleRegistration = handleRegistration;
+window.verifyAge = verifyAge;
+window.submitParentalConsent = submitParentalConsent;
+window.closeAgeVerification = closeAgeVerification;
+window.submitIdea = submitIdea;
+window.submitGeneralFeedback = submitGeneralFeedback;
+window.downloadFeedbackCSV = downloadFeedbackCSV;
+window.removeUploadedImage = removeUploadedImage;
+
+
+// ============================================
+// ANALYTICS TRACKER MODULE
+// ============================================
+
+const AnalyticsTracker = {
+  // Storage key
+  STORAGE_KEY: 'interlinkAnalytics',
+  
+  // Initialize analytics data structure
+  data: {
+    experiments: [],
+    modelPerformance: {},
+    totalExperiments: 0,
+    successfulExperiments: 0,
+    totalLatency: 0,
+    modelsUsed: new Set(),
+    sessionStart: null
+  },
+  
+  // Initialize the tracker
+  init() {
+    this.loadFromStorage();
+    this.data.sessionStart = new Date().toISOString();
+    this.updateDashboard();
+    this.wireAnalyticsEvents();
+  },
+  
+  // Load data from localStorage
+  loadFromStorage() {
+    try {
+      const stored = localStorage.getItem(this.STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        this.data = {
+          ...this.data,
+          ...parsed,
+          modelsUsed: new Set(parsed.modelsUsed || [])
+        };
+      }
+    } catch (e) {
+      console.error('Error loading analytics:', e);
+    }
+  },
+  
+  // Save data to localStorage
+  saveToStorage() {
+    try {
+      const toSave = {
+        ...this.data,
+        modelsUsed: Array.from(this.data.modelsUsed)
+      };
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(toSave));
+    } catch (e) {
+      console.error('Error saving analytics:', e);
+    }
+  },
+  
+  // Track an experiment
+  trackExperiment(experimentData) {
+    const experiment = {
+      id: Date.now(),
+      timestamp: new Date().toISOString(),
+      title: experimentData.prompt?.substring(0, 50) + '...' || 'Untitled',
+      prompt: experimentData.prompt,
+      models: experimentData.models || [],
+      results: experimentData.results || [],
+      avgLatency: experimentData.avgLatency || 0,
+      successRate: experimentData.successRate || 0,
+      status: experimentData.successRate >= 70 ? 'success' : experimentData.successRate >= 40 ? 'warning' : 'error'
+    };
+    
+    // Update totals
+    this.data.totalExperiments++;
+    if (experiment.successRate >= 70) {
+      this.data.successfulExperiments++;
+    }
+    this.data.totalLatency += experiment.avgLatency;
+    
+    // Track models used
+    experiment.models.forEach(m => this.data.modelsUsed.add(m));
+    
+    // Update model performance
+    experiment.results.forEach(result => {
+      if (!this.data.modelPerformance[result.model]) {
+        this.data.modelPerformance[result.model] = {
+          totalRuns: 0,
+          successfulRuns: 0,
+          totalLatency: 0
+        };
+      }
+      const perf = this.data.modelPerformance[result.model];
+      perf.totalRuns++;
+      if (result.success) perf.successfulRuns++;
+      perf.totalLatency += result.latency || 0;
+    });
+    
+    // Add to experiments list (keep last 100)
+    this.data.experiments.unshift(experiment);
+    if (this.data.experiments.length > 100) {
+      this.data.experiments = this.data.experiments.slice(0, 100);
+    }
+    
+    this.saveToStorage();
+    this.updateDashboard();
+    
+    return experiment;
+  },
+  
+  // Update the dashboard UI
+  updateDashboard() {
+    // Update stat cards
+    const totalEl = document.getElementById('totalExperiments');
+    const successRateEl = document.getElementById('successRate');
+    const avgLatencyEl = document.getElementById('avgLatency');
+    const modelsUsedEl = document.getElementById('modelsUsed');
+    
+    if (totalEl) totalEl.textContent = this.data.totalExperiments;
+    
+    if (successRateEl) {
+      const rate = this.data.totalExperiments > 0 
+        ? Math.round((this.data.successfulExperiments / this.data.totalExperiments) * 100)
+        : 0;
+      successRateEl.textContent = rate + '%';
+    }
+    
+    if (avgLatencyEl) {
+      const avg = this.data.totalExperiments > 0
+        ? Math.round(this.data.totalLatency / this.data.totalExperiments)
+        : 0;
+      avgLatencyEl.textContent = avg + 'ms';
+    }
+    
+    if (modelsUsedEl) {
+      modelsUsedEl.textContent = this.data.modelsUsed.size;
+    }
+    
+    // Update model performance chart
+    this.updatePerformanceChart();
+    
+    // Update experiment log
+    this.updateExperimentLog();
+  },
+  
+  // Update the performance chart
+  updatePerformanceChart() {
+    const chartContainer = document.getElementById('modelPerformanceChart');
+    if (!chartContainer) return;
+    
+    const modelColors = {
+      'openai': 'chart-bar-openai',
+      'anthropic': 'chart-bar-claude',
+      'gemini': 'chart-bar-gemini',
+      'llama': 'chart-bar-llama',
+      'mistral': 'chart-bar-mistral',
+      'deepseek': 'chart-bar-deepseek',
+      'kimi': 'chart-bar-kimi',
+      'qwen': 'chart-bar-qwen',
+      'gptoss120b': 'chart-bar-gptoss120b',
+      'gptoss20b': 'chart-bar-gptoss20b',
+      'compound': 'chart-bar-compound',
+      'cohere': 'chart-bar-cohere'
+    };
+    
+    const modelLabels = {
+      'openai': 'ChatGPT',
+      'anthropic': 'Claude',
+      'gemini': 'Gemini',
+      'llama': 'Llama',
+      'mistral': 'Mistral',
+      'deepseek': 'DeepSeek',
+      'kimi': 'Kimi-K2',
+      'qwen': 'Qwen',
+      'gptoss120b': 'GPT-OSS 120B',
+      'gptoss20b': 'GPT-OSS 20B',
+      'compound': 'Compound',
+      'cohere': 'Command R+'
+    };
+    
+    // If we have real data, use it
+    if (Object.keys(this.data.modelPerformance).length > 0) {
+      let html = '<div class="chart-bar-container">';
+      
+      Object.entries(this.data.modelPerformance).forEach(([model, perf]) => {
+        const successRate = perf.totalRuns > 0 
+          ? Math.round((perf.successfulRuns / perf.totalRuns) * 100)
+          : 0;
+        const colorClass = modelColors[model] || 'chart-bar-openai';
+        const label = modelLabels[model] || model;
+        
+        html += `
+          <div class="chart-bar-row">
+            <span class="chart-label">${label}</span>
+            <div class="chart-bar-bg"><div class="chart-bar ${colorClass}" style="width: ${successRate}%"></div></div>
+            <span class="chart-value">${successRate}%</span>
+          </div>
+        `;
+      });
+      
+      html += '</div>';
+      chartContainer.innerHTML = html;
+    }
+  },
+  
+  // Update experiment log
+  updateExperimentLog() {
+    const logContainer = document.getElementById('experimentLog');
+    if (!logContainer) return;
+    
+    if (this.data.experiments.length === 0) {
+      logContainer.innerHTML = `
+        <div class="experiment-item">
+          <div class="experiment-info">
+            <div class="experiment-title">No experiments yet</div>
+            <div class="experiment-meta">Run your first experiment in the Playground</div>
+          </div>
+        </div>
+      `;
+      return;
+    }
+    
+    const recentExperiments = this.data.experiments.slice(0, 10);
+    
+    logContainer.innerHTML = recentExperiments.map(exp => {
+      const timeAgo = this.getTimeAgo(new Date(exp.timestamp));
+      const statusClass = exp.status === 'success' ? 'status-success' : 
+                         exp.status === 'warning' ? 'status-warning' : 'status-error';
+      
+      return `
+        <div class="experiment-item" onclick="AnalyticsTracker.showExperimentDetails('${exp.id}')">
+          <div class="experiment-status ${statusClass}"></div>
+          <div class="experiment-info">
+            <div class="experiment-title">${this.escapeHtml(exp.title)}</div>
+            <div class="experiment-meta">${exp.models.length} models • ${exp.avgLatency}ms avg • ${timeAgo}</div>
+          </div>
+          <div class="experiment-score">${Math.round(exp.successRate)}%</div>
+        </div>
+      `;
+    }).join('');
+  },
+  
+  // Show experiment details
+  showExperimentDetails(id) {
+    const exp = this.data.experiments.find(e => e.id === parseInt(id));
+    if (!exp) return;
+    
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.style.display = 'flex';
+    modal.innerHTML = `
+      <div class="modal-content" style="max-width: 600px;">
+        <button class="modal-close" onclick="this.closest('.modal').remove()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+        <h2>Experiment Details</h2>
+        <div class="experiment-details">
+          <p><strong>Time:</strong> ${new Date(exp.timestamp).toLocaleString()}</p>
+          <p><strong>Models:</strong> ${exp.models.join(', ')}</p>
+          <p><strong>Avg Latency:</strong> ${exp.avgLatency}ms</p>
+          <p><strong>Success Rate:</strong> ${Math.round(exp.successRate)}%</p>
+          <p><strong>Prompt:</strong></p>
+          <pre style="background: var(--bg-contrast); padding: 12px; border-radius: 8px; overflow-x: auto; white-space: pre-wrap;">${this.escapeHtml(exp.prompt || 'N/A')}</pre>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  },
+  
+  // Export analytics data
+  exportAnalytics() {
+    const data = {
+      exportDate: new Date().toISOString(),
+      summary: {
+        totalExperiments: this.data.totalExperiments,
+        successRate: this.data.totalExperiments > 0 
+          ? Math.round((this.data.successfulExperiments / this.data.totalExperiments) * 100)
+          : 0,
+        avgLatency: this.data.totalExperiments > 0
+          ? Math.round(this.data.totalLatency / this.data.totalExperiments)
+          : 0,
+        modelsUsed: Array.from(this.data.modelsUsed)
+      },
+      modelPerformance: this.data.modelPerformance,
+      experiments: this.data.experiments
+    };
+    
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `interlink-analytics-${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    showNotification('Analytics exported successfully!', 'success');
+  },
+  
+  // Wire analytics events
+  wireAnalyticsEvents() {
+    const exportBtn = document.getElementById('exportAnalytics');
+    if (exportBtn) {
+      exportBtn.addEventListener('click', () => this.exportAnalytics());
+    }
+    
+    const timeRangeSelect = document.getElementById('analyticsTimeRange');
+    if (timeRangeSelect) {
+      timeRangeSelect.addEventListener('change', (e) => this.filterByTimeRange(e.target.value));
+    }
+  },
+  
+  // Filter by time range
+  filterByTimeRange(range) {
+    // This would filter the displayed data based on time range
+    // For now, just update the dashboard
+    this.updateDashboard();
+  },
+  
+  // Utility: Get time ago string
+  getTimeAgo(date) {
+    const seconds = Math.floor((new Date() - date) / 1000);
+    
+    if (seconds < 60) return 'just now';
+    if (seconds < 3600) return Math.floor(seconds / 60) + ' min ago';
+    if (seconds < 86400) return Math.floor(seconds / 3600) + ' hr ago';
+    if (seconds < 604800) return Math.floor(seconds / 86400) + ' days ago';
+    return date.toLocaleDateString();
+  },
+  
+  // Utility: Escape HTML
+  escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+};
+
+// ============================================
+// WORKFLOW TRACKER MODULE
+// ============================================
+
+const WorkflowTracker = {
+  STORAGE_KEY: 'interlinkWorkflow',
+  
+  data: {
+    promptKits: [],
+    deployments: [],
+    stages: {
+      development: { experiments: 0, pendingReview: 0 },
+      staging: { inTesting: 0, readyForProd: 0 },
+      production: { activePrompts: 0, uptime: 99.2 }
+    }
+  },
+  
+  init() {
+    this.loadFromStorage();
+    this.updateDashboard();
+    this.wireWorkflowEvents();
+  },
+  
+  loadFromStorage() {
+    try {
+      const stored = localStorage.getItem(this.STORAGE_KEY);
+      if (stored) {
+        this.data = JSON.parse(stored);
+      }
+    } catch (e) {
+      console.error('Error loading workflow data:', e);
+    }
+  },
+  
+  saveToStorage() {
+    try {
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.data));
+    } catch (e) {
+      console.error('Error saving workflow data:', e);
+    }
+  },
+  
+  // Create a new prompt kit
+  createPromptKit(name, prompt, models) {
+    const kit = {
+      id: Date.now(),
+      name,
+      prompt,
+      models,
+      stage: 'development',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      version: '1.0.0'
+    };
+    
+    this.data.promptKits.push(kit);
+    this.data.stages.development.experiments++;
+    this.saveToStorage();
+    this.updateDashboard();
+    
+    showNotification(`Prompt kit "${name}" created!`, 'success');
+    return kit;
+  },
+  
+  // Promote a prompt kit to the next stage
+  promoteKit(kitId) {
+    const kit = this.data.promptKits.find(k => k.id === kitId);
+    if (!kit) return;
+    
+    const stageOrder = ['development', 'staging', 'production'];
+    const currentIndex = stageOrder.indexOf(kit.stage);
+    
+    if (currentIndex < stageOrder.length - 1) {
+      const oldStage = kit.stage;
+      kit.stage = stageOrder[currentIndex + 1];
+      kit.updatedAt = new Date().toISOString();
+      
+      // Update stage counts
+      if (oldStage === 'development') {
+        this.data.stages.development.experiments--;
+        this.data.stages.staging.inTesting++;
+      } else if (oldStage === 'staging') {
+        this.data.stages.staging.inTesting--;
+        this.data.stages.production.activePrompts++;
+      }
+      
+      // Add deployment record
+      this.data.deployments.unshift({
+        id: Date.now(),
+        name: kit.name,
+        stage: kit.stage,
+        timestamp: new Date().toISOString(),
+        status: 'success'
+      });
+      
+      this.saveToStorage();
+      this.updateDashboard();
+      
+      showNotification(`"${kit.name}" promoted to ${kit.stage}!`, 'success');
+    }
+  },
+  
+  // Rollback a prompt kit
+  rollbackKit(kitId) {
+    const kit = this.data.promptKits.find(k => k.id === kitId);
+    if (!kit || kit.stage === 'development') return;
+    
+    const stageOrder = ['development', 'staging', 'production'];
+    const currentIndex = stageOrder.indexOf(kit.stage);
+    
+    const oldStage = kit.stage;
+    kit.stage = stageOrder[currentIndex - 1];
+    kit.updatedAt = new Date().toISOString();
+    
+    // Update stage counts
+    if (oldStage === 'production') {
+      this.data.stages.production.activePrompts--;
+      this.data.stages.staging.inTesting++;
+    } else if (oldStage === 'staging') {
+      this.data.stages.staging.inTesting--;
+      this.data.stages.development.experiments++;
+    }
+    
+    this.saveToStorage();
+    this.updateDashboard();
+    
+    showNotification(`"${kit.name}" rolled back to ${kit.stage}`, 'info');
+  },
+  
+  updateDashboard() {
+    // Update stage stats
+    const stages = this.data.stages;
+    
+    // Development stage
+    const devExperiments = document.querySelector('[data-stage="dev"] .stat-num');
+    const devPending = document.querySelectorAll('[data-stage="dev"] .stat-num')[1];
+    if (devExperiments) devExperiments.textContent = stages.development.experiments;
+    if (devPending) devPending.textContent = stages.development.pendingReview;
+    
+    // Staging stage
+    const stagingTesting = document.querySelector('[data-stage="staging"] .stat-num');
+    const stagingReady = document.querySelectorAll('[data-stage="staging"] .stat-num')[1];
+    if (stagingTesting) stagingTesting.textContent = stages.staging.inTesting;
+    if (stagingReady) stagingReady.textContent = stages.staging.readyForProd;
+    
+    // Production stage
+    const prodActive = document.querySelector('[data-stage="production"] .stat-num');
+    const prodUptime = document.querySelectorAll('[data-stage="production"] .stat-num')[1];
+    if (prodActive) prodActive.textContent = stages.production.activePrompts;
+    if (prodUptime) prodUptime.textContent = stages.production.uptime + '%';
+    
+    // Update deployment list
+    this.updateDeploymentList();
+  },
+  
+  updateDeploymentList() {
+    const listContainer = document.querySelector('.deployment-list');
+    if (!listContainer) return;
+    
+    if (this.data.deployments.length === 0) {
+      listContainer.innerHTML = `
+        <div class="deployment-item">
+          <div class="deployment-info">
+            <span class="deployment-name">No deployments yet</span>
+            <span class="deployment-time">Create your first prompt kit</span>
+          </div>
+        </div>
+      `;
+      return;
+    }
+    
+    const recentDeployments = this.data.deployments.slice(0, 5);
+    
+    listContainer.innerHTML = recentDeployments.map(dep => {
+      const timeAgo = AnalyticsTracker.getTimeAgo(new Date(dep.timestamp));
+      const statusClass = dep.status === 'success' ? 'status-success' : 
+                         dep.status === 'pending' ? 'status-pending' : 'status-warning';
+      
+      return `
+        <div class="deployment-item">
+          <div class="deployment-status ${statusClass}"></div>
+          <div class="deployment-info">
+            <span class="deployment-name">${dep.name}</span>
+            <span class="deployment-time">${timeAgo}</span>
+          </div>
+          <span class="deployment-env">${dep.stage}</span>
+        </div>
+      `;
+    }).join('');
+  },
+  
+  wireWorkflowEvents() {
+    // Wire up quick action buttons
+    const newKitBtn = document.querySelector('.quick-actions .btn:first-child');
+    if (newKitBtn) {
+      newKitBtn.addEventListener('click', () => this.showCreateKitModal());
+    }
+  },
+  
+  showCreateKitModal() {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.style.display = 'flex';
+    modal.innerHTML = `
+      <div class="modal-content">
+        <button class="modal-close" onclick="this.closest('.modal').remove()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+        <h2>Create New Prompt Kit</h2>
+        <div class="field-group">
+          <label for="kitName">Kit Name</label>
+          <input type="text" id="kitName" class="input" placeholder="e.g., Code Review Assistant" />
+        </div>
+        <div class="field-group">
+          <label for="kitPrompt">Base Prompt</label>
+          <textarea id="kitPrompt" class="input" rows="4" placeholder="Enter your prompt template..."></textarea>
+        </div>
+        <button class="btn btn-primary full" onclick="WorkflowTracker.createKitFromModal(this.closest('.modal'))">Create Kit</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  },
+  
+  createKitFromModal(modal) {
+    const name = document.getElementById('kitName')?.value;
+    const prompt = document.getElementById('kitPrompt')?.value;
+    
+    if (!name || !prompt) {
+      showNotification('Please fill in all fields', 'error');
+      return;
+    }
+    
+    this.createPromptKit(name, prompt, ['openai', 'anthropic']);
+    modal.remove();
+  }
+};
+
+// Initialize analytics and workflow on page load
+document.addEventListener('DOMContentLoaded', () => {
+  // Initialize after a short delay to ensure DOM is ready
+  setTimeout(() => {
+    AnalyticsTracker.init();
+    WorkflowTracker.init();
+  }, 500);
+});
+
+// Make modules globally available
+window.AnalyticsTracker = AnalyticsTracker;
+window.WorkflowTracker = WorkflowTracker;
+
+// Hook into playground results to track experiments
+const originalRenderPlaygroundResults = window.renderPlaygroundResults || function() {};
+window.renderPlaygroundResults = function() {
+  originalRenderPlaygroundResults.apply(this, arguments);
+  
+  // Track experiment if we have results
+  if (lastPlaygroundResults && lastPlaygroundResults.length > 0) {
+    const prompt = document.getElementById('playgroundPrompt')?.value || '';
+    const models = lastPlaygroundResults.map(r => r.id);
+    const avgLatency = Math.round(lastPlaygroundResults.reduce((sum, r) => sum + (r.latency || 1500), 0) / lastPlaygroundResults.length);
+    const successRate = (lastPlaygroundResults.filter(r => r.text && r.text !== '-' && !r.text.includes('error')).length / lastPlaygroundResults.length) * 100;
+    
+    const results = lastPlaygroundResults.map(r => ({
+      model: r.id,
+      success: r.text && r.text !== '-' && !r.text.includes('error'),
+      latency: r.latency || 1500
+    }));
+    
+    AnalyticsTracker.trackExperiment({
+      prompt,
+      models,
+      results,
+      avgLatency,
+      successRate
+    });
+  }
+};
+
+
+// =============================================
+// A/B TESTING MODULE
+// =============================================
+
+const ABTestingModule = {
+  tests: [],
+  currentUser: null,
+  
+  init() {
+    this.loadTests();
+    this.setupEventListeners();
+    this.initTrafficSplitSlider();
+  },
+  
+  setupEventListeners() {
+    // Create A/B test button
+    const createBtn = document.getElementById('createABTest');
+    if (createBtn) {
+      createBtn.addEventListener('click', () => this.createTest());
+    }
+    
+    // Filter dropdown
+    const filterSelect = document.getElementById('abTestFilter');
+    if (filterSelect) {
+      filterSelect.addEventListener('change', (e) => this.filterTests(e.target.value));
+    }
+  },
+  
+  initTrafficSplitSlider() {
+    const slider = document.getElementById('trafficSplit');
+    const splitA = document.getElementById('splitA');
+    const splitB = document.getElementById('splitB');
+    
+    if (slider && splitA && splitB) {
+      slider.addEventListener('input', (e) => {
+        const value = parseInt(e.target.value);
+        splitA.textContent = `${value}%`;
+        splitB.textContent = `${100 - value}%`;
+      });
+    }
+  },
+  
+  async loadTests() {
+    try {
+      const response = await fetch('/api/ab-tests');
+      if (response.ok) {
+        this.tests = await response.json();
+        this.renderTests();
+      }
+    } catch (error) {
+      console.log('Using local A/B test data');
+      this.tests = this.getLocalTests();
+      this.renderTests();
+    }
+  },
+  
+  getLocalTests() {
+    return JSON.parse(localStorage.getItem('abTests') || '[]');
+  },
+  
+  saveLocalTests() {
+    localStorage.setItem('abTests', JSON.stringify(this.tests));
+  },
+  
+  async createTest() {
+    const name = document.getElementById('abTestName')?.value;
+    const variantAId = document.getElementById('variantAKit')?.value;
+    const variantBId = document.getElementById('variantBKit')?.value;
+    const trafficSplit = parseInt(document.getElementById('trafficSplit')?.value || 50) / 100;
+    const minSamples = parseInt(document.getElementById('minSamples')?.value || 100);
+    const metricType = document.getElementById('metricType')?.value || 'success_rate';
+    
+    if (!name) {
+      showNotification('Please enter a test name', 'error');
+      return;
+    }
+    
+    const test = {
+      id: 'test_' + Date.now(),
+      name,
+      variantAId: variantAId || 'variant_a',
+      variantBId: variantBId || 'variant_b',
+      trafficSplit,
+      minSamples,
+      metricType,
+      status: 'draft',
+      createdAt: new Date().toISOString(),
+      results: {
+        A: { total: 0, successes: 0, avgLatency: 0 },
+        B: { total: 0, successes: 0, avgLatency: 0 }
+      }
+    };
+    
+    try {
+      const response = await fetch('/api/ab-tests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(test)
+      });
+      
+      if (response.ok) {
+        const savedTest = await response.json();
+        this.tests.unshift(savedTest);
+      } else {
+        this.tests.unshift(test);
+        this.saveLocalTests();
+      }
+    } catch (error) {
+      this.tests.unshift(test);
+      this.saveLocalTests();
+    }
+    
+    this.renderTests();
+    showNotification('A/B test created successfully!', 'success');
+    
+    // Clear form
+    document.getElementById('abTestName').value = '';
+  },
+  
+  async startTest(testId) {
+    const test = this.tests.find(t => t.id === testId);
+    if (!test) return;
+    
+    test.status = 'running';
+    test.startedAt = new Date().toISOString();
+    
+    try {
+      await fetch(`/api/ab-tests/${testId}/start`, { method: 'POST' });
+    } catch (error) {
+      this.saveLocalTests();
+    }
+    
+    this.renderTests();
+    showNotification('A/B test started!', 'success');
+  },
+  
+  async endTest(testId) {
+    const test = this.tests.find(t => t.id === testId);
+    if (!test) return;
+    
+    test.status = 'completed';
+    test.endedAt = new Date().toISOString();
+    
+    // Determine winner
+    const rateA = test.results.A.total > 0 ? test.results.A.successes / test.results.A.total : 0;
+    const rateB = test.results.B.total > 0 ? test.results.B.successes / test.results.B.total : 0;
+    test.winner = rateB > rateA ? 'B' : (rateA > rateB ? 'A' : null);
+    
+    try {
+      await fetch(`/api/ab-tests/${testId}/end`, { method: 'POST' });
+    } catch (error) {
+      this.saveLocalTests();
+    }
+    
+    this.renderTests();
+    showNotification(`A/B test completed! ${test.winner ? `Variant ${test.winner} wins!` : 'No clear winner.'}`, 'success');
+  },
+  
+  recordResult(testId, variant, success, latencyMs) {
+    const test = this.tests.find(t => t.id === testId);
+    if (!test || test.status !== 'running') return;
+    
+    test.results[variant].total++;
+    if (success) test.results[variant].successes++;
+    test.results[variant].avgLatency = 
+      (test.results[variant].avgLatency * (test.results[variant].total - 1) + latencyMs) / test.results[variant].total;
+    
+    this.saveLocalTests();
+    this.renderTests();
+    
+    // Check if we should auto-end
+    const totalSamples = test.results.A.total + test.results.B.total;
+    if (totalSamples >= test.minSamples) {
+      this.checkStatisticalSignificance(test);
+    }
+  },
+  
+  checkStatisticalSignificance(test) {
+    const nA = test.results.A.total;
+    const nB = test.results.B.total;
+    if (nA < 10 || nB < 10) return;
+    
+    const pA = test.results.A.successes / nA;
+    const pB = test.results.B.successes / nB;
+    const pooledP = (test.results.A.successes + test.results.B.successes) / (nA + nB);
+    const se = Math.sqrt(pooledP * (1 - pooledP) * (1/nA + 1/nB));
+    const zScore = se > 0 ? Math.abs(pB - pA) / se : 0;
+    
+    // 95% confidence = z-score > 1.96
+    if (zScore > 1.96) {
+      showNotification('Statistical significance reached! Consider ending the test.', 'info');
+    }
+  },
+  
+  filterTests(status) {
+    this.renderTests(status === 'all' ? null : status);
+  },
+  
+  renderTests(filterStatus = null) {
+    const container = document.getElementById('abTestsList');
+    if (!container) return;
+    
+    const filteredTests = filterStatus 
+      ? this.tests.filter(t => t.status === filterStatus)
+      : this.tests;
+    
+    if (filteredTests.length === 0) {
+      container.innerHTML = `
+        <div class="no-tests-message" style="text-align: center; padding: 2rem; color: var(--muted);">
+          <p>No A/B tests yet. Create one to get started!</p>
+        </div>
+      `;
+      return;
+    }
+    
+    container.innerHTML = filteredTests.map(test => this.renderTestCard(test)).join('');
+    
+    // Add event listeners
+    container.querySelectorAll('[data-action]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const action = e.target.dataset.action;
+        const testId = e.target.dataset.testId;
+        if (action === 'start') this.startTest(testId);
+        else if (action === 'end') this.endTest(testId);
+        else if (action === 'view') this.viewTestDetails(testId);
+      });
+    });
+  },
+  
+  renderTestCard(test) {
+    const totalSamples = test.results.A.total + test.results.B.total;
+    const progress = Math.min((totalSamples / test.minSamples) * 100, 100);
+    const rateA = test.results.A.total > 0 ? Math.round((test.results.A.successes / test.results.A.total) * 100) : 0;
+    const rateB = test.results.B.total > 0 ? Math.round((test.results.B.successes / test.results.B.total) * 100) : 0;
+    const diff = rateB - rateA;
+    
+    if (test.status === 'completed') {
+      return `
+        <div class="ab-test-card ab-test-completed">
+          <div class="ab-test-header">
+            <span class="ab-test-name">${test.name}</span>
+            <span class="ab-test-status status-completed">Completed</span>
+          </div>
+          <div class="ab-test-winner">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="8" r="7"/>
+              <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>
+            </svg>
+            <span>${test.winner ? `Variant ${test.winner} won with ${test.winner === 'A' ? rateA : rateB}% success rate` : 'No clear winner'}</span>
+          </div>
+          <div class="ab-test-stats">
+            <div class="stat-item">
+              <span class="stat-label">Improvement</span>
+              <span class="stat-value ${diff > 0 ? 'positive' : diff < 0 ? 'negative' : ''}">${diff > 0 ? '+' : ''}${diff}%</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Total Samples</span>
+              <span class="stat-value">${totalSamples}</span>
+            </div>
+          </div>
+          <div class="ab-test-actions">
+            <button class="btn btn-sm btn-ghost" data-action="view" data-test-id="${test.id}">View Report</button>
+          </div>
+        </div>
+      `;
+    }
+    
+    return `
+      <div class="ab-test-card ab-test-${test.status}">
+        <div class="ab-test-header">
+          <span class="ab-test-name">${test.name}</span>
+          <span class="ab-test-status status-${test.status}">${test.status.charAt(0).toUpperCase() + test.status.slice(1)}</span>
+        </div>
+        ${test.status === 'running' ? `
+          <div class="ab-test-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: ${progress}%"></div>
+            </div>
+            <span class="progress-text">${totalSamples}/${test.minSamples} samples</span>
+          </div>
+          <div class="ab-test-results-preview">
+            <div class="result-preview">
+              <span class="variant-tag variant-a-tag">A</span>
+              <span class="result-value">${rateA}%</span>
+            </div>
+            <div class="result-preview">
+              <span class="variant-tag variant-b-tag">B</span>
+              <span class="result-value">${rateB}%</span>
+              ${diff !== 0 ? `<span class="result-badge ${diff > 0 ? 'winner' : ''}">${diff > 0 ? '+' : ''}${diff}%</span>` : ''}
+            </div>
+          </div>
+        ` : ''}
+        <div class="ab-test-actions">
+          <button class="btn btn-sm btn-ghost" data-action="view" data-test-id="${test.id}">View Details</button>
+          ${test.status === 'draft' ? `<button class="btn btn-sm btn-primary" data-action="start" data-test-id="${test.id}">Start Test</button>` : ''}
+          ${test.status === 'running' ? `<button class="btn btn-sm btn-outline" data-action="end" data-test-id="${test.id}">End Test</button>` : ''}
+        </div>
+      </div>
+    `;
+  },
+  
+  viewTestDetails(testId) {
+    const test = this.tests.find(t => t.id === testId);
+    if (!test) return;
+    
+    showNotification(`Viewing details for: ${test.name}`, 'info');
+  }
+};
+
+// =============================================
+// CI/CD PIPELINE MODULE
+// =============================================
+
+const PipelineModule = {
+  pipelines: [],
+  runs: [],
+  
+  init() {
+    this.loadPipelines();
+    this.setupEventListeners();
+  },
+  
+  setupEventListeners() {
+    const createBtn = document.getElementById('createPipeline');
+    if (createBtn) {
+      createBtn.addEventListener('click', () => this.createPipeline());
+    }
+  },
+  
+  async loadPipelines() {
+    try {
+      const response = await fetch('/api/pipelines');
+      if (response.ok) {
+        this.pipelines = await response.json();
+        this.renderPipelines();
+      }
+    } catch (error) {
+      console.log('Using local pipeline data');
+      this.pipelines = this.getLocalPipelines();
+      this.renderPipelines();
+    }
+  },
+  
+  getLocalPipelines() {
+    return JSON.parse(localStorage.getItem('pipelines') || '[]');
+  },
+  
+  saveLocalPipelines() {
+    localStorage.setItem('pipelines', JSON.stringify(this.pipelines));
+  },
+  
+  async createPipeline() {
+    const name = document.getElementById('pipelineName')?.value;
+    const kitId = document.getElementById('pipelineKit')?.value;
+    
+    if (!name) {
+      showNotification('Please enter a pipeline name', 'error');
+      return;
+    }
+    
+    const stages = [];
+    if (document.getElementById('stageLint')?.checked) stages.push({ name: 'lint', enabled: true });
+    if (document.getElementById('stageTest')?.checked) stages.push({ name: 'test', enabled: true });
+    if (document.getElementById('stageBenchmark')?.checked) stages.push({ name: 'benchmark', enabled: true });
+    if (document.getElementById('stageDeploy')?.checked) stages.push({ name: 'deploy', enabled: true });
+    
+    const pipeline = {
+      id: 'pipeline_' + Date.now(),
+      name,
+      kitId: kitId || 'default',
+      config: { stages },
+      status: 'idle',
+      createdAt: new Date().toISOString(),
+      runs: []
+    };
+    
+    try {
+      const response = await fetch('/api/pipelines', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(pipeline)
+      });
+      
+      if (response.ok) {
+        const savedPipeline = await response.json();
+        this.pipelines.unshift(savedPipeline);
+      } else {
+        this.pipelines.unshift(pipeline);
+        this.saveLocalPipelines();
+      }
+    } catch (error) {
+      this.pipelines.unshift(pipeline);
+      this.saveLocalPipelines();
+    }
+    
+    this.renderPipelines();
+    showNotification('Pipeline created successfully!', 'success');
+    document.getElementById('pipelineName').value = '';
+  },
+  
+  async runPipeline(pipelineId) {
+    const pipeline = this.pipelines.find(p => p.id === pipelineId);
+    if (!pipeline) return;
+    
+    pipeline.status = 'running';
+    
+    const run = {
+      id: 'run_' + Date.now(),
+      pipelineId,
+      status: 'running',
+      stages: pipeline.config.stages.map(s => ({ ...s, status: 'pending' })),
+      startedAt: new Date().toISOString(),
+      logs: []
+    };
+    
+    pipeline.runs = pipeline.runs || [];
+    pipeline.runs.unshift(run);
+    this.saveLocalPipelines();
+    this.renderPipelines();
+    
+    // Simulate pipeline execution
+    await this.simulatePipelineRun(pipeline, run);
+  },
+  
+  async simulatePipelineRun(pipeline, run) {
+    for (let i = 0; i < run.stages.length; i++) {
+      run.stages[i].status = 'running';
+      this.renderPipelines();
+      
+      // Simulate stage execution
+      await new Promise(resolve => setTimeout(resolve, 1500 + Math.random() * 1000));
+      
+      // 90% success rate
+      const success = Math.random() > 0.1;
+      
+      if (success) {
+        run.stages[i].status = 'completed';
+        run.logs.push(`[${run.stages[i].name}] Completed successfully`);
+      } else {
+        run.stages[i].status = 'failed';
+        run.logs.push(`[${run.stages[i].name}] Failed: Simulated error`);
+        
+        // Mark remaining stages as skipped
+        for (let j = i + 1; j < run.stages.length; j++) {
+          run.stages[j].status = 'skipped';
+        }
+        
+        run.status = 'failed';
+        pipeline.status = 'idle';
+        this.saveLocalPipelines();
+        this.renderPipelines();
+        showNotification(`Pipeline failed at ${run.stages[i].name} stage`, 'error');
+        return;
+      }
+      
+      this.saveLocalPipelines();
+      this.renderPipelines();
+    }
+    
+    run.status = 'completed';
+    run.completedAt = new Date().toISOString();
+    pipeline.status = 'idle';
+    this.saveLocalPipelines();
+    this.renderPipelines();
+    showNotification('Pipeline completed successfully!', 'success');
+  },
+  
+  cancelRun(pipelineId, runId) {
+    const pipeline = this.pipelines.find(p => p.id === pipelineId);
+    if (!pipeline) return;
+    
+    const run = pipeline.runs.find(r => r.id === runId);
+    if (!run || run.status !== 'running') return;
+    
+    run.status = 'cancelled';
+    run.stages.forEach(s => {
+      if (s.status === 'running' || s.status === 'pending') {
+        s.status = 'cancelled';
+      }
+    });
+    
+    pipeline.status = 'idle';
+    this.saveLocalPipelines();
+    this.renderPipelines();
+    showNotification('Pipeline run cancelled', 'info');
+  },
+  
+  renderPipelines() {
+    const container = document.getElementById('pipelinesList');
+    if (!container) return;
+    
+    if (this.pipelines.length === 0) {
+      container.innerHTML = `
+        <div style="text-align: center; padding: 2rem; color: var(--muted);">
+          <p>No pipelines yet. Create one to automate your prompt testing!</p>
+        </div>
+      `;
+      return;
+    }
+    
+    container.innerHTML = this.pipelines.slice(0, 5).map(pipeline => {
+      const latestRun = pipeline.runs?.[0];
+      return this.renderPipelineCard(pipeline, latestRun);
+    }).join('');
+    
+    // Add event listeners
+    container.querySelectorAll('[data-action]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const action = e.target.dataset.action;
+        const pipelineId = e.target.dataset.pipelineId;
+        const runId = e.target.dataset.runId;
+        
+        if (action === 'run') this.runPipeline(pipelineId);
+        else if (action === 'cancel') this.cancelRun(pipelineId, runId);
+        else if (action === 'logs') this.viewLogs(pipelineId, runId);
+      });
+    });
+  },
+  
+  renderPipelineCard(pipeline, latestRun) {
+    const stages = latestRun?.stages || pipeline.config.stages.map(s => ({ ...s, status: 'pending' }));
+    
+    return `
+      <div class="pipeline-card ${latestRun?.status === 'completed' ? 'pipeline-completed' : ''}">
+        <div class="pipeline-header">
+          <div class="pipeline-info">
+            <span class="pipeline-name">${pipeline.name}</span>
+            <span class="pipeline-kit">${pipeline.kitId}</span>
+          </div>
+          <span class="pipeline-status status-${latestRun?.status || 'idle'}">
+            ${latestRun?.status === 'running' ? '<span class="status-dot"></span>' : ''}
+            ${latestRun?.status === 'completed' ? `
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            ` : ''}
+            ${(latestRun?.status || 'Idle').charAt(0).toUpperCase() + (latestRun?.status || 'idle').slice(1)}
+          </span>
+        </div>
+        <div class="pipeline-stages">
+          ${stages.map((stage, i) => `
+            <div class="pipeline-stage-item ${stage.status}">
+              <div class="stage-indicator">
+                ${stage.status === 'completed' ? `
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                ` : stage.status === 'running' ? '<div class="spinner-sm"></div>' : ''}
+              </div>
+              <span>${stage.name.charAt(0).toUpperCase() + stage.name.slice(1)}</span>
+            </div>
+            ${i < stages.length - 1 ? `<div class="stage-connector ${stage.status}"></div>` : ''}
+          `).join('')}
+        </div>
+        <div class="pipeline-actions">
+          ${latestRun?.status === 'running' ? `
+            <button class="btn btn-sm btn-ghost" data-action="logs" data-pipeline-id="${pipeline.id}" data-run-id="${latestRun.id}">View Logs</button>
+            <button class="btn btn-sm btn-outline btn-danger" data-action="cancel" data-pipeline-id="${pipeline.id}" data-run-id="${latestRun.id}">Cancel</button>
+          ` : `
+            <button class="btn btn-sm btn-ghost" data-action="logs" data-pipeline-id="${pipeline.id}">View Logs</button>
+            <button class="btn btn-sm btn-primary" data-action="run" data-pipeline-id="${pipeline.id}">Run Pipeline</button>
+          `}
+        </div>
+        ${latestRun?.status === 'completed' ? `
+          <div class="pipeline-meta">
+            <span>Completed ${this.formatTimeAgo(latestRun.completedAt)}</span>
+          </div>
+        ` : ''}
+      </div>
+    `;
+  },
+  
+  viewLogs(pipelineId, runId) {
+    const pipeline = this.pipelines.find(p => p.id === pipelineId);
+    if (!pipeline) return;
+    
+    const run = runId ? pipeline.runs.find(r => r.id === runId) : pipeline.runs?.[0];
+    const logs = run?.logs?.join('\n') || 'No logs available';
+    
+    showNotification(`Pipeline logs:\n${logs}`, 'info');
+  },
+  
+  formatTimeAgo(dateStr) {
+    if (!dateStr) return 'Unknown';
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+    
+    if (diffMins < 1) return 'just now';
+    if (diffMins < 60) return `${diffMins} min ago`;
+    if (diffHours < 24) return `${diffHours} hr ago`;
+    return `${diffDays} days ago`;
+  }
+};
+
+// =============================================
+// COLLABORATION MODULE
+// =============================================
+
+const CollaborationModule = {
+  socket: null,
+  currentTeam: null,
+  currentUser: null,
+  activeUsers: [],
+  
+  init() {
+    this.loadUser();
+    this.setupEventListeners();
+    this.initSocket();
+  },
+  
+  loadUser() {
+    const savedUser = localStorage.getItem('interlinkUser');
+    if (savedUser) {
+      this.currentUser = JSON.parse(savedUser);
+    } else {
+      this.currentUser = {
+        id: 'user_' + Date.now(),
+        name: 'You',
+        email: '',
+        avatar: 'Y'
+      };
+      localStorage.setItem('interlinkUser', JSON.stringify(this.currentUser));
+    }
+  },
+  
+  setupEventListeners() {
+    const createTeamBtn = document.getElementById('createTeam');
+    if (createTeamBtn) {
+      createTeamBtn.addEventListener('click', () => this.createTeam());
+    }
+    
+    const inviteBtn = document.getElementById('inviteMember');
+    if (inviteBtn) {
+      inviteBtn.addEventListener('click', () => this.inviteMember());
+    }
+    
+    const sendChatBtn = document.getElementById('sendTeamChat');
+    if (sendChatBtn) {
+      sendChatBtn.addEventListener('click', () => this.sendChatMessage());
+    }
+    
+    const chatInput = document.getElementById('teamChatInput');
+    if (chatInput) {
+      chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') this.sendChatMessage();
+      });
+    }
+  },
+  
+  initSocket() {
+    // Try to connect to Socket.IO
+    if (typeof io !== 'undefined') {
+      try {
+        this.socket = io();
+        
+        this.socket.on('connect', () => {
+          console.log('Connected to collaboration server');
+          if (this.currentTeam) {
+            this.joinTeam(this.currentTeam.id);
+          }
+        });
+        
+        this.socket.on('user-joined', (data) => {
+          this.activeUsers = data.activeUsers;
+          this.renderTeamMembers();
+          this.addActivityItem(`${data.userName} joined the team`);
+        });
+        
+        this.socket.on('user-left', (data) => {
+          this.activeUsers = data.activeUsers;
+          this.renderTeamMembers();
+        });
+        
+        this.socket.on('team-message', (data) => {
+          this.addChatMessage(data.userName, data.message);
+        });
+        
+        this.socket.on('experiment-completed', (data) => {
+          this.addActivityItem(`${data.userName} completed an experiment`);
+        });
+        
+      } catch (error) {
+        console.log('Socket.IO not available, using local mode');
+      }
+    }
+  },
+  
+  async createTeam() {
+    const nameInput = document.getElementById('teamName');
+    const name = nameInput?.value;
+    
+    if (!name) {
+      showNotification('Please enter a team name', 'error');
+      return;
+    }
+    
+    const team = {
+      id: 'team_' + Date.now(),
+      name,
+      members: [this.currentUser],
+      createdAt: new Date().toISOString()
+    };
+    
+    this.currentTeam = team;
+    localStorage.setItem('interlinkTeam', JSON.stringify(team));
+    
+    if (this.socket) {
+      this.socket.emit('join-team', {
+        teamId: team.id,
+        userId: this.currentUser.id,
+        userName: this.currentUser.name
+      });
+    }
+    
+    this.renderTeamMembers();
+    showNotification(`Team "${name}" created!`, 'success');
+    nameInput.value = '';
+    
+    // Hide no team message
+    const noTeamMsg = document.getElementById('noTeamMessage');
+    if (noTeamMsg) noTeamMsg.style.display = 'none';
+  },
+  
+  joinTeam(teamId) {
+    if (this.socket && this.currentUser) {
+      this.socket.emit('join-team', {
+        teamId,
+        userId: this.currentUser.id,
+        userName: this.currentUser.name
+      });
+    }
+  },
+  
+  inviteMember() {
+    const emailInput = document.getElementById('inviteEmail');
+    const email = emailInput?.value;
+    
+    if (!email) {
+      showNotification('Please enter an email address', 'error');
+      return;
+    }
+    
+    showNotification(`Invitation sent to ${email}`, 'success');
+    emailInput.value = '';
+  },
+  
+  sendChatMessage() {
+    const input = document.getElementById('teamChatInput');
+    const message = input?.value?.trim();
+    
+    if (!message) return;
+    
+    if (this.socket && this.currentTeam) {
+      this.socket.emit('team-message', {
+        teamId: this.currentTeam.id,
+        userId: this.currentUser.id,
+        userName: this.currentUser.name,
+        message
+      });
+    }
+    
+    this.addChatMessage(this.currentUser.name, message);
+    input.value = '';
+  },
+  
+  addChatMessage(author, text) {
+    const container = document.getElementById('chatMessages');
+    if (!container) return;
+    
+    const msgEl = document.createElement('div');
+    msgEl.className = 'chat-message';
+    msgEl.innerHTML = `
+      <span class="chat-author">${author}:</span>
+      <span class="chat-text">${text}</span>
+    `;
+    container.appendChild(msgEl);
+    container.scrollTop = container.scrollHeight;
+  },
+  
+  addActivityItem(text) {
+    const container = document.getElementById('activityFeed');
+    if (!container) return;
+    
+    const item = document.createElement('div');
+    item.className = 'activity-item';
+    item.innerHTML = `
+      <div class="activity-avatar"><span>•</span></div>
+      <div class="activity-content">${text}</div>
+      <span class="activity-time">just now</span>
+    `;
+    container.insertBefore(item, container.firstChild);
+  },
+  
+  renderTeamMembers() {
+    const container = document.getElementById('teamMembers');
+    if (!container) return;
+    
+    const members = this.activeUsers.length > 0 ? this.activeUsers : (this.currentTeam?.members || [this.currentUser]);
+    
+    container.innerHTML = members.map(member => `
+      <div class="member-item">
+        <div class="member-avatar online">
+          <span>${member.name?.charAt(0) || member.avatar || '?'}</span>
+          <span class="online-indicator"></span>
+        </div>
+        <div class="member-info">
+          <span class="member-name">${member.name}</span>
+          <span class="member-role">${member.id === this.currentUser?.id ? 'You' : 'Member'}</span>
+        </div>
+      </div>
+    `).join('');
+  }
+};
+
+// =============================================
+// TIME-SERIES CHARTS MODULE
+// =============================================
+
+const TimeSeriesModule = {
+  chart: null,
+  selectedModels: ['openai', 'anthropic', 'gemini'],
+  timeRange: '24h',
+  metric: 'latency',
+  
+  init() {
+    this.setupEventListeners();
+    this.initChart();
+    this.loadData();
+  },
+  
+  setupEventListeners() {
+    const rangeSelect = document.getElementById('timeseriesRange');
+    if (rangeSelect) {
+      rangeSelect.addEventListener('change', (e) => {
+        this.timeRange = e.target.value;
+        this.loadData();
+      });
+    }
+    
+    const metricSelect = document.getElementById('timeseriesMetric');
+    if (metricSelect) {
+      metricSelect.addEventListener('change', (e) => {
+        this.metric = e.target.value;
+        this.loadData();
+      });
+    }
+    
+    const modelToggles = document.querySelectorAll('.toggle-mini');
+    modelToggles.forEach(toggle => {
+      toggle.addEventListener('click', () => {
+        const model = toggle.dataset.model;
+        toggle.classList.toggle('active');
+        
+        if (toggle.classList.contains('active')) {
+          if (!this.selectedModels.includes(model)) {
+            this.selectedModels.push(model);
+          }
+        } else {
+          this.selectedModels = this.selectedModels.filter(m => m !== model);
+        }
+        
+        this.updateChart();
+      });
+    });
+  },
+  
+  initChart() {
+    const canvas = document.getElementById('timeseriesChart');
+    if (!canvas) return;
+    
+    // Check if Chart.js is available
+    if (typeof Chart === 'undefined') {
+      // Load Chart.js dynamically
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+      script.onload = () => this.createChart(canvas);
+      document.head.appendChild(script);
+    } else {
+      this.createChart(canvas);
+    }
+  },
+  
+  createChart(canvas) {
+    const ctx = canvas.getContext('2d');
+    
+    this.chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: []
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+          mode: 'index',
+          intersect: false
+        },
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: {
+              color: '#94a3b8',
+              usePointStyle: true,
+              padding: 20
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(10, 15, 26, 0.9)',
+            titleColor: '#f1f5f9',
+            bodyColor: '#94a3b8',
+            borderColor: 'rgba(148, 163, 184, 0.1)',
+            borderWidth: 1,
+            padding: 12,
+            cornerRadius: 8
+          }
+        },
+        scales: {
+          x: {
+            grid: {
+              color: 'rgba(148, 163, 184, 0.1)'
+            },
+            ticks: {
+              color: '#94a3b8'
+            }
+          },
+          y: {
+            grid: {
+              color: 'rgba(148, 163, 184, 0.1)'
+            },
+            ticks: {
+              color: '#94a3b8'
+            }
+          }
+        }
+      }
+    });
+    
+    this.loadData();
+  },
+  
+  async loadData() {
+    // Generate sample data
+    const data = this.generateSampleData();
+    this.updateChart(data);
+    this.updateSummary(data);
+  },
+  
+  generateSampleData() {
+    const modelColors = {
+      openai: '#10a37f',
+      anthropic: '#6B4FBB',
+      gemini: '#4285f4',
+      llama: '#0084ff',
+      mistral: '#ff6b35',
+      deepseek: '#00d4aa'
+    };
+    
+    const points = this.timeRange === '24h' ? 24 : 
+                   this.timeRange === '7d' ? 7 :
+                   this.timeRange === '30d' ? 30 : 90;
+    
+    const labels = [];
+    const now = new Date();
+    
+    for (let i = points - 1; i >= 0; i--) {
+      if (this.timeRange === '24h') {
+        const d = new Date(now - i * 3600000);
+        labels.push(d.getHours() + ':00');
+      } else {
+        const d = new Date(now - i * 86400000);
+        labels.push(d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+      }
+    }
+    
+    const datasets = {};
+    
+    this.selectedModels.forEach(model => {
+      const baseValue = this.metric === 'latency' ? 1500 + Math.random() * 1000 :
+                        this.metric === 'success_rate' ? 85 + Math.random() * 10 :
+                        this.metric === 'requests' ? 50 + Math.random() * 100 :
+                        1000 + Math.random() * 500;
+      
+      datasets[model] = {
+        label: model.charAt(0).toUpperCase() + model.slice(1),
+        data: Array(points).fill(0).map(() => {
+          const variation = (Math.random() - 0.5) * baseValue * 0.3;
+          return Math.max(0, baseValue + variation);
+        }),
+        borderColor: modelColors[model] || '#3b82f6',
+        backgroundColor: (modelColors[model] || '#3b82f6') + '20',
+        tension: 0.4,
+        fill: true
+      };
+    });
+    
+    return { labels, datasets };
+  },
+  
+  updateChart(data) {
+    if (!this.chart) return;
+    
+    if (data) {
+      this.chart.data.labels = data.labels;
+      this.chart.data.datasets = Object.values(data.datasets);
+    }
+    
+    this.chart.update();
+  },
+  
+  updateSummary(data) {
+    // Calculate summary stats
+    let totalLatency = 0;
+    let totalSuccess = 0;
+    let totalRequests = 0;
+    let modelCount = 0;
+    let bestModel = null;
+    let bestRate = 0;
+    
+    Object.entries(data.datasets).forEach(([model, dataset]) => {
+      const avg = dataset.data.reduce((a, b) => a + b, 0) / dataset.data.length;
+      
+      if (this.metric === 'latency') {
+        totalLatency += avg;
+      } else if (this.metric === 'success_rate') {
+        totalSuccess += avg;
+        if (avg > bestRate) {
+          bestRate = avg;
+          bestModel = model;
+        }
+      } else if (this.metric === 'requests') {
+        totalRequests += dataset.data.reduce((a, b) => a + b, 0);
+      }
+      modelCount++;
+    });
+    
+    // Update summary cards
+    const avgLatencyEl = document.getElementById('avgLatencySummary');
+    if (avgLatencyEl) {
+      avgLatencyEl.textContent = (totalLatency / modelCount / 1000).toFixed(1) + 's';
+    }
+    
+    const successRateEl = document.getElementById('successRateSummary');
+    if (successRateEl) {
+      successRateEl.textContent = (totalSuccess / modelCount).toFixed(1) + '%';
+    }
+    
+    const totalRequestsEl = document.getElementById('totalRequestsSummary');
+    if (totalRequestsEl) {
+      totalRequestsEl.textContent = Math.round(totalRequests).toLocaleString();
+    }
+    
+    const bestPerformerEl = document.getElementById('bestPerformerSummary');
+    if (bestPerformerEl && bestModel) {
+      bestPerformerEl.textContent = bestModel.charAt(0).toUpperCase() + bestModel.slice(1);
+    }
+  }
+};
+
+// =============================================
+// INITIALIZE ALL MODULES
+// =============================================
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Initialize new modules after a short delay
+  setTimeout(() => {
+    ABTestingModule.init();
+    PipelineModule.init();
+    CollaborationModule.init();
+    TimeSeriesModule.init();
+  }, 600);
+});
+
+// Make modules globally available
+window.ABTestingModule = ABTestingModule;
+window.PipelineModule = PipelineModule;
+window.CollaborationModule = CollaborationModule;
+window.TimeSeriesModule = TimeSeriesModule;

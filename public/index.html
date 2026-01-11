@@ -3,59 +3,96 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- DEPLOYMENT TEST v2 - If you see this, new code is deployed -->
   <title>Interlink AI - Multi-Model Orchestration Hub</title>
+  <meta name="description" content="Compare AI models side-by-side. Fan out prompts to ChatGPT, Claude, Gemini, and more. Built for serious builders and researchers.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%233b82f6'/%3E%3Cstop offset='100%25' stop-color='%2306b6d4'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='8' fill='url(%23g)'/%3E%3Cpath d='M8 16h16M16 8v16M10 10l12 12M22 10l-12 12' stroke='white' stroke-width='2' stroke-linecap='round' opacity='0.9'/%3E%3C/svg%3E">
 </head>
 <body>
   <div class="page" id="top">
     <header class="nav">
-      <div class="brand">
-        <div class="brand-mark">8</div>
+      <a href="#top" class="brand">
+        <div class="brand-mark">
+          <svg viewBox="0 0 32 32" width="32" height="32">
+            <defs>
+              <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#3b82f6"/>
+                <stop offset="100%" stop-color="#06b6d4"/>
+              </linearGradient>
+            </defs>
+            <rect width="32" height="32" rx="8" fill="url(#brandGrad)"/>
+            <path d="M8 16h16M16 8v16M10 10l12 12M22 10l-12 12" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.9"/>
+          </svg>
+        </div>
         <div class="brand-name">Interlink <span>AI</span></div>
-      </div>
-      <nav class="nav-links">
+      </a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <nav class="nav-links" id="navLinks">
         <a href="#features">Features</a>
         <a href="#playground">Playground</a>
         <a href="#races">Races</a>
-        <a href="#one-on-one">Expert Mode</a>
-        <a href="#resources">Resources</a>
-        <a href="#community">Community</a>
+        <a href="#analytics">Analytics</a>
+        <a href="#ab-testing">A/B Tests</a>
+        <a href="#pipelines">CI/CD</a>
+        <a href="#collaboration">Team</a>
+        <a href="#timeseries">Trends</a>
         <a href="#pricing">Pricing</a>
       </nav>
-      <a class="nav-cta" href="#cta" onclick="showTutorial(); return false;">Start Tutorial</a>
+      <a class="nav-cta" href="#playground">Try Free</a>
     </header>
 
     <main>
       <section class="hero">
         <div class="hero-copy">
-          <div class="pill">Research-grade orchestration</div>
-          <h1>One prompt. Three minds. Evidence-grade answers.</h1>
+          <div class="pill">
+            <span class="pill-dot"></span>
+            Research-grade orchestration
+          </div>
+          <h1>One prompt.<br>Three minds.<br><span class="gradient-text">Evidence-grade answers.</span></h1>
           <p class="hero-sub">
             Interlink AI is the test bench for serious builders. Fan out a single prompt to ChatGPT, Claude, and Gemini,
             stage prompt races, and lock in winners for repeatable workflows.
           </p>
           <div class="hero-actions">
-            <a class="btn btn-primary" href="#playground">Open playground</a>
-            <a class="btn btn-ghost" href="#races">Run a prompt race</a>
-            <button class="btn btn-ghost btn-compact" onclick="replayTutorial(); return false;">Replay tutorial</button>
+            <a class="btn btn-primary btn-lg" href="#playground">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="5 3 19 12 5 21 5 3"/>
+              </svg>
+              Open Playground
+            </a>
+            <a class="btn btn-ghost btn-lg" href="#races">Run a Prompt Race</a>
           </div>
-          <p class="hero-note">Built for focused research and production: your API keys, your guardrails, export to your stack.</p>
+          <p class="hero-note">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            Your API keys, your guardrails, export to your stack.
+          </p>
           <div class="hero-metrics">
             <div class="metric">
-              <div class="metric-number">3x</div>
-              <div class="metric-label">models, one prompt</div>
+              <div class="metric-number">12+</div>
+              <div class="metric-label">AI Models</div>
             </div>
             <div class="metric">
-              <div class="metric-number">Under 60s</div>
-              <div class="metric-label">to ship a race</div>
+              <div class="metric-number">&lt;60s</div>
+              <div class="metric-label">Race Setup</div>
             </div>
             <div class="metric">
-              <div class="metric-number">Voice/Vision</div>
-              <div class="metric-label">multimodal ready</div>
+              <div class="metric-number">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                  <line x1="12" y1="19" x2="12" y2="23"/>
+                </svg>
+              </div>
+              <div class="metric-label">Voice & Vision</div>
             </div>
           </div>
         </div>
@@ -64,7 +101,7 @@
           <div class="einstein-card">
             <div class="einstein-img" aria-hidden="true"></div>
             <div class="einstein-overlay">
-              <div class="overlay-title">Research avatar, 3D ready</div>
+              <div class="overlay-title">Research Avatar, 3D Ready</div>
               <div class="overlay-meta">Swap in your 3D Einstein or any glTF hero.</div>
               <div class="overlay-chips">
                 <span>Model fanout</span>
@@ -75,12 +112,17 @@
           </div>
           <div class="hero-panel">
             <div class="panel-header">
-              <span class="panel-title">Live multi-model view</span>
-              <span class="panel-status">Ready</span>
+              <span class="panel-title">Live Multi-Model View</span>
+              <span class="panel-status"><span class="status-dot"></span>Ready</span>
             </div>
             <label class="field-label" for="heroPrompt">Prompt</label>
             <textarea id="heroPrompt" class="input" rows="3">Summarize three angles for a founder evaluating Interlink AI today.</textarea>
-            <button id="heroRun" class="btn btn-primary full">Fan out to all models</button>
+            <button id="heroRun" class="btn btn-primary full">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+              </svg>
+              Fan out to all models
+            </button>
             <div class="output-grid" id="heroOutputs">
               <div class="output-card" data-model="openai">
                 <div class="output-header"><span class="tag tag-openai">ChatGPT</span><span class="status">waiting</span></div>
@@ -95,7 +137,6 @@
                 <p class="output-text" id="out-gemini">-</p>
               </div>
             </div>
-            <p class="stub-note">Production: your backend fans out to providers; we return the winner.</p>
           </div>
         </div>
       </section>
@@ -108,78 +149,137 @@
         </div>
         <div class="feature-grid">
           <article class="feature-card">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"/>
+                <rect x="14" y="3" width="7" height="7"/>
+                <rect x="14" y="14" width="7" height="7"/>
+                <rect x="3" y="14" width="7" height="7"/>
+              </svg>
+            </div>
             <h3>Multi-model in one pane</h3>
             <p>Send the same prompt to multiple engines with a click. Compare reasoning, tone, and latency.</p>
           </article>
           <article class="feature-card">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+              </svg>
+            </div>
             <h3>Prompt races</h3>
             <p>Turn comparison into a game for TikTok, Twitch, or your team. Keep the winners.</p>
           </article>
           <article class="feature-card">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+              </svg>
+            </div>
             <h3>Prompt kits</h3>
             <p>Save winning prompts as shareable templates so your team reuses what works.</p>
           </article>
           <article class="feature-card">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+            </div>
             <h3>API-key safe</h3>
             <p>Use your own OpenAI, Claude, and Gemini keys. Nothing is trained on your data.</p>
           </article>
         </div>
       </section>
 
-      <section class="section section-contrast" id="playground">
+      <section class="section section-alt" id="playground">
         <div class="section-header">
           <p class="kicker">Playground</p>
           <h2>Toggle models, test prompts, keep the best.</h2>
           <p class="section-sub">Run real prompts with your stack. Turn experiments into repeatable workflows.</p>
         </div>
-        <div class="playground">
-          <div class="playground-left">
-            <label class="field-label">Models</label>
-            <div id="model-toggles" class="toggle-row"></div>
-            
-                        <label class="field-label">Examples</label>
-            <select id="exampleSelect" class="input">
-              <option value="">Load an example prompt...</option>
-              <option value="spanish-learning">Research summary: multimodal RAG setup</option>
-              <option value="troubleshooting">Debug React error</option>
-              <option value="design-review">Review landing page design</option>
-              <option value="code-refactor">Refactor code for efficiency</option>
-              <option value="product-compare">PostgreSQL vs MongoDB</option>
-            </select>
-            
-            <label class="field-label" for="playgroundPrompt">Prompt</label>
-            <div class="prompt-controls">
-              <textarea id="playgroundPrompt" class="input" rows="4" placeholder="Type or speak your prompt..." ></textarea>
-              <button id="voiceInputBtn" class="btn btn-ghost btn-voice">Voice input</button>
+        <div class="playground-layout">
+          <div class="playground-controls">
+            <div class="control-section">
+              <label class="field-label">Models</label>
+              <div class="model-toggles" id="modelToggles"></div>
             </div>
-            <div class="voice-grid">
-              <div class="voice-field">
+            <div class="control-section">
+              <label class="field-label" for="exampleSelect">Examples</label>
+              <select id="exampleSelect" class="input">
+                <option value="">Load an example prompt...</option>
+                <option value="research">Research summary: multimodal RAG setup</option>
+                <option value="debug">Debug React error</option>
+                <option value="review">Review landing page design</option>
+                <option value="refactor">Refactor code for efficiency</option>
+                <option value="compare">PostgreSQL vs MongoDB</option>
+                <option value="devops">CI/CD pipeline optimization</option>
+              </select>
+            </div>
+            <div class="control-section">
+              <label class="field-label" for="playgroundPrompt">Prompt</label>
+              <textarea id="playgroundPrompt" class="input" rows="4" placeholder="Type or speak your prompt..."></textarea>
+              <button class="btn btn-ghost btn-sm" id="voiceInputBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                  <line x1="12" y1="19" x2="12" y2="23"/>
+                </svg>
+                Voice Input
+              </button>
+            </div>
+            <div class="control-section control-row">
+              <div class="control-group">
                 <label class="field-label" for="voiceLanguage">Voice language</label>
                 <select id="voiceLanguage" class="input"></select>
               </div>
-              <div class="voice-field">
+              <div class="control-group">
                 <label class="field-label" for="voiceOutputVoice">Playback voice</label>
-                <select id="voiceOutputVoice" class="input">
-                  <option value="">Best voice for selected language</option>
-                </select>
-                <p class="microcopy">Used for read-aloud and one-on-one tutors.</p>
+                <select id="voiceOutputVoice" class="input"></select>
+                <span class="field-hint">Used for read-aloud and one-on-one tutors.</span>
               </div>
             </div>
-            
-            <label class="field-label">Vision (Optional)</label>
-            <div class="vision-upload">
-              <input type="file" id="visionUpload" accept="image/*" style="display:none;">
-              <button onclick="document.getElementById('visionUpload').click()" class="btn btn-ghost full">Upload image</button>
+            <div class="control-section">
+              <label class="field-label">Vision (Optional)</label>
+              <button class="btn btn-ghost btn-sm" id="imageUploadBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <polyline points="21 15 16 10 5 21"/>
+                </svg>
+                Upload image
+              </button>
+              <input type="file" id="imageUpload" accept="image/*" style="display:none;" />
               <div id="imagePreview" class="image-preview"></div>
             </div>
-            
-            <button id="playgroundRun" class="btn btn-primary full">Run experiment</button>
-            <button onclick="downloadFeedbackCSV()" class="btn btn-ghost full download-csv-btn">Download feedback CSV</button>
-            <p class="stub-note">Tip: Use voice input, examples, or type your own. Track model behavior with feedback tools.</p>
+            <button id="playgroundRun" class="btn btn-primary full">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="5 3 19 12 5 21 5 3"/>
+              </svg>
+              Run experiment
+            </button>
+            <button class="btn btn-ghost full" id="downloadFeedback">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              Download feedback CSV
+            </button>
+            <p class="field-hint">Tip: Use voice input, examples, or type your own. Track model behavior with feedback tools.</p>
           </div>
-          <div class="playground-right">
-            <div class="results" id="playgroundResults">
-              <div class="placeholder">Outputs will appear here after you run.</div>
+          <div class="playground-output">
+            <div id="playgroundResults" class="results-container">
+              <div class="results-placeholder">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.5">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                  <line x1="3" y1="9" x2="21" y2="9"/>
+                  <line x1="9" y1="21" x2="9" y2="9"/>
+                </svg>
+                <p>Outputs will appear here after you run.</p>
+              </div>
             </div>
           </div>
         </div>
@@ -187,51 +287,971 @@
 
       <section class="section" id="races">
         <div class="section-header">
-          <p class="kicker">Prompt races</p>
+          <p class="kicker">Prompt Races</p>
           <h2>Host a live challenge and crown a winner.</h2>
-          <p class="section-sub">Great for �find the best deal� battles, research sprints, or live content.</p>
+          <p class="section-sub">Great for "find the best deal" battles, research sprints, or live content.</p>
         </div>
-        <div class="race-grid">
-          <div class="race-config">
-            <label class="field-label" for="raceTitle">Challenge title</label>
-            <input id="raceTitle" class="input" placeholder="e.g., Best round-trip flight SFO -> NYC under $300" />
-            <label class="field-label" for="raceRules">Rules</label>
-            <textarea id="raceRules" class="input" rows="3" placeholder="Constraints, timing, what counts as a win"></textarea>
-            <label class="field-label">Participants</label>
-            <div id="participantList" class="participant-list"></div>
-            <div class="participant-add">
-              <input id="participantName" class="input" placeholder="Name or handle" />
-              <button id="addParticipant" class="btn btn-ghost">Add</button>
+        <div class="race-layout">
+          <div class="race-setup">
+            <div class="control-section">
+              <label class="field-label" for="raceTitle">Challenge title</label>
+              <input type="text" id="raceTitle" class="input" placeholder="e.g., Best round-trip flight SFO -> NYC under $300" />
             </div>
-            <button id="startRace" class="btn btn-primary full">Start race</button>
-            <p class="stub-note">In a full app, this persists to your backend so you can share the race link.</p>
+            <div class="control-section">
+              <label class="field-label" for="raceRules">Rules</label>
+              <textarea id="raceRules" class="input" rows="3" placeholder="Constraints, timing, what counts as a win"></textarea>
+            </div>
+            <div class="control-section">
+              <label class="field-label">Participants</label>
+              <div id="raceParticipants" class="participant-list">
+                <p class="field-hint">No participants yet.</p>
+              </div>
+              <div class="participant-add">
+                <input type="text" id="participantName" class="input" placeholder="Name or handle" />
+                <button class="btn btn-ghost" id="addParticipant">Add</button>
+              </div>
+            </div>
+            <button id="startRace" class="btn btn-primary full">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+              </svg>
+              Start race
+            </button>
+            <p class="field-hint">In a full app, this persists to your backend so you can share the race link.</p>
           </div>
           <div class="race-results">
-            <div class="race-status" id="raceStatus">No race running.</div>
-            <div class="race-entries" id="raceEntries">
-              <div class="placeholder">Run a race to see model answers and timings.</div>
+            <div id="raceOutput" class="race-output">
+              <div class="results-placeholder">
+                <p>No race running.</p>
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.5">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polyline points="12 6 12 12 16 14"/>
+                </svg>
+                <p>Run a race to see model answers and timings.</p>
+              </div>
             </div>
-            <div class="race-winner" id="raceWinner"></div>
           </div>
         </div>
       </section>
 
-      <section class="section section-contrast" id="resources">
+      <!-- NEW: Analytics Dashboard Section -->
+      <section class="section section-alt" id="analytics">
+        <div class="section-header">
+          <p class="kicker">Research Analytics</p>
+          <h2>Track experiments, measure performance, iterate faster.</h2>
+          <p class="section-sub">Comprehensive analytics for PC lab work, research processes, and production readiness.</p>
+        </div>
+        <div class="analytics-dashboard">
+          <div class="analytics-stats">
+            <div class="stat-card">
+              <div class="stat-icon stat-icon-blue">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                </svg>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value" id="totalExperiments">0</div>
+                <div class="stat-label">Total Experiments</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon stat-icon-green">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value" id="successRate">0%</div>
+                <div class="stat-label">Success Rate</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon stat-icon-purple">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polyline points="12 6 12 12 16 14"/>
+                </svg>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value" id="avgLatency">0ms</div>
+                <div class="stat-label">Avg Latency</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon stat-icon-orange">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                  <path d="M2 17l10 5 10-5"/>
+                  <path d="M2 12l10 5 10-5"/>
+                </svg>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value" id="modelsUsed">0</div>
+                <div class="stat-label">Models Used</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="analytics-panels">
+            <div class="analytics-panel">
+              <div class="panel-header">
+                <h3>Model Performance Comparison</h3>
+                <select id="analyticsTimeRange" class="input input-sm">
+                  <option value="today">Today</option>
+                  <option value="week">This Week</option>
+                  <option value="month">This Month</option>
+                  <option value="all">All Time</option>
+                </select>
+              </div>
+              <div class="model-performance-chart" id="modelPerformanceChart">
+                <div class="chart-bar-container">
+                  <div class="chart-bar-row">
+                    <span class="chart-label">ChatGPT</span>
+                    <div class="chart-bar-bg"><div class="chart-bar chart-bar-openai" style="width: 85%"></div></div>
+                    <span class="chart-value">85%</span>
+                  </div>
+                  <div class="chart-bar-row">
+                    <span class="chart-label">Claude</span>
+                    <div class="chart-bar-bg"><div class="chart-bar chart-bar-claude" style="width: 82%"></div></div>
+                    <span class="chart-value">82%</span>
+                  </div>
+                  <div class="chart-bar-row">
+                    <span class="chart-label">Gemini</span>
+                    <div class="chart-bar-bg"><div class="chart-bar chart-bar-gemini" style="width: 78%"></div></div>
+                    <span class="chart-value">78%</span>
+                  </div>
+                  <div class="chart-bar-row">
+                    <span class="chart-label">Llama</span>
+                    <div class="chart-bar-bg"><div class="chart-bar chart-bar-llama" style="width: 75%"></div></div>
+                    <span class="chart-value">75%</span>
+                  </div>
+                  <div class="chart-bar-row">
+                    <span class="chart-label">Mistral</span>
+                    <div class="chart-bar-bg"><div class="chart-bar chart-bar-mistral" style="width: 72%"></div></div>
+                    <span class="chart-value">72%</span>
+                  </div>
+                  <div class="chart-bar-row">
+                    <span class="chart-label">DeepSeek</span>
+                    <div class="chart-bar-bg"><div class="chart-bar chart-bar-deepseek" style="width: 80%"></div></div>
+                    <span class="chart-value">80%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="analytics-panel">
+              <div class="panel-header">
+                <h3>Recent Experiments</h3>
+                <button class="btn btn-ghost btn-sm" id="exportAnalytics">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                  </svg>
+                  Export
+                </button>
+              </div>
+              <div class="experiment-log" id="experimentLog">
+                <div class="experiment-item">
+                  <div class="experiment-status status-success"></div>
+                  <div class="experiment-info">
+                    <div class="experiment-title">Research summary: multimodal RAG</div>
+                    <div class="experiment-meta">3 models • 2.3s avg • 2 min ago</div>
+                  </div>
+                  <div class="experiment-score">92%</div>
+                </div>
+                <div class="experiment-item">
+                  <div class="experiment-status status-success"></div>
+                  <div class="experiment-info">
+                    <div class="experiment-title">Debug React useState error</div>
+                    <div class="experiment-meta">4 models • 1.8s avg • 15 min ago</div>
+                  </div>
+                  <div class="experiment-score">88%</div>
+                </div>
+                <div class="experiment-item">
+                  <div class="experiment-status status-warning"></div>
+                  <div class="experiment-info">
+                    <div class="experiment-title">CI/CD pipeline optimization</div>
+                    <div class="experiment-meta">2 models • 3.1s avg • 1 hr ago</div>
+                  </div>
+                  <div class="experiment-score">65%</div>
+                </div>
+                <div class="experiment-item">
+                  <div class="experiment-status status-success"></div>
+                  <div class="experiment-info">
+                    <div class="experiment-title">PostgreSQL query optimization</div>
+                    <div class="experiment-meta">3 models • 2.0s avg • 2 hr ago</div>
+                  </div>
+                  <div class="experiment-score">95%</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="analytics-insights">
+            <h3>AI Insights</h3>
+            <div class="insight-cards">
+              <div class="insight-card">
+                <div class="insight-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                  </svg>
+                </div>
+                <div class="insight-content">
+                  <strong>Performance Trend:</strong> Claude shows 12% improvement in code-related tasks this week.
+                </div>
+              </div>
+              <div class="insight-card">
+                <div class="insight-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 16v-4M12 8h.01"/>
+                  </svg>
+                </div>
+                <div class="insight-content">
+                  <strong>Recommendation:</strong> Consider using Gemini for creative tasks - 15% higher satisfaction scores.
+                </div>
+              </div>
+              <div class="insight-card">
+                <div class="insight-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                  </svg>
+                </div>
+                <div class="insight-content">
+                  <strong>Alert:</strong> Llama latency increased 20% - consider checking API configuration.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- NEW: DevOps Workflow Section -->
+      <section class="section" id="workflow">
+        <div class="section-header">
+          <p class="kicker">DevOps Workflow</p>
+          <h2>From lab to production, track every stage.</h2>
+          <p class="section-sub">Manage your AI research pipeline from development through staging to live deployment.</p>
+        </div>
+        <div class="workflow-container">
+          <div class="workflow-pipeline">
+            <div class="pipeline-stage" data-stage="dev">
+              <div class="stage-header">
+                <div class="stage-icon stage-icon-dev">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="16 18 22 12 16 6"/>
+                    <polyline points="8 6 2 12 8 18"/>
+                  </svg>
+                </div>
+                <h3>Development</h3>
+                <span class="stage-badge stage-active">Active</span>
+              </div>
+              <div class="stage-content">
+                <div class="stage-stat">
+                  <span class="stat-num">12</span>
+                  <span class="stat-desc">Experiments</span>
+                </div>
+                <div class="stage-stat">
+                  <span class="stat-num">3</span>
+                  <span class="stat-desc">Pending Review</span>
+                </div>
+              </div>
+              <div class="stage-actions">
+                <button class="btn btn-sm btn-ghost">View All</button>
+                <button class="btn btn-sm btn-primary">New Experiment</button>
+              </div>
+            </div>
+            
+            <div class="pipeline-arrow">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="5" y1="12" x2="19" y2="12"/>
+                <polyline points="12 5 19 12 12 19"/>
+              </svg>
+            </div>
+            
+            <div class="pipeline-stage" data-stage="staging">
+              <div class="stage-header">
+                <div class="stage-icon stage-icon-staging">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                  </svg>
+                </div>
+                <h3>Staging</h3>
+                <span class="stage-badge stage-pending">2 Pending</span>
+              </div>
+              <div class="stage-content">
+                <div class="stage-stat">
+                  <span class="stat-num">5</span>
+                  <span class="stat-desc">In Testing</span>
+                </div>
+                <div class="stage-stat">
+                  <span class="stat-num">2</span>
+                  <span class="stat-desc">Ready for Prod</span>
+                </div>
+              </div>
+              <div class="stage-actions">
+                <button class="btn btn-sm btn-ghost">View All</button>
+                <button class="btn btn-sm btn-outline">Promote</button>
+              </div>
+            </div>
+            
+            <div class="pipeline-arrow">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="5" y1="12" x2="19" y2="12"/>
+                <polyline points="12 5 19 12 12 19"/>
+              </svg>
+            </div>
+            
+            <div class="pipeline-stage" data-stage="production">
+              <div class="stage-header">
+                <div class="stage-icon stage-icon-prod">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                  </svg>
+                </div>
+                <h3>Production</h3>
+                <span class="stage-badge stage-live">Live</span>
+              </div>
+              <div class="stage-content">
+                <div class="stage-stat">
+                  <span class="stat-num">8</span>
+                  <span class="stat-desc">Active Prompts</span>
+                </div>
+                <div class="stage-stat">
+                  <span class="stat-num">99.2%</span>
+                  <span class="stat-desc">Uptime</span>
+                </div>
+              </div>
+              <div class="stage-actions">
+                <button class="btn btn-sm btn-ghost">Monitor</button>
+                <button class="btn btn-sm btn-ghost">Rollback</button>
+              </div>
+            </div>
+          </div>
+          
+          <div class="workflow-details">
+            <div class="workflow-panel">
+              <h4>Recent Deployments</h4>
+              <div class="deployment-list">
+                <div class="deployment-item">
+                  <div class="deployment-status status-success"></div>
+                  <div class="deployment-info">
+                    <span class="deployment-name">prompt-kit-v2.3</span>
+                    <span class="deployment-time">Deployed 2 hours ago</span>
+                  </div>
+                  <span class="deployment-env">Production</span>
+                </div>
+                <div class="deployment-item">
+                  <div class="deployment-status status-pending"></div>
+                  <div class="deployment-info">
+                    <span class="deployment-name">research-template-beta</span>
+                    <span class="deployment-time">In staging for 1 day</span>
+                  </div>
+                  <span class="deployment-env">Staging</span>
+                </div>
+                <div class="deployment-item">
+                  <div class="deployment-status status-success"></div>
+                  <div class="deployment-info">
+                    <span class="deployment-name">code-review-assistant</span>
+                    <span class="deployment-time">Deployed 3 days ago</span>
+                  </div>
+                  <span class="deployment-env">Production</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="workflow-panel">
+              <h4>Quick Actions</h4>
+              <div class="quick-actions">
+                <button class="btn btn-outline full">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"/>
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                  </svg>
+                  Create New Prompt Kit
+                </button>
+                <button class="btn btn-outline full">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="17 8 12 3 7 8"/>
+                    <line x1="12" y1="3" x2="12" y2="15"/>
+                  </svg>
+                  Import from GitHub
+                </button>
+                <button class="btn btn-outline full">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="3" y1="9" x2="21" y2="9"/>
+                    <line x1="9" y1="21" x2="9" y2="9"/>
+                  </svg>
+                  View Full Dashboard
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- A/B Testing Section -->
+      <section class="section section-alt" id="ab-testing">
+        <div class="section-header">
+          <p class="kicker">A/B Testing</p>
+          <h2>Optimize prompts with statistical confidence.</h2>
+          <p class="section-sub">Run controlled experiments to find the best performing prompts with real statistical significance.</p>
+        </div>
+        <div class="ab-testing-container">
+          <div class="ab-test-creator">
+            <h3>Create New A/B Test</h3>
+            <div class="ab-test-form">
+              <div class="field-group">
+                <label for="abTestName">Test Name</label>
+                <input type="text" id="abTestName" class="input" placeholder="e.g., Code Review Prompt v2 vs v1" />
+              </div>
+              <div class="ab-variants">
+                <div class="variant-card variant-a">
+                  <div class="variant-header">
+                    <span class="variant-label">Variant A (Control)</span>
+                  </div>
+                  <select id="variantAKit" class="input">
+                    <option value="">Select a prompt kit...</option>
+                  </select>
+                </div>
+                <div class="variant-vs">VS</div>
+                <div class="variant-card variant-b">
+                  <div class="variant-header">
+                    <span class="variant-label">Variant B (Treatment)</span>
+                  </div>
+                  <select id="variantBKit" class="input">
+                    <option value="">Select a prompt kit...</option>
+                  </select>
+                </div>
+              </div>
+              <div class="ab-test-config">
+                <div class="config-row">
+                  <div class="field-group">
+                    <label for="trafficSplit">Traffic Split</label>
+                    <input type="range" id="trafficSplit" min="10" max="90" value="50" class="range-input" />
+                    <div class="split-display">
+                      <span id="splitA">50%</span> / <span id="splitB">50%</span>
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <label for="minSamples">Min Samples</label>
+                    <input type="number" id="minSamples" class="input" value="100" min="10" max="10000" />
+                  </div>
+                  <div class="field-group">
+                    <label for="metricType">Primary Metric</label>
+                    <select id="metricType" class="input">
+                      <option value="success_rate">Success Rate</option>
+                      <option value="latency">Latency</option>
+                      <option value="user_rating">User Rating</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <button class="btn btn-primary" id="createABTest">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4"/>
+                </svg>
+                Create A/B Test
+              </button>
+            </div>
+          </div>
+          
+          <div class="ab-tests-list">
+            <div class="ab-tests-header">
+              <h3>Active Tests</h3>
+              <select id="abTestFilter" class="input input-sm">
+                <option value="all">All Tests</option>
+                <option value="running">Running</option>
+                <option value="completed">Completed</option>
+                <option value="draft">Draft</option>
+              </select>
+            </div>
+            <div id="abTestsList" class="ab-tests-grid">
+              <!-- Tests will be populated here -->
+              <div class="ab-test-card ab-test-running">
+                <div class="ab-test-header">
+                  <span class="ab-test-name">Code Review Prompt v2</span>
+                  <span class="ab-test-status status-running">Running</span>
+                </div>
+                <div class="ab-test-progress">
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 67%"></div>
+                  </div>
+                  <span class="progress-text">67/100 samples</span>
+                </div>
+                <div class="ab-test-results-preview">
+                  <div class="result-preview">
+                    <span class="variant-tag variant-a-tag">A</span>
+                    <span class="result-value">78%</span>
+                  </div>
+                  <div class="result-preview">
+                    <span class="variant-tag variant-b-tag">B</span>
+                    <span class="result-value">85%</span>
+                    <span class="result-badge winner">+9%</span>
+                  </div>
+                </div>
+                <div class="ab-test-actions">
+                  <button class="btn btn-sm btn-ghost">View Details</button>
+                  <button class="btn btn-sm btn-outline">End Test</button>
+                </div>
+              </div>
+              <div class="ab-test-card ab-test-completed">
+                <div class="ab-test-header">
+                  <span class="ab-test-name">Research Summary v3</span>
+                  <span class="ab-test-status status-completed">Completed</span>
+                </div>
+                <div class="ab-test-winner">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="8" r="7"/>
+                    <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>
+                  </svg>
+                  <span>Variant B won with 95% confidence</span>
+                </div>
+                <div class="ab-test-stats">
+                  <div class="stat-item">
+                    <span class="stat-label">Improvement</span>
+                    <span class="stat-value positive">+12.3%</span>
+                  </div>
+                  <div class="stat-item">
+                    <span class="stat-label">P-Value</span>
+                    <span class="stat-value">0.023</span>
+                  </div>
+                </div>
+                <div class="ab-test-actions">
+                  <button class="btn btn-sm btn-ghost">View Report</button>
+                  <button class="btn btn-sm btn-primary">Apply Winner</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CI/CD Pipeline Section -->
+      <section class="section" id="pipelines">
+        <div class="section-header">
+          <p class="kicker">CI/CD Pipelines</p>
+          <h2>Automate prompt testing and deployment.</h2>
+          <p class="section-sub">Build automated pipelines to lint, test, benchmark, and deploy your prompts with confidence.</p>
+        </div>
+        <div class="pipelines-container">
+          <div class="pipeline-creator">
+            <h3>Create Pipeline</h3>
+            <div class="pipeline-form">
+              <div class="field-group">
+                <label for="pipelineName">Pipeline Name</label>
+                <input type="text" id="pipelineName" class="input" placeholder="e.g., Production Deployment Pipeline" />
+              </div>
+              <div class="field-group">
+                <label for="pipelineKit">Prompt Kit</label>
+                <select id="pipelineKit" class="input">
+                  <option value="">Select a prompt kit...</option>
+                </select>
+              </div>
+              <div class="pipeline-stages-config">
+                <label>Pipeline Stages</label>
+                <div class="stages-checklist">
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="stageLint" checked />
+                    <span class="checkbox-custom"></span>
+                    <span class="stage-name">Lint</span>
+                    <span class="stage-desc">Validate prompt syntax and variables</span>
+                  </label>
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="stageTest" checked />
+                    <span class="checkbox-custom"></span>
+                    <span class="stage-name">Test</span>
+                    <span class="stage-desc">Run against test cases</span>
+                  </label>
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="stageBenchmark" checked />
+                    <span class="checkbox-custom"></span>
+                    <span class="stage-name">Benchmark</span>
+                    <span class="stage-desc">Compare across models</span>
+                  </label>
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="stageDeploy" checked />
+                    <span class="checkbox-custom"></span>
+                    <span class="stage-name">Deploy</span>
+                    <span class="stage-desc">Promote to target stage</span>
+                  </label>
+                </div>
+              </div>
+              <button class="btn btn-primary" id="createPipeline">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"/>
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                Create Pipeline
+              </button>
+            </div>
+          </div>
+          
+          <div class="pipelines-list">
+            <h3>Pipeline Runs</h3>
+            <div id="pipelinesList" class="pipelines-grid">
+              <div class="pipeline-card">
+                <div class="pipeline-header">
+                  <div class="pipeline-info">
+                    <span class="pipeline-name">Production Deploy</span>
+                    <span class="pipeline-kit">code-review-assistant</span>
+                  </div>
+                  <span class="pipeline-status status-running">
+                    <span class="status-dot"></span>
+                    Running
+                  </span>
+                </div>
+                <div class="pipeline-stages">
+                  <div class="pipeline-stage-item completed">
+                    <div class="stage-indicator">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"/>
+                      </svg>
+                    </div>
+                    <span>Lint</span>
+                  </div>
+                  <div class="stage-connector completed"></div>
+                  <div class="pipeline-stage-item completed">
+                    <div class="stage-indicator">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"/>
+                      </svg>
+                    </div>
+                    <span>Test</span>
+                  </div>
+                  <div class="stage-connector running"></div>
+                  <div class="pipeline-stage-item running">
+                    <div class="stage-indicator">
+                      <div class="spinner-sm"></div>
+                    </div>
+                    <span>Benchmark</span>
+                  </div>
+                  <div class="stage-connector pending"></div>
+                  <div class="pipeline-stage-item pending">
+                    <div class="stage-indicator"></div>
+                    <span>Deploy</span>
+                  </div>
+                </div>
+                <div class="pipeline-actions">
+                  <button class="btn btn-sm btn-ghost">View Logs</button>
+                  <button class="btn btn-sm btn-outline btn-danger">Cancel</button>
+                </div>
+              </div>
+              <div class="pipeline-card pipeline-completed">
+                <div class="pipeline-header">
+                  <div class="pipeline-info">
+                    <span class="pipeline-name">Staging Deploy</span>
+                    <span class="pipeline-kit">research-summary</span>
+                  </div>
+                  <span class="pipeline-status status-success">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    Success
+                  </span>
+                </div>
+                <div class="pipeline-stages">
+                  <div class="pipeline-stage-item completed">
+                    <div class="stage-indicator">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"/>
+                      </svg>
+                    </div>
+                    <span>Lint</span>
+                  </div>
+                  <div class="stage-connector completed"></div>
+                  <div class="pipeline-stage-item completed">
+                    <div class="stage-indicator">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"/>
+                      </svg>
+                    </div>
+                    <span>Test</span>
+                  </div>
+                  <div class="stage-connector completed"></div>
+                  <div class="pipeline-stage-item completed">
+                    <div class="stage-indicator">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"/>
+                      </svg>
+                    </div>
+                    <span>Benchmark</span>
+                  </div>
+                  <div class="stage-connector completed"></div>
+                  <div class="pipeline-stage-item completed">
+                    <div class="stage-indicator">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"/>
+                      </svg>
+                    </div>
+                    <span>Deploy</span>
+                  </div>
+                </div>
+                <div class="pipeline-meta">
+                  <span>Completed 2 hours ago</span>
+                  <span>Duration: 45s</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Real-time Collaboration Section -->
+      <section class="section section-alt" id="collaboration">
+        <div class="section-header">
+          <p class="kicker">Team Collaboration</p>
+          <h2>Work together in real-time.</h2>
+          <p class="section-sub">See who's online, share experiments, and collaborate on prompt development with your team.</p>
+        </div>
+        <div class="collaboration-container">
+          <div class="collab-panel team-panel">
+            <h3>Your Team</h3>
+            <div class="team-info">
+              <div class="team-header-row">
+                <input type="text" id="teamName" class="input" placeholder="Enter team name..." />
+                <button class="btn btn-primary btn-sm" id="createTeam">Create Team</button>
+              </div>
+              <div class="team-members" id="teamMembers">
+                <div class="member-item">
+                  <div class="member-avatar online">
+                    <span>Y</span>
+                    <span class="online-indicator"></span>
+                  </div>
+                  <div class="member-info">
+                    <span class="member-name">You</span>
+                    <span class="member-role">Admin</span>
+                  </div>
+                </div>
+                <div class="no-team-message" id="noTeamMessage">
+                  <p>Create or join a team to collaborate with others.</p>
+                </div>
+              </div>
+              <div class="invite-section">
+                <input type="email" id="inviteEmail" class="input" placeholder="Invite by email..." />
+                <button class="btn btn-outline btn-sm" id="inviteMember">Invite</button>
+              </div>
+            </div>
+          </div>
+          
+          <div class="collab-panel activity-panel">
+            <h3>Activity Feed</h3>
+            <div class="activity-feed" id="activityFeed">
+              <div class="activity-item">
+                <div class="activity-avatar">
+                  <span>JD</span>
+                </div>
+                <div class="activity-content">
+                  <span class="activity-user">John Doe</span>
+                  <span class="activity-action">ran an experiment</span>
+                  <span class="activity-target">"Code Review Prompt v2"</span>
+                </div>
+                <span class="activity-time">2 min ago</span>
+              </div>
+              <div class="activity-item">
+                <div class="activity-avatar">
+                  <span>AS</span>
+                </div>
+                <div class="activity-content">
+                  <span class="activity-user">Alice Smith</span>
+                  <span class="activity-action">promoted</span>
+                  <span class="activity-target">"Research Summary"</span>
+                  <span class="activity-detail">to staging</span>
+                </div>
+                <span class="activity-time">15 min ago</span>
+              </div>
+              <div class="activity-item">
+                <div class="activity-avatar">
+                  <span>BJ</span>
+                </div>
+                <div class="activity-content">
+                  <span class="activity-user">Bob Johnson</span>
+                  <span class="activity-action">started A/B test</span>
+                  <span class="activity-target">"Prompt Optimization"</span>
+                </div>
+                <span class="activity-time">1 hr ago</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="collab-panel chat-panel">
+            <h3>Team Chat</h3>
+            <div class="team-chat" id="teamChat">
+              <div class="chat-messages" id="chatMessages">
+                <div class="chat-message">
+                  <span class="chat-author">Alice:</span>
+                  <span class="chat-text">Just finished the benchmark tests. Results look promising!</span>
+                </div>
+                <div class="chat-message">
+                  <span class="chat-author">Bob:</span>
+                  <span class="chat-text">Great! Can you share the report?</span>
+                </div>
+              </div>
+              <div class="chat-input-row">
+                <input type="text" id="teamChatInput" class="input" placeholder="Type a message..." />
+                <button class="btn btn-primary btn-sm" id="sendTeamChat">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="22" y1="2" x2="11" y2="13"/>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Time-Series Analytics Section -->
+      <section class="section" id="timeseries">
+        <div class="section-header">
+          <p class="kicker">Performance Trends</p>
+          <h2>Track model performance over time.</h2>
+          <p class="section-sub">Visualize latency, success rates, and usage patterns with interactive time-series charts.</p>
+        </div>
+        <div class="timeseries-container">
+          <div class="timeseries-controls">
+            <div class="control-group">
+              <label>Time Range</label>
+              <select id="timeseriesRange" class="input">
+                <option value="24h">Last 24 Hours</option>
+                <option value="7d">Last 7 Days</option>
+                <option value="30d">Last 30 Days</option>
+                <option value="90d">Last 90 Days</option>
+              </select>
+            </div>
+            <div class="control-group">
+              <label>Metric</label>
+              <select id="timeseriesMetric" class="input">
+                <option value="latency">Latency</option>
+                <option value="success_rate">Success Rate</option>
+                <option value="requests">Request Volume</option>
+                <option value="tokens">Token Usage</option>
+              </select>
+            </div>
+            <div class="control-group">
+              <label>Models</label>
+              <div class="model-toggles-mini" id="timeseriesModels">
+                <label class="toggle-mini active" data-model="openai">
+                  <span class="toggle-dot" style="background: #10a37f"></span>
+                  ChatGPT
+                </label>
+                <label class="toggle-mini active" data-model="anthropic">
+                  <span class="toggle-dot" style="background: #d4a574"></span>
+                  Claude
+                </label>
+                <label class="toggle-mini active" data-model="gemini">
+                  <span class="toggle-dot" style="background: #4285f4"></span>
+                  Gemini
+                </label>
+                <label class="toggle-mini" data-model="llama">
+                  <span class="toggle-dot" style="background: #7c3aed"></span>
+                  Llama
+                </label>
+                <label class="toggle-mini" data-model="mistral">
+                  <span class="toggle-dot" style="background: #ff6b35"></span>
+                  Mistral
+                </label>
+                <label class="toggle-mini" data-model="deepseek">
+                  <span class="toggle-dot" style="background: #00d4aa"></span>
+                  DeepSeek
+                </label>
+              </div>
+            </div>
+          </div>
+          
+          <div class="timeseries-chart-container">
+            <canvas id="timeseriesChart"></canvas>
+          </div>
+          
+          <div class="timeseries-summary">
+            <div class="summary-card">
+              <div class="summary-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+              </div>
+              <div class="summary-content">
+                <span class="summary-label">Avg Latency</span>
+                <span class="summary-value" id="avgLatencySummary">1.8s</span>
+                <span class="summary-change positive">-12% from last week</span>
+              </div>
+            </div>
+            <div class="summary-card">
+              <div class="summary-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                  <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+              </div>
+              <div class="summary-content">
+                <span class="summary-label">Success Rate</span>
+                <span class="summary-value" id="successRateSummary">94.2%</span>
+                <span class="summary-change positive">+3.1% from last week</span>
+              </div>
+            </div>
+            <div class="summary-card">
+              <div class="summary-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4"/>
+                </svg>
+              </div>
+              <div class="summary-content">
+                <span class="summary-label">Total Requests</span>
+                <span class="summary-value" id="totalRequestsSummary">2,847</span>
+                <span class="summary-change positive">+28% from last week</span>
+              </div>
+            </div>
+            <div class="summary-card">
+              <div class="summary-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polyline points="12 6 12 12 16 14"/>
+                </svg>
+              </div>
+              <div class="summary-content">
+                <span class="summary-label">Best Performer</span>
+                <span class="summary-value" id="bestPerformerSummary">Claude</span>
+                <span class="summary-change">96.8% success rate</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section-alt" id="resources">
         <div class="section-header">
           <p class="kicker">Resources</p>
           <h2>Tools to sharpen your AI thinking.</h2>
           <p class="section-sub">Curated resources for critical thinking, responsible AI use, and continuous learning.</p>
         </div>
-        <div class="resources-grid">
+        <div class="resource-grid">
           <article class="resource-card">
+            <div class="resource-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+            </div>
             <h3>Critical Thinking Framework</h3>
             <p><strong>Question Everything:</strong> Don't accept AI responses at face value. Ask: "How does this model know this? What sources would support or contradict this?"</p>
             <p><strong>Cross-Reference:</strong> Use multiple models and compare. Different perspectives reveal blind spots.</p>
             <p><strong>Verify Claims:</strong> Check facts with external sources. AI can hallucinate convincingly.</p>
           </article>
           <article class="resource-card">
+            <div class="resource-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+              </svg>
+            </div>
             <h3>Recommended Tools</h3>
-            <ul>
+            <ul class="resource-list">
               <li><strong>Perplexity AI:</strong> Research with cited sources</li>
               <li><strong>Notion AI:</strong> Knowledge management with AI</li>
               <li><strong>GitHub Copilot:</strong> Code assistance</li>
@@ -240,21 +1260,35 @@
             </ul>
           </article>
           <article class="resource-card">
+            <div class="resource-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+              </svg>
+            </div>
             <h3>Learning Path</h3>
             <p><strong>Beginners:</strong> Start with comparison prompts. See how different models approach the same question.</p>
             <p><strong>Intermediate:</strong> Use feedback tools to track model behavior patterns over time.</p>
             <p><strong>Advanced:</strong> Experiment with vision, voice, and multi-modal inputs to understand limitations.</p>
           </article>
           <article class="resource-card">
+            <div class="resource-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+            </div>
             <h3>Spotting Red Flags</h3>
             <p><strong>Overconfidence:</strong> Model states facts without uncertainty when it should express doubt.</p>
             <p><strong>Hallucination:</strong> Fabricates data, links, or references that don't exist.</p>
             <p><strong>Inconsistency:</strong> Gives different answers to the same question in different sessions.</p>
-            <p><strong>Deception:</strong> Creates false scenarios (like Gemini's fake Stripe request!).</p>
+            <p><strong>Deception:</strong> Creates false scenarios or misleading information.</p>
           </article>
         </div>
       </section>
-\n<section class="section" id="community">
+
+      <section class="section" id="community">
         <div class="section-header">
           <p class="kicker">Community</p>
           <h2>Join the AI literacy movement.</h2>
@@ -262,32 +1296,58 @@
         </div>
         <div class="community-grid">
           <article class="community-card">
+            <div class="community-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/>
+                <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/>
+              </svg>
+            </div>
             <h3>YouTube Study Group</h3>
             <p>Every two weeks, we compare AI model findings live. Analyze real-world scenarios, discuss results, and learn together.</p>
-            <a href="#" class="btn btn-ghost" id="youtubeLink">Coming Soon - Subscribe</a>
-            <p class="stub-note">Channel launches Q1 2026. Be the first to know!</p>
+            <a href="#" class="btn btn-outline" id="youtubeLink">Coming Soon - Subscribe</a>
+            <p class="field-hint">Channel launches Q1 2026. Be the first to know!</p>
           </article>
           <article class="community-card">
+            <div class="community-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+              </svg>
+            </div>
             <h3>Interactive Blog</h3>
             <p>Deep dives into AI behavior, case studies, and practical guides for responsible AI usage.</p>
-            <a href="#" class="btn btn-ghost" id="blogLink">Coming Soon</a>
+            <a href="#" class="btn btn-outline" id="blogLink">Coming Soon</a>
           </article>
           <article class="community-card">
+            <div class="community-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="16"/>
+                <line x1="8" y1="12" x2="16" y2="12"/>
+              </svg>
+            </div>
             <h3>Share Your Ideas</h3>
             <p>Help shape the future of Interlink AI. What features would improve your workflow?</p>
             <textarea id="ideaInput" class="input" rows="3" placeholder="Describe your idea..."></textarea>
-            <button onclick="submitIdea()" class="btn btn-primary full">Submit Idea</button>
+            <button class="btn btn-primary" onclick="submitIdea()">Submit Idea</button>
           </article>
           <article class="community-card">
+            <div class="community-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+              </svg>
+            </div>
             <h3>General Feedback</h3>
             <p>Found a bug? Have suggestions? We're listening.</p>
             <textarea id="feedbackInput" class="input" rows="3" placeholder="Your feedback..."></textarea>
-            <button onclick="submitGeneralFeedback()" class="btn btn-primary full">Send Feedback</button>
+            <button class="btn btn-primary" onclick="submitFeedback()">Send Feedback</button>
           </article>
         </div>
       </section>
 
-            <section class="section" id="pricing">
+      <section class="section section-alt" id="pricing">
         <div class="section-header">
           <p class="kicker">Pricing</p>
           <h2>Profit-friendly plans for research teams.</h2>
@@ -295,28 +1355,90 @@
         </div>
         <div class="pricing-grid">
           <article class="pricing-card">
+            <div class="pricing-badge">Popular</div>
             <div class="pricing-label">Solo</div>
             <div class="pricing-price">$39.99 <span>/mo</span></div>
             <ul class="pricing-list">
-              <li>1 seat</li>
-              <li>3+ AI models (GPT, Claude, Gemini)</li>
-              <li>Unlimited prompt races</li>
-              <li>Voice & vision fanout</li>
-              <li>Feedback + CSV export</li>
-              <li>Local API key vault</li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                1 seat
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                12+ AI models (GPT, Claude, Gemini, Llama, Mistral, DeepSeek)
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                Unlimited prompt races
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                Voice & vision fanout
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                Analytics dashboard
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                Local API key vault
+              </li>
             </ul>
             <button class="btn btn-primary full" onclick="showRegistration()">Start Solo</button>
           </article>
           <article class="pricing-card highlight">
+            <div class="pricing-badge highlight-badge">Best Value</div>
             <div class="pricing-label">Pro / Team</div>
             <div class="pricing-price">$89.99 <span>/mo</span></div>
             <ul class="pricing-list">
-              <li>Up to 4 team users</li>
-              <li>Shared prompt kits & approvals</li>
-              <li>Latency heatmaps & audits</li>
-              <li>Usage limits & guardrails</li>
-              <li>Notion / Slack export</li>
-              <li>Priority support & rollout help</li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                Up to 4 team users
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                Shared prompt kits & approvals
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                DevOps workflow pipeline
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                Advanced analytics & insights
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                Notion / Slack export
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                Priority support & rollout help
+              </li>
             </ul>
             <button class="btn btn-outline full" onclick="showRegistration()">Start Team Trial</button>
           </article>
@@ -331,45 +1453,54 @@
         </div>
 
         <div class="one-on-one-container">
-          <!-- Avatar Selection -->
           <div class="avatar-selection">
             <h3>Choose your avatar</h3>
             <div class="avatar-grid">
               <div class="tutor-avatar" data-avatar="einstein" onclick="selectTutor('einstein')">
-                <div class="tutor-icon">E</div>
+                <div class="tutor-icon-img">
+                  <img src="avatars/robo-einstein.png" alt="Robo Einstein" />
+                </div>
                 <div class="tutor-name">Robo Einstein</div>
                 <div class="tutor-bio">Physics + systems thinking</div>
               </div>
               <div class="tutor-avatar" data-avatar="prof" onclick="selectTutor('prof')">
-                <div class="tutor-icon">P</div>
+                <div class="tutor-icon-img">
+                  <img src="avatars/robo-prof.png" alt="Robo Prof" />
+                </div>
                 <div class="tutor-name">Robo Prof</div>
                 <div class="tutor-bio">Research strategist</div>
               </div>
               <div class="tutor-avatar" data-avatar="mentor" onclick="selectTutor('mentor')">
-                <div class="tutor-icon">M</div>
+                <div class="tutor-icon-img">
+                  <img src="avatars/robot-mentor.png" alt="Robot Mentor" />
+                </div>
                 <div class="tutor-name">Robot Mentor</div>
                 <div class="tutor-bio">Delivery & PM guidance</div>
               </div>
               <div class="tutor-avatar" data-avatar="sage" onclick="selectTutor('sage')">
-                <div class="tutor-icon">S</div>
+                <div class="tutor-icon-img">
+                  <img src="avatars/ai-sage.png" alt="AI Sage" />
+                </div>
                 <div class="tutor-name">AI Sage</div>
                 <div class="tutor-bio">Philosophy & critical thinking</div>
               </div>
               <div class="tutor-avatar" data-avatar="cyber" onclick="selectTutor('cyber')">
-                <div class="tutor-icon">C</div>
+                <div class="tutor-icon-img">
+                  <img src="avatars/cyber-tutor.png" alt="Cyber Tutor" />
+                </div>
                 <div class="tutor-name">Cyber Tutor</div>
                 <div class="tutor-bio">Security & coding</div>
               </div>
             </div>
           </div>
 
-          <!-- Chat Interface -->
           <div class="chat-interface phone-interface" id="chatInterface" style="display:none;">
-            <!-- Large Avatar Display (Phone Style) -->
             <div class="tutor-video-container">
               <div class="video-rings"><span></span><span></span><span></span></div>
               <div class="video-noise"></div>
-              <div class="tutor-avatar-large breathing" id="activeTutorIcon">E</div>
+              <div class="tutor-avatar-large breathing" id="activeTutorIcon">
+                <img src="avatars/robo-einstein.png" alt="Active Avatar" id="activeTutorImg" />
+              </div>
               <div class="video-live-pill"><span class="dot"></span>Live</div>
               <div class="video-signal"><span></span><span></span><span></span><span></span></div>
               <div class="video-hypno"></div>
@@ -378,7 +1509,13 @@
             </div>
 
             <div class="chat-header">
-              <button class="btn btn-ghost" onclick="endChat()">? Back</button>
+              <button class="btn btn-ghost" onclick="endChat()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="19" y1="12" x2="5" y2="12"/>
+                  <polyline points="12 19 5 12 12 5"/>
+                </svg>
+                Back
+              </button>
             </div>
 
             <div class="chat-controls">
@@ -389,6 +1526,8 @@
                   <option value="anthropic">Claude 3.5 Sonnet</option>
                   <option value="gemini">Gemini 2.0 Flash</option>
                   <option value="groq">Llama 3.3</option>
+                  <option value="mistral">Mistral Large</option>
+                  <option value="deepseek">DeepSeek V3</option>
                 </select>
               </div>
               <div class="control-group">
@@ -397,9 +1536,7 @@
               </div>
               <div class="control-group">
                 <label for="chatVoice">Voice:</label>
-                <select id="chatVoice" class="input">
-                  <!-- Populated by JavaScript -->
-                </select>
+                <select id="chatVoice" class="input"></select>
               </div>
             </div>
 
@@ -412,7 +1549,13 @@
             </div>
 
             <div class="chat-input-area">
-              <button class="btn btn-icon icon-only" id="chatMic" onclick="toggleChatVoice()">Mic</button>
+              <button class="btn btn-icon icon-only" id="chatMic" onclick="toggleChatVoice()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                  <line x1="12" y1="19" x2="12" y2="23"/>
+                </svg>
+              </button>
               <input type="text" id="chatInput" class="input" placeholder="Type your message or use voice..." />
               <button class="btn btn-primary" onclick="sendChatMessage()">Send</button>
             </div>
@@ -423,24 +1566,94 @@
       <section class="section section-contrast" id="cta">
         <div class="cta-card">
           <div>
-            <p class="kicker">Early access</p>
+            <p class="kicker">Early Access</p>
             <h2>Be there for the first Interlink AI prompt tournaments.</h2>
             <p>We are onboarding the first wave of builders and creators. Drop your email or jump into the playground above.</p>
           </div>
           <div class="cta-actions">
-            <a class="btn btn-primary" href="#playground" id="ctaStart">Open playground</a>
-            <a class="btn btn-ghost" href="mailto:hello@yourcompany.com?subject=Interlink%20AI%20Access">Email us</a>
+            <a class="btn btn-primary btn-lg" href="#playground" id="ctaStart">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="5 3 19 12 5 21 5 3"/>
+              </svg>
+              Open Playground
+            </a>
+            <a class="btn btn-ghost btn-lg" href="mailto:hello@interlinkai.com?subject=Interlink%20AI%20Access">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <polyline points="22,6 12,13 2,6"/>
+              </svg>
+              Email Us
+            </a>
           </div>
         </div>
       </section>
     </main>
 
     <footer class="footer">
-      <div class="footer-left">� <span id="year"></span> Interlink AI</div>
-      <div class="footer-right">
-        <a href="#top">Home</a>
-        <a href="#pricing">Pricing</a>
-        <a href="#cta">Access</a>
+      <div class="footer-content">
+        <div class="footer-brand">
+          <div class="brand">
+            <div class="brand-mark">
+              <svg viewBox="0 0 32 32" width="24" height="24">
+                <defs>
+                  <linearGradient id="footerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#3b82f6"/>
+                    <stop offset="100%" stop-color="#06b6d4"/>
+                  </linearGradient>
+                </defs>
+                <rect width="32" height="32" rx="8" fill="url(#footerGrad)"/>
+                <path d="M8 16h16M16 8v16M10 10l12 12M22 10l-12 12" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.9"/>
+              </svg>
+            </div>
+            <div class="brand-name">Interlink <span>AI</span></div>
+          </div>
+          <p class="footer-tagline">Multi-model orchestration for serious builders.</p>
+        </div>
+        <div class="footer-links">
+          <div class="footer-col">
+            <h4>Product</h4>
+            <a href="#features">Features</a>
+            <a href="#playground">Playground</a>
+            <a href="#races">Prompt Races</a>
+            <a href="#analytics">Analytics</a>
+            <a href="#pricing">Pricing</a>
+          </div>
+          <div class="footer-col">
+            <h4>Resources</h4>
+            <a href="#resources">Learning</a>
+            <a href="#community">Community</a>
+            <a href="#one-on-one">Expert Mode</a>
+            <a href="#workflow">Workflow</a>
+          </div>
+          <div class="footer-col">
+            <h4>Company</h4>
+            <a href="mailto:hello@interlinkai.com">Contact</a>
+            <a href="#">Privacy</a>
+            <a href="#">Terms</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div class="footer-left">&copy; <span id="year"></span> Interlink AI. All rights reserved.</div>
+        <div class="footer-social">
+          <a href="#" aria-label="Twitter">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
+            </svg>
+          </a>
+          <a href="#" aria-label="GitHub">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+            </svg>
+          </a>
+          <a href="#" aria-label="LinkedIn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+              <rect x="2" y="9" width="4" height="12"/>
+              <circle cx="4" cy="4" r="2"/>
+            </svg>
+          </a>
+        </div>
       </div>
     </footer>
   </div>
@@ -448,7 +1661,12 @@
   <!-- Tutorial Modal -->
   <div id="tutorialModal" class="modal">
     <div class="modal-content">
-      <button class="modal-close" onclick="closeTutorial()">?</button>
+      <button class="modal-close" onclick="closeTutorial()" aria-label="Close tutorial">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
       <div id="tutorialStep" class="tutorial-step">
         <h2>Welcome to Interlink AI</h2>
         <p>Learn how to use AI responsibly and think critically.</p>
@@ -465,23 +1683,22 @@
             <p>Use the speaker button to hear responses read aloud.</p>
           </div>
           <div class="tutorial-page" data-step="3">
-            <h3>Step 3: Track Behavior</h3>
-            <p>Use the feedback tools to document patterns:</p>
+            <h3>Step 3: Track with Analytics</h3>
+            <p>Use the Analytics dashboard to:</p>
             <ul>
-              <li>Quick ratings for response quality</li>
-              <li>Flag issues like hallucinations or overconfidence</li>
-              <li>Advanced metrics for research</li>
-              <li>Download CSV to analyze trends</li>
+              <li>Monitor experiment success rates</li>
+              <li>Compare model performance over time</li>
+              <li>Get AI-powered insights and recommendations</li>
+              <li>Export data for further analysis</li>
             </ul>
           </div>
           <div class="tutorial-page" data-step="4">
-            <h3>Step 4: Think Critically</h3>
-            <p><strong>Don't blindly trust AI.</strong> Ask yourself:</p>
+            <h3>Step 4: DevOps Workflow</h3>
+            <p>Manage your AI research pipeline:</p>
             <ul>
-              <li>Does this answer cite sources?</li>
-              <li>Are multiple models agreeing or conflicting?</li>
-              <li>Is the model expressing appropriate uncertainty?</li>
-              <li>Can I verify this information elsewhere?</li>
+              <li>Development: Run experiments and iterate</li>
+              <li>Staging: Test and validate before production</li>
+              <li>Production: Deploy winning prompts live</li>
             </ul>
           </div>
           <div class="tutorial-page" data-step="5">
@@ -493,9 +1710,21 @@
           </div>
         </div>
         <div class="tutorial-nav">
-          <button id="tutorialPrev" class="btn btn-ghost" onclick="prevTutorialStep()">? Previous</button>
+          <button id="tutorialPrev" class="btn btn-ghost" onclick="prevTutorialStep()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="19" y1="12" x2="5" y2="12"/>
+              <polyline points="12 19 5 12 12 5"/>
+            </svg>
+            Previous
+          </button>
           <span id="tutorialProgress">1 / 5</span>
-          <button id="tutorialNext" class="btn btn-primary" onclick="nextTutorialStep()">Next ?</button>
+          <button id="tutorialNext" class="btn btn-primary" onclick="nextTutorialStep()">
+            Next
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </button>
         </div>
       </div>
     </div>
@@ -504,7 +1733,12 @@
   <!-- Registration Modal -->
   <div id="registrationModal" class="modal">
     <div class="modal-content">
-      <button class="modal-close" onclick="closeRegistration()">?</button>
+      <button class="modal-close" onclick="closeRegistration()" aria-label="Close registration">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
       <h2>Create Your Account</h2>
       <p>Join Interlink AI and start orchestrating models today.</p>
       <form id="registrationForm" onsubmit="handleRegistration(event)">
@@ -526,48 +1760,6 @@
     </div>
   </div>
 
-  <!-- Age Verification Modal -->
-  <div id="ageVerificationModal" class="modal">
-    <div class="modal-content">
-      <h2>Welcome to Interlink AI</h2>
-      <p>To provide a safe experience, please verify your age.</p>
-      
-      <div id="ageVerificationStep1">
-        <div class="field-group">
-          <label for="birthdate">Date of Birth:</label>
-          <input type="date" id="birthdate" class="input" required />
-        </div>
-        <button class="btn btn-primary full" onclick="verifyAge()">Continue</button>
-      </div>
-
-      <div id="parentalConsentStep" style="display:none;">
-        <p class="alert alert-info">
-          You must be 13 or older to use Interlink AI. Users under 18 require parental consent.
-        </p>
-        <div class="field-group">
-          <label for="parentEmail">Parent/Guardian Email:</label>
-          <input type="email" id="parentEmail" class="input" placeholder="parent@example.com" required />
-        </div>
-        <div class="field-group">
-          <label>
-            <input type="checkbox" id="parentConsent" />
-            My parent/guardian has given me permission to use this platform.
-          </label>
-        </div>
-        <button class="btn btn-primary full" onclick="submitParentalConsent()">Submit</button>
-      </div>
-
-      <div id="ageVerifiedStep" style="display:none;">
-        <p class="alert alert-success">Age verified! Welcome to Interlink AI.</p>
-        <button class="btn btn-primary full" onclick="closeAgeVerification()">Start Learning</button>
-      </div>
-
-      <div id="ageDeniedStep" style="display:none;">
-        <p class="alert alert-error">You must be at least 13 years old to use this platform.</p>
-        <p>Please return when you are older, or have an adult create an account.</p>
-      </div>
-    </div>
-  </div>
-
   <script src="app.js"></script>
 </body>
+</html>
