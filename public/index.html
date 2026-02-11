@@ -292,17 +292,27 @@
           <p class="section-sub">Great for "find the best deal" battles, research sprints, or live content.</p>
         </div>
         <div class="race-layout">
-          <div class="race-setup">
-            <div class="control-section">
-              <label class="field-label" for="raceTitle">Challenge title</label>
-              <input type="text" id="raceTitle" class="input" placeholder="e.g., Best round-trip flight SFO -> NYC under $300" />
+          <div class="race-config">
+            <div class="field-group">
+              <label class="field-label" for="raceTitle">Race Title</label>
+              <input type="text" id="raceTitle" class="input" placeholder="e.g. Best Sales Email">
             </div>
-            <div class="control-section">
-              <label class="field-label" for="raceRules">Rules</label>
-              <textarea id="raceRules" class="input" rows="3" placeholder="Constraints, timing, what counts as a win"></textarea>
-            </div>
-            <div class="control-section">
+            <div class="field-group">
               <label class="field-label">Select Models to Race</label>
+              <div class="model-toggles" id="raceModelToggles">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="raceRules">Rules / Prompt</label>
+              <textarea id="raceRules" class="input" rows="4" placeholder="Write a sales email for..."></textarea>
+            </div>
+            <button id="startRace" class="btn btn-primary full">Start Race</button>
+          </div>
+          <div class="race-results">
+            <div id="raceStatus" class="status-text"></div>
+            <div id="raceEntries" class="entries-grid"></div>
+          </div>     <label class="field-label">Select Models to Race</label>
               <div class="model-toggles" id="raceModelToggles">
                 <!-- Populated by JS -->
               </div>
