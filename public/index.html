@@ -99,7 +99,7 @@
 
         <div class="hero-visual">
           <div class="einstein-card">
-            <div class="einstein-img" aria-hidden="true"></div>
+            <div class="einstein-img" aria-hidden="true"><img src="einstein-hero.png" alt="Robo Einstein" style="width: 100%; height: 100%; object-fit: cover; border-radius: 16px;"></div>
             <div class="einstein-overlay">
               <div class="overlay-title">Research Avatar, 3D Ready</div>
               <div class="overlay-meta">Swap in your 3D Einstein or any glTF hero.</div>
@@ -302,13 +302,9 @@
               <textarea id="raceRules" class="input" rows="3" placeholder="Constraints, timing, what counts as a win"></textarea>
             </div>
             <div class="control-section">
-              <label class="field-label">Participants</label>
-              <div id="raceParticipants" class="participant-list">
-                <p class="field-hint">No participants yet.</p>
-              </div>
-              <div class="participant-add">
-                <input type="text" id="participantName" class="input" placeholder="Name or handle" />
-                <button class="btn btn-ghost" id="addParticipant">Add</button>
+              <label class="field-label">Select Models to Race</label>
+              <div class="model-toggles" id="raceModelToggles">
+                <!-- Populated by JS -->
               </div>
             </div>
             <button id="startRace" class="btn btn-primary full">
@@ -1760,6 +1756,6 @@
     </div>
   </div>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=2.2"></script>
 </body>
 </html>

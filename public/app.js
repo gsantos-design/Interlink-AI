@@ -99,31 +99,31 @@ const PROVIDER_HINT = /(microsoft|google|apple|amazon|openai)/i;
 const tutors = {
   einstein: {
     name: 'Robo Einstein',
-    icon: 'E',
+    icon: 'avatars/robo-einstein.png',
     color: 'linear-gradient(135deg, #f59e0b, #d97706)',
     systemPrompt: 'You are Robo Einstein, a physics expert with deep systems thinking. Explain concepts using analogies from physics and mathematics. Be curious and encourage exploration of ideas.'
   },
   prof: {
     name: 'Robo Prof',
-    icon: 'P',
+    icon: 'avatars/robo-prof.png',
     color: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
     systemPrompt: 'You are Robo Prof, a research strategist. Help users develop research methodologies, analyze papers, and think critically about academic work.'
   },
   mentor: {
     name: 'Robot Mentor',
-    icon: 'M',
+    icon: 'avatars/robot-mentor.png',
     color: 'linear-gradient(135deg, #10b981, #059669)',
     systemPrompt: 'You are Robot Mentor, a delivery and project management expert. Help users plan projects, manage timelines, and navigate team dynamics.'
   },
   sage: {
     name: 'AI Sage',
-    icon: 'S',
+    icon: 'avatars/ai-sage.png',
     color: 'linear-gradient(135deg, #3b82f6, #2563eb)',
     systemPrompt: 'You are AI Sage, a philosophy and critical thinking expert. Help users examine assumptions, explore ethical implications, and think deeply about complex topics.'
   },
   cyber: {
     name: 'Cyber Tutor',
-    icon: 'C',
+    icon: 'avatars/cyber-tutor.png',
     color: 'linear-gradient(135deg, #ef4444, #dc2626)',
     systemPrompt: 'You are Cyber Tutor, a security and coding expert. Help users understand cybersecurity concepts, write secure code, and debug programming issues.'
   }
@@ -174,38 +174,60 @@ function showNotification(message, type = 'info') {
 // ==========================================
 
 async function fetchModels() {
+  // Force defaults first to ensure UI populates immediately
+  models = [...defaultModels];
+  renderModelSelectors();
+
   try {
     const res = await fetch('/api/models');
-    if (!res.ok) return;
-    const data = await res.json();
-    if (Array.isArray(data.models) && data.models.length) {
-      models = data.models;
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data.models) && data.models.length > 0) {
+        // Only update if we actually got data back
+        models = data.models.map(apiModel => {
+          const defaultModel = defaultModels.find(m => m.id === apiModel.id);
+          // Preserve the avatar and color from default if missing in API
+          return { 
+            ...defaultModel, 
+            ...apiModel,
+            avatar: defaultModel?.avatar || apiModel.avatar,
+            color: defaultModel?.color || apiModel.color
+          };
+        });
+        renderModelSelectors();
+      }
     }
   } catch (err) {
-    console.warn('Using default models', err);
+    console.warn('API model fetch failed, keeping defaults', err);
   }
 }
 
-function renderModelToggles() {
-  const container = document.getElementById('model-toggles');
-  if (!container) return;
-  container.innerHTML = '';
-  models.forEach((model, idx) => {
-    const label = document.createElement('label');
-    const input = document.createElement('input');
-    input.type = 'checkbox';
-    input.value = model.id;
-    input.checked = idx < 3;
-    const span = document.createElement('span');
-    span.textContent = model.label;
-    label.appendChild(input);
-    label.appendChild(span);
-    container.appendChild(label);
+function renderModelSelectors() {
+  const containers = [
+    document.getElementById('model-toggles'),
+    document.getElementById('raceModelToggles')
+  ];
+  
+  containers.forEach(container => {
+    if (!container) return;
+    container.innerHTML = '';
+    models.forEach((model, idx) => {
+      const label = document.createElement('label');
+      const input = document.createElement('input');
+      input.type = 'checkbox';
+      input.value = model.id;
+      input.checked = idx < 3;
+      const span = document.createElement('span');
+      span.textContent = model.label;
+      label.appendChild(input);
+      label.appendChild(span);
+      container.appendChild(label);
+    });
   });
 }
 
-function getSelectedModelIds() {
-  const container = document.getElementById('model-toggles');
+function getSelectedModelIds(containerId = 'model-toggles') {
+  const container = document.getElementById(containerId);
   if (!container) return models.map((m) => m.id);
   const boxes = container.querySelectorAll('input[type="checkbox"]');
   const selected = [];
@@ -244,10 +266,17 @@ function setHeroState(modelId, statusText, content) {
 }
 
 async function handleHeroRun() {
+  console.log('Fan out button clicked');
   const promptEl = document.getElementById('heroPrompt');
-  if (!promptEl) return;
+  if (!promptEl) {
+    console.error('Prompt element not found');
+    return;
+  }
   const prompt = promptEl.value.trim();
-  if (!prompt) return;
+  if (!prompt) {
+    alert('Please enter a prompt first.');
+    return;
+  }
   
   const targets = ['openai', 'anthropic', 'gemini'];
   targets.forEach((id) => setHeroState(id, 'running...', '')); 
@@ -258,7 +287,7 @@ async function handleHeroRun() {
         const reply = await callModel(id, prompt);
         setHeroState(id, 'done', reply);
       } catch (err) {
-        setHeroState(id, 'error', err.message);
+        setHeroState(id, 'error', err.message || err.toString());
       }
     })
   );
@@ -358,7 +387,7 @@ async function handlePlaygroundRun() {
       const reply = await callModel(id, prompt, uploadedImageData);
       results.push({ label: meta.label, status: 'done', text: reply });
     } catch (err) {
-      results.push({ label: meta.label, status: 'error', text: err.message });
+      results.push({ label: meta.label, status: 'error', text: err.message || err.toString() });
     }
     // Update UI progressively
     renderPlaygroundResults([...results, ...selected.slice(results.length).map(rid => {
@@ -507,7 +536,7 @@ function renderRaceEntries(payload) {
           </div>
           <span style="color: var(--accent);">${r.latencyMs}ms</span>
         </div>
-        <div class="result-body">${escapeHtml(r.text || r.error || '')}</div>
+        <div class="result-body">${escapeHtml(r.text || (typeof r.error === 'object' ? JSON.stringify(r.error) : r.error) || '')}</div>
       </div>
     `;
   }).join('');
@@ -527,7 +556,7 @@ async function handleStartRace() {
   const title = titleEl?.value.trim() || 'Untitled Race';
   const rules = rulesEl?.value.trim() || '';
   
-  const selected = getSelectedModelIds();
+  const selected = getSelectedModelIds('raceModelToggles');
   if (selected.length < 2) {
     showNotification('Select at least 2 models for a race', 'error');
     return;
@@ -792,22 +821,34 @@ function populateChatVoices() {
 
 function speakText(text) {
   if (!('speechSynthesis' in window)) {
-    showNotification('Speech synthesis not supported', 'error');
+    alert('Speech synthesis is not supported in this browser.');
     return;
   }
   
   window.speechSynthesis.cancel();
   
   const utterance = new SpeechSynthesisUtterance(text);
-  const voiceSelect = document.getElementById('voiceOutputVoice');
   const voices = window.speechSynthesis.getVoices();
   
+  // Try to find a good English voice if none selected
+  let voice = null;
+  const voiceSelect = document.getElementById('voiceOutputVoice');
   if (voiceSelect?.value) {
-    const voice = voices.find(v => v.name === voiceSelect.value);
-    if (voice) utterance.voice = voice;
+    voice = voices.find(v => v.name === voiceSelect.value);
   }
   
+  if (!voice) {
+    // Fallback to first English voice
+    voice = voices.find(v => v.lang.includes('en')) || voices[0];
+  }
+  
+  if (voice) utterance.voice = voice;
   utterance.lang = selectedVoiceLanguage;
+  
+  utterance.onerror = (e) => {
+    console.error('Speech synthesis error:', e);
+  };
+  
   window.speechSynthesis.speak(utterance);
 }
 
@@ -823,7 +864,7 @@ function wireVoiceControls() {
 
 function toggleVoiceInput() {
   if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-    showNotification('Speech recognition not supported in this browser', 'error');
+    alert('Speech recognition is not supported in this browser. Please use Chrome or Edge.');
     return;
   }
   
@@ -874,7 +915,11 @@ function toggleVoiceInput() {
   
   recognition.onerror = (event) => {
     console.error('Speech recognition error:', event.error);
-    showNotification(`Voice input error: ${event.error}`, 'error');
+    if (event.error === 'not-allowed') {
+      alert('Microphone access denied. Please allow microphone access in your browser settings.');
+    } else {
+      showNotification(`Voice input error: ${event.error}`, 'error');
+    }
     isRecording = false;
     btn.classList.remove('active');
   };
@@ -1352,7 +1397,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   
   setYear();
   await fetchModels();
-  renderModelToggles();
+  renderModelSelectors();
   renderParticipants();
   renderPlaygroundResults();
   renderRaceEntries();
@@ -1364,7 +1409,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   wireParticipants();
   wireVoiceControls();
   wireNavigation();
-  await initVoiceUI();
+  // await initVoiceUI(); // Removed non-existent function call
   
   // Load voices for TTS
   if ('speechSynthesis' in window) {
@@ -1528,37 +1573,54 @@ const AnalyticsTracker = {
   
   // Update the dashboard UI
   updateDashboard() {
-    // Update stat cards
-    const totalEl = document.getElementById('totalExperiments');
+    this.updateAnalytics();
+  },
+  
+  async updateAnalytics() {
+  try {
+    const res = await fetch('/api/analytics/dashboard');
+    if (!res.ok) return;
+    const data = await res.json();
+    
+    const totalExpEl = document.getElementById('totalExperiments');
     const successRateEl = document.getElementById('successRate');
     const avgLatencyEl = document.getElementById('avgLatency');
     const modelsUsedEl = document.getElementById('modelsUsed');
+
+    if (totalExpEl) totalExpEl.textContent = data.totalExperiments;
+    if (successRateEl) successRateEl.textContent = `${data.successRate}%`;
+    if (avgLatencyEl) avgLatencyEl.textContent = `${data.avgLatency}ms`;
+    if (modelsUsedEl) modelsUsedEl.textContent = data.modelsUsed;
     
-    if (totalEl) totalEl.textContent = this.data.totalExperiments;
-    
-    if (successRateEl) {
-      const rate = this.data.totalExperiments > 0 
-        ? Math.round((this.data.successfulExperiments / this.data.totalExperiments) * 100)
-        : 0;
-      successRateEl.textContent = rate + '%';
+    // Render Chart if placeholder exists
+    const chartPlaceholder = document.querySelector('.chart-placeholder');
+    if (chartPlaceholder && data.performanceData) {
+       // Simple HTML bar chart visualization
+       const maxVal = Math.max(...data.performanceData.datasets[0].data, ...data.performanceData.datasets[1].data);
+       
+       let html = '<div class="bar-chart" style="display: flex; align-items: flex-end; height: 100%; gap: 8px; padding-top: 20px;">';
+       data.performanceData.labels.forEach((label, idx) => {
+         const val1 = data.performanceData.datasets[0].data[idx];
+         const val2 = data.performanceData.datasets[1].data[idx];
+         const h1 = (val1 / maxVal) * 100;
+         const h2 = (val2 / maxVal) * 100;
+         
+         html += `
+           <div class="bar-group" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+             <div style="display: flex; gap: 4px; align-items: flex-end; height: 150px; width: 100%;">
+               <div style="flex: 1; background: var(--accent); height: ${h1}%; border-radius: 4px 4px 0 0;" title="GPT-4: ${val1}"></div>
+               <div style="flex: 1; background: var(--accent-2); height: ${h2}%; border-radius: 4px 4px 0 0;" title="Claude 3: ${val2}"></div>
+             </div>
+             <span style="font-size: 0.75rem; color: var(--muted);">${label}</span>
+           </div>
+         `;
+       });
+       html += '</div>';
+       chartPlaceholder.innerHTML = html;
     }
-    
-    if (avgLatencyEl) {
-      const avg = this.data.totalExperiments > 0
-        ? Math.round(this.data.totalLatency / this.data.totalExperiments)
-        : 0;
-      avgLatencyEl.textContent = avg + 'ms';
-    }
-    
-    if (modelsUsedEl) {
-      modelsUsedEl.textContent = this.data.modelsUsed.size;
-    }
-    
-    // Update model performance chart
-    this.updatePerformanceChart();
-    
-    // Update experiment log
-    this.updateExperimentLog();
+    } catch (err) {
+    console.warn('Analytics update failed', err);
+  }
   },
   
   // Update the performance chart

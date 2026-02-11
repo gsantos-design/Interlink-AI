@@ -18,6 +18,7 @@ function normalizeModel(model) {
   if (['gptoss120b', 'gpt-oss-120b'].includes(key)) return 'gptoss120b';
   if (['gptoss20b', 'gpt-oss-20b'].includes(key)) return 'gptoss20b';
   if (['compound', 'compound-beta'].includes(key)) return 'compound';
+  if (['grok', 'xai'].includes(key)) return 'grok';
   return key;
 }
 
@@ -61,13 +62,16 @@ router.post('/', contentFilterMiddleware, async (req, res) => {
       case 'compound':
         reply = await callGroq(prompt, 'compound');
         break;
+      case 'grok':
+        reply = await callGroq(prompt, 'grok');
+        break;
       default:
         return res.status(400).json({ error: `Unsupported model: ${target}` });
     }
     return res.json({ reply });
   } catch (err) {
     console.error('Chat route error', err);
-    return res.status(500).json({ error: 'Server error in /api/chat' });
+    return res.status(500).json({ error: err.message || 'Server error in /api/chat' });
   }
 });
 

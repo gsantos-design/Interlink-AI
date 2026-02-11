@@ -3577,3 +3577,9 @@ a:hover {
     display: none;
   }
 }
+
+/* Fix for select dropdown visibility */
+select.input option {
+  background-color: var(--bg-panel);
+  color: var(--text);
+}
