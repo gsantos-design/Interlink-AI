@@ -627,21 +627,29 @@ a:hover {
 
 /* Sections */
 .section {
-  margin: 64px 0;
+  margin: 96px 0;
+  padding: 0 8px;
+}
+
+.section-alt {
+  background: linear-gradient(180deg, rgba(10, 15, 26, 0.6), rgba(5, 8, 17, 0.8));
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  padding: 48px 32px;
 }
 
 .section-contrast {
   background: linear-gradient(135deg, rgba(59, 130, 246, 0.03), rgba(6, 182, 212, 0.02)), var(--bg-contrast);
   border-radius: 20px;
   border: 1px solid var(--border);
-  padding: 32px;
+  padding: 48px 32px;
   box-shadow: var(--shadow);
   backdrop-filter: blur(var(--panel-blur));
 }
 
 .section-header {
   max-width: 720px;
-  margin-bottom: 32px;
+  margin-bottom: 48px;
 }
 
 .section-header h2 {
@@ -716,6 +724,29 @@ a:hover {
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
   gap: 24px;
+}
+
+.playground-layout {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+.playground-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  position: sticky;
+  top: 80px;
+}
+
+.playground-output {
+  min-height: 400px;
 }
 
 .toggle-row {
@@ -987,6 +1018,13 @@ a:hover {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
   gap: 24px;
+}
+
+.race-layout {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 32px;
+  align-items: start;
 }
 
 .race-config {
@@ -1773,6 +1811,18 @@ a:hover {
   }
   
   .playground {
+    grid-template-columns: 1fr;
+  }
+  
+  .playground-layout {
+    grid-template-columns: 1fr;
+  }
+  
+  .playground-controls {
+    position: static;
+  }
+  
+  .race-layout {
     grid-template-columns: 1fr;
   }
   
@@ -3582,4 +3632,201 @@ a:hover {
 select.input option {
   background-color: var(--bg-panel);
   color: var(--text);
+}
+
+/* ============================================ */
+/* Missing CSS fixes - v3.0 cleanup             */
+/* ============================================ */
+
+.control-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.control-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field-hint {
+  font-size: 0.8rem;
+  color: var(--muted);
+  opacity: 0.7;
+  margin-top: 4px;
+}
+
+.btn-sm {
+  padding: 6px 14px;
+  font-size: 0.82rem;
+}
+
+.icon-only {
+  padding: 8px;
+  min-width: unset;
+}
+
+.results-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.results-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--muted);
+  background: var(--bg-panel);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-lg);
+  min-height: 200px;
+}
+
+.results-placeholder p {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.status-text {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.entries-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.race-output {
+  min-height: 200px;
+}
+
+.phone-interface {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.status-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--success);
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+}
+
+.video-hypno {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, transparent 40%, rgba(59, 130, 246, 0.05) 100%);
+  pointer-events: none;
+  animation: hypno-pulse 4s ease-in-out infinite;
+}
+
+@keyframes hypno-pulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
+.activity-panel,
+.chat-panel,
+.team-panel,
+.team-info {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+}
+
+.ab-test-running {
+  border-left: 3px solid var(--warning);
+}
+
+.ab-test-completed {
+  border-left: 3px solid var(--success);
+}
+
+.pipeline-completed {
+  border-left: 3px solid var(--success);
+}
+
+/* Fix model toggles container */
+.model-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.model-toggles label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--muted);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.model-toggles label:hover {
+  border-color: var(--muted);
+}
+
+.model-toggles label:has(input:checked) {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.model-toggles input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+  accent-color: var(--accent);
+}
+
+/* Image preview */
+.image-preview {
+  margin-top: 8px;
+}
+
+.image-preview img {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+@media (max-width: 768px) {
+  .control-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .section-alt {
+    padding: 32px 20px;
+  }
+  
+  .section {
+    margin: 64px 0;
+  }
 }
