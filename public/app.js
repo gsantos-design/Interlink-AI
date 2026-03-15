@@ -2650,6 +2650,30 @@ window.renderPlaygroundResults = function() {
 // A/B TESTING MODULE
 // =============================================
 
+const starterPromptKits = [
+  {
+    id: 'starter-code-review-baseline',
+    name: 'Code Review Baseline',
+    prompt: 'Review this code for correctness, maintainability, and security issues. Be concise.',
+    models: ['openai', 'anthropic'],
+    stage: 'development',
+  },
+  {
+    id: 'starter-code-review-structured',
+    name: 'Code Review Structured',
+    prompt: 'Review this code and respond with three sections: Risks, Fixes, and Priority. Focus on security and production-readiness.',
+    models: ['openai', 'anthropic'],
+    stage: 'development',
+  },
+  {
+    id: 'starter-research-summary',
+    name: 'Research Summary v1',
+    prompt: 'Summarize the material, extract the key risks, and recommend the next actions in bullet points.',
+    models: ['openai', 'anthropic', 'gemini'],
+    stage: 'development',
+  },
+];
+
 const ABTestingModule = {
   tests: [],
   currentUser: null,
@@ -2707,7 +2731,8 @@ const ABTestingModule = {
     try {
       const response = await fetch('/api/workflow/kits');
       if (response.ok) {
-        this.promptKits = await response.json();
+        const kits = await response.json();
+        this.promptKits = Array.isArray(kits) && kits.length ? kits : starterPromptKits;
         this.populatePromptKitSelects();
         return;
       }
@@ -2715,7 +2740,9 @@ const ABTestingModule = {
       console.warn('Prompt kit fetch failed, using local workflow kits', error);
     }
 
-    this.promptKits = window.WorkflowTracker?.data?.promptKits || [];
+    this.promptKits = (window.WorkflowTracker?.data?.promptKits || []).length
+      ? window.WorkflowTracker.data.promptKits
+      : starterPromptKits;
     this.populatePromptKitSelects();
   },
 
