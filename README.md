@@ -12,8 +12,11 @@ Multi-model orchestration hub with a landing page, Node/Express backend, and pro
 ```
 PORT=3000
 OPENAI_API_KEY=
+OPENAI_CODE_REVIEW_MODEL=gpt-5.2-codex
 ANTHROPIC_API_KEY=
+ANTHROPIC_CODE_REVIEW_MODEL=claude-3-5-sonnet-20241022
 GEMINI_API_KEY=
+GROQ_API_KEY=
 STRIPE_SECRET_KEY=
 STRIPE_PRICE_ID=
 STRIPE_WEBHOOK_SECRET=
@@ -30,8 +33,23 @@ If a key is missing, the services return stubbed text so the UI still works.
 - `routes/chatRoutes.js` — POST `/api/chat` { model, prompt }
 - `routes/contestRoutes.js` — POST `/api/contest` { prompt, models[] } fan-out to providers, returns timings
 - `routes/modelsRoutes.js` — GET `/api/models` for frontend toggles
+- `routes/codeValidationRoutes.js` — POST `/api/validate/code` for AI code quality + security review
 - `routes/billingRoutes.js` — POST `/api/billing/create-checkout-session` (expects Stripe keys)
 - `services/*Service.js` — OpenAI/Anthropic/Gemini helpers with real calls when keys exist and stub fallbacks otherwise
+
+## Code Validation API
+- `POST /api/validate/code`
+- Request body:
+```json
+{
+  "code": "const password = 'secret';",
+  "language": "javascript",
+  "filename": "auth.js",
+  "checks": ["quality", "security"],
+  "providers": ["openai", "anthropic"]
+}
+```
+- Returns normalized provider results, merged findings, and provider errors if any provider fails.
 
 ## Stripe
 - Set `STRIPE_SECRET_KEY` and `STRIPE_PRICE_ID` to enable checkout.
