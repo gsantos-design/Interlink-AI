@@ -1600,7 +1600,7 @@ const AnalyticsTracker = {
   
   async updateAnalytics() {
   try {
-    const res = await fetch('/api/analytics/dashboard');
+    const res = await fetch('/api/analytics/summary');
     if (!res.ok) return;
     const data = await res.json();
     
@@ -2892,7 +2892,7 @@ const CollaborationModule = {
   },
   
   addChatMessage(author, text) {
-    const container = document.getElementById('chatMessages');
+    const container = document.getElementById('teamChatMessages');
     if (!container) return;
     
     const msgEl = document.createElement('div');
