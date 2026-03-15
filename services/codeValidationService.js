@@ -3,8 +3,8 @@ const axios = require('axios');
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 
-const OPENAI_CODE_REVIEW_MODEL = process.env.OPENAI_CODE_REVIEW_MODEL || 'gpt-5.2-codex';
-const ANTHROPIC_CODE_REVIEW_MODEL = process.env.ANTHROPIC_CODE_REVIEW_MODEL || 'claude-3-5-sonnet-20241022';
+const OPENAI_CODE_REVIEW_MODEL = process.env.OPENAI_CODE_REVIEW_MODEL || 'gpt-4o';
+const ANTHROPIC_CODE_REVIEW_MODEL = process.env.ANTHROPIC_CODE_REVIEW_MODEL || 'claude-3-haiku-20240307';
 
 const ALLOWED_PROVIDERS = new Set(['openai', 'anthropic']);
 const ALLOWED_CHECKS = new Set(['quality', 'security']);
@@ -172,11 +172,22 @@ async function validateWithOpenAI(input) {
 
   try {
     const response = await axios.post(
-      'https://api.openai.com/v1/responses',
+      'https://api.openai.com/v1/chat/completions',
       {
         model: OPENAI_CODE_REVIEW_MODEL,
-        input: prompt,
-        reasoning: { effort: 'medium' },
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a strict code and security reviewer. Return JSON only.',
+          },
+          {
+            role: 'user',
+            content: prompt,
+          },
+        ],
+        response_format: { type: 'json_object' },
+        temperature: 0.2,
+        max_tokens: 2000,
       },
       {
         headers: {
@@ -187,7 +198,8 @@ async function validateWithOpenAI(input) {
       }
     );
 
-    const parsed = extractFirstJsonObject(response.data?.output_text || '');
+    const rawText = response.data?.choices?.[0]?.message?.content || '';
+    const parsed = extractFirstJsonObject(rawText);
     if (!parsed) {
       throw new Error('OpenAI returned a non-JSON validation response.');
     }

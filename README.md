@@ -12,9 +12,9 @@ Multi-model orchestration hub with a landing page, Node/Express backend, and pro
 ```
 PORT=3000
 OPENAI_API_KEY=
-OPENAI_CODE_REVIEW_MODEL=gpt-5.2-codex
+OPENAI_CODE_REVIEW_MODEL=gpt-4o
 ANTHROPIC_API_KEY=
-ANTHROPIC_CODE_REVIEW_MODEL=claude-3-5-sonnet-20241022
+ANTHROPIC_CODE_REVIEW_MODEL=claude-3-haiku-20240307
 GEMINI_API_KEY=
 GROQ_API_KEY=
 STRIPE_SECRET_KEY=

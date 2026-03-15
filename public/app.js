@@ -433,7 +433,13 @@ async function handleCodeValidationRun() {
     });
 
     const data = await response.json().catch(() => ({}));
-    if (!response.ok && !data.results?.length) {
+    if (!response.ok) {
+      if (data && (Array.isArray(data.errors) || Array.isArray(data.results))) {
+        renderCodeValidationResults(data);
+        showNotification(data.error || `Validation failed with ${response.status}`, 'error');
+        return;
+      }
+
       throw new Error(data.error || `Validation failed with ${response.status}`);
     }
 

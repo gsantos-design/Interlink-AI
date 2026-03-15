@@ -18,7 +18,7 @@ const modelCatalog = [
     personality: 'Thoughtful & Precise',
     tagClass: 'tag-claude',
     provider: 'Anthropic',
-    version: 'Claude 3.5 Sonnet',
+    version: 'Claude 3 Haiku',
     envVar: 'ANTHROPIC_API_KEY',
   },
   {
