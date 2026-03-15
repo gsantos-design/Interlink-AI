@@ -837,7 +837,7 @@ function populateChatVoices() {
     voices.map(v => `<option value="${v.name}">${v.name} (${v.lang})</option>`).join('');
 }
 
-function speakText(text) {
+function speakText(text, options = {}) {
   if (!('speechSynthesis' in window)) {
     alert('Speech synthesis is not supported in this browser.');
     return;
@@ -847,21 +847,27 @@ function speakText(text) {
   
   const utterance = new SpeechSynthesisUtterance(text);
   const voices = window.speechSynthesis.getVoices();
+  const {
+    voiceSelectId = 'voiceOutputVoice',
+    language = selectedVoiceLanguage,
+  } = options;
   
-  // Try to find a good English voice if none selected
+  // Use the requested voice when available, otherwise fall back to a matching language voice.
   let voice = null;
-  const voiceSelect = document.getElementById('voiceOutputVoice');
+  const voiceSelect = document.getElementById(voiceSelectId);
   if (voiceSelect?.value) {
     voice = voices.find(v => v.name === voiceSelect.value);
   }
   
   if (!voice) {
-    // Fallback to first English voice
-    voice = voices.find(v => v.lang.includes('en')) || voices[0];
+    const languagePrefix = (language || selectedVoiceLanguage || 'en-US').split('-')[0];
+    voice = voices.find(v => v.lang.toLowerCase().startsWith(languagePrefix.toLowerCase()))
+      || voices.find(v => v.lang.toLowerCase().includes('en'))
+      || voices[0];
   }
   
   if (voice) utterance.voice = voice;
-  utterance.lang = selectedVoiceLanguage;
+  utterance.lang = language || selectedVoiceLanguage;
   
   utterance.onerror = (e) => {
     console.error('Speech synthesis error:', e);
@@ -1074,11 +1080,11 @@ async function sendChatMessage() {
       </div>
     `;
     
-    // Speak response if voice is enabled
-    const voiceSelect = document.getElementById('chatVoice');
-    if (voiceSelect?.value) {
-      speakText(reply);
-    }
+    const chatLanguage = document.getElementById('chatVoiceLang')?.value || selectedVoiceLanguage;
+    speakText(reply, {
+      voiceSelectId: 'chatVoice',
+      language: chatLanguage,
+    });
     
     chatHistory.push({ role: 'user', content: message });
     chatHistory.push({ role: 'assistant', content: reply });
