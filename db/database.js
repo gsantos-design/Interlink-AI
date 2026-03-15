@@ -1,6 +1,6 @@
 const Database = require('better-sqlite3');
+const crypto = require('crypto');
 const path = require('path');
-const { v4: uuidv4 } = require('uuid');
 
 // Initialize database
 const dbPath = path.join(__dirname, 'interlink.db');
@@ -184,7 +184,7 @@ db.exec(`
 `);
 
 // Helper functions
-const generateId = () => uuidv4();
+const generateId = () => crypto.randomUUID();
 
 // User functions
 const createUser = (name, email, avatarUrl = null) => {

@@ -2,6 +2,18 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db/database');
 
+const trackedModels = [
+  'openai',
+  'anthropic',
+  'gemini',
+  'llama',
+  'kimi',
+  'gptoss120b',
+  'gptoss20b',
+  'compound',
+  'grok',
+];
+
 // Get analytics summary
 router.get('/summary', (req, res) => {
   try {
@@ -108,10 +120,8 @@ router.get('/models/:modelId/timeseries', (req, res) => {
 router.get('/timeseries', (req, res) => {
   try {
     const { interval, limit } = req.query;
-    const models = ['openai', 'anthropic', 'gemini', 'llama', 'mistral', 'deepseek', 'kimi', 'qwen', 'gptoss120b', 'gptoss20b', 'compound', 'cohere'];
-    
     const data = {};
-    models.forEach(modelId => {
+    trackedModels.forEach(modelId => {
       data[modelId] = db.getModelPerformanceTimeSeries(
         modelId,
         interval || 'hour',

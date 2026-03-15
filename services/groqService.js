@@ -8,14 +8,13 @@ const XAI_API_KEY = process.env.XAI_API_KEY;
 const MODEL_MAP = {
   // Groq Models
   'llama': 'llama-3.3-70b-versatile',
-  'mixtral': 'mixtral-8x7b-32768',
-  'gemma': 'gemma-7b-it',
-  'gptoss120b': 'mixtral-8x7b-32768', // Mapping generic OSS to Mixtral on Groq
-  'gptoss20b': 'gemma-7b-it',         // Mapping generic OSS to Gemma on Groq
+  'kimi': 'moonshotai/kimi-k2-instruct',
+  'gptoss120b': 'openai/gpt-oss-120b',
+  'gptoss20b': 'openai/gpt-oss-20b',
+  'compound': 'groq/compound',
   
   // xAI Models
-  'grok': 'grok-beta',
-  'compound': 'grok-beta' // Mapping compound to Grok for now
+  'grok': 'grok-beta'
 };
 
 async function callGroq(prompt, modelKey = 'llama') {

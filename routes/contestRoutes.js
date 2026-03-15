@@ -10,7 +10,12 @@ const modelConfig = {
   openai: { label: 'ChatGPT', fn: callOpenAI },
   anthropic: { label: 'Claude', fn: callAnthropic },
   gemini: { label: 'Gemini', fn: callGemini },
-  llama: { label: 'Llama', fn: callGroq },
+  llama: { label: 'Llama', fn: (prompt) => callGroq(prompt, 'llama') },
+  kimi: { label: 'Kimi', fn: (prompt) => callGroq(prompt, 'kimi') },
+  gptoss120b: { label: 'GPT-OSS 120B', fn: (prompt) => callGroq(prompt, 'gptoss120b') },
+  gptoss20b: { label: 'GPT-OSS 20B', fn: (prompt) => callGroq(prompt, 'gptoss20b') },
+  compound: { label: 'Compound', fn: (prompt) => callGroq(prompt, 'compound') },
+  grok: { label: 'Grok', fn: (prompt) => callGroq(prompt, 'grok') },
 };
 
 function normalize(model) {
@@ -20,6 +25,11 @@ function normalize(model) {
   if (['claude', 'anthropic'].includes(key)) return 'anthropic';
   if (['gemini', 'google'].includes(key)) return 'gemini';
   if (['llama', 'groq', 'meta'].includes(key)) return 'llama';
+  if (['kimi', 'kimi-k2'].includes(key)) return 'kimi';
+  if (['gptoss120b', 'gpt-oss-120b'].includes(key)) return 'gptoss120b';
+  if (['gptoss20b', 'gpt-oss-20b'].includes(key)) return 'gptoss20b';
+  if (['compound', 'compound-beta'].includes(key)) return 'compound';
+  if (['grok', 'xai'].includes(key)) return 'grok';
   return null;
 }
 

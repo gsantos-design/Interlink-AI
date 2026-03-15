@@ -206,7 +206,7 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(publicDir, 'index.html'));
 });
 
-const PORT = 3005;
+const PORT = parseInt(process.env.PORT, 10) || 3000;
 server.listen(PORT, () => {
   console.log(`Interlink AI server running on port ${PORT}`);
   console.log(`Real-time collaboration enabled via Socket.IO`);
