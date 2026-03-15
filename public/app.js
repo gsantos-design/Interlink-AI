@@ -3063,6 +3063,41 @@ const ABTestingModule = {
 
     this.pendingRun = null;
   },
+
+  formatPercent(value) {
+    return `${Math.round((value || 0) * 100)}%`;
+  },
+
+  getStatisticsSummary(test) {
+    if (test.statistics) {
+      return test.statistics;
+    }
+
+    const variantA = test.results?.A || { total: 0, successes: 0, avgLatency: 0 };
+    const variantB = test.results?.B || { total: 0, successes: 0, avgLatency: 0 };
+    const rateA = variantA.total > 0 ? variantA.successes / variantA.total : 0;
+    const rateB = variantB.total > 0 ? variantB.successes / variantB.total : 0;
+
+    return {
+      variantA: {
+        total: variantA.total,
+        successes: variantA.successes,
+        rate: rateA,
+        avgLatency: variantA.avgLatency || 0,
+      },
+      variantB: {
+        total: variantB.total,
+        successes: variantB.successes,
+        rate: rateB,
+        avgLatency: variantB.avgLatency || 0,
+      },
+      difference: rateB - rateA,
+      relativeImprovement: rateA > 0 ? ((rateB - rateA) / rateA) * 100 : 0,
+      pValue: null,
+      isSignificant: false,
+      recommendedWinner: rateB > rateA ? 'B' : rateA > rateB ? 'A' : null,
+    };
+  },
   
   checkStatisticalSignificance(test) {
     const nA = test.results.A.total;
@@ -3195,8 +3230,50 @@ const ABTestingModule = {
   viewTestDetails(testId) {
     const test = this.tests.find(t => t.id === testId);
     if (!test) return;
-    
-    showNotification(`Viewing details for: ${test.name}`, 'info');
+
+    const stats = this.getStatisticsSummary(test);
+    const variantAName = test.variantA?.name || this.findPromptKit(test.variantAId)?.name || 'Variant A';
+    const variantBName = test.variantB?.name || this.findPromptKit(test.variantBId)?.name || 'Variant B';
+
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.style.display = 'flex';
+    modal.innerHTML = `
+      <div class="modal-content" style="max-width: 760px;">
+        <button class="modal-close" onclick="this.closest('.modal').remove()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+        <h2>${escapeHtml(test.name)} Report</h2>
+        <div class="experiment-details">
+          <p><strong>Status:</strong> ${escapeHtml(test.status)}</p>
+          <p><strong>Primary Metric:</strong> ${escapeHtml(test.metricType || 'success_rate')}</p>
+          <p><strong>Winner:</strong> ${escapeHtml(stats.recommendedWinner ? `Variant ${stats.recommendedWinner}` : 'No clear winner')}</p>
+          <div class="ab-test-stats" style="margin-top: 16px;">
+            <div class="stat-item">
+              <span class="stat-label">${escapeHtml(variantAName)}</span>
+              <span class="stat-value">${this.formatPercent(stats.variantA.rate)} (${stats.variantA.total} samples)</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">${escapeHtml(variantBName)}</span>
+              <span class="stat-value">${this.formatPercent(stats.variantB.rate)} (${stats.variantB.total} samples)</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Relative Improvement</span>
+              <span class="stat-value ${stats.relativeImprovement > 0 ? 'positive' : stats.relativeImprovement < 0 ? 'negative' : ''}">${stats.relativeImprovement > 0 ? '+' : ''}${Math.round(stats.relativeImprovement || 0)}%</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">P-Value</span>
+              <span class="stat-value">${stats.pValue != null ? Number(stats.pValue).toFixed(3) : 'Not enough data'}</span>
+            </div>
+          </div>
+          <p style="margin-top: 16px;"><strong>Confidence:</strong> ${stats.isSignificant ? 'Statistically significant at the configured threshold.' : 'More samples may be required for significance.'}</p>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
   }
 };
 
@@ -3207,8 +3284,10 @@ const ABTestingModule = {
 const PipelineModule = {
   pipelines: [],
   runs: [],
+  promptKits: [],
   
   init() {
+    this.loadPromptKits();
     this.loadPipelines();
     this.setupEventListeners();
   },
@@ -3217,6 +3296,39 @@ const PipelineModule = {
     const createBtn = document.getElementById('createPipeline');
     if (createBtn) {
       createBtn.addEventListener('click', () => this.createPipeline());
+    }
+  },
+
+  async loadPromptKits() {
+    try {
+      const response = await fetch('/api/workflow/kits');
+      if (response.ok) {
+        const kits = await response.json();
+        this.promptKits = Array.isArray(kits) && kits.length ? kits : starterPromptKits;
+        this.populatePromptKitSelect();
+        return;
+      }
+    } catch (error) {
+      console.warn('Pipeline prompt kit fetch failed, using fallback kits', error);
+    }
+
+    this.promptKits = window.ABTestingModule?.promptKits?.length
+      ? window.ABTestingModule.promptKits
+      : starterPromptKits;
+    this.populatePromptKitSelect();
+  },
+
+  populatePromptKitSelect() {
+    const select = document.getElementById('pipelineKit');
+    if (!select) return;
+
+    const currentValue = select.value;
+    select.innerHTML = '<option value="">Select a prompt kit...</option>' + this.promptKits.map((kit) => (
+      `<option value="${kit.id}">${escapeHtml(kit.name)}</option>`
+    )).join('');
+
+    if (currentValue && this.promptKits.some((kit) => String(kit.id) === String(currentValue))) {
+      select.value = currentValue;
     }
   },
   
@@ -3248,6 +3360,11 @@ const PipelineModule = {
     
     if (!name) {
       showNotification('Please enter a pipeline name', 'error');
+      return;
+    }
+
+    if (!kitId) {
+      showNotification('Please select a prompt kit', 'error');
       return;
     }
     
