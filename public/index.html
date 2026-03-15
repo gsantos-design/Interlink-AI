@@ -326,6 +326,14 @@
             </div>
             <div class="control-section">
               <label class="field-label" for="validationCode">Code</label>
+              <div class="validation-demo-row">
+                <span class="validation-demo-label">Demo snippets</span>
+                <div class="validation-demo-buttons">
+                  <button type="button" class="btn btn-secondary validation-demo-btn" data-validation-snippet="auth">Auth flow</button>
+                  <button type="button" class="btn btn-secondary validation-demo-btn" data-validation-snippet="sql">SQL injection</button>
+                  <button type="button" class="btn btn-secondary validation-demo-btn" data-validation-snippet="secrets">Cloud secrets</button>
+                </div>
+              </div>
               <textarea id="validationCode" class="input code-textarea" rows="14">const password = 'secret';
 async function login(req, res) {
   if (req.body.password === password) {

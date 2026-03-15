@@ -296,9 +296,94 @@ function sortValidationFindings(findings = []) {
   });
 }
 
+function dedupeValidationFindings(findings = []) {
+  const grouped = new Map();
+
+  findings.forEach((finding) => {
+    const key = [
+      String(finding.file || 'snippet').toLowerCase(),
+      finding.line || 0,
+      String(finding.category || 'quality').toLowerCase(),
+    ].join('|');
+
+    if (!grouped.has(key)) {
+      grouped.set(key, {
+        ...finding,
+        providers: [finding.provider],
+      });
+      return;
+    }
+
+    const existing = grouped.get(key);
+    const providers = new Set([...(existing.providers || [existing.provider]), finding.provider]);
+    const severity = getSeverityRank(finding.severity) > getSeverityRank(existing.severity)
+      ? finding.severity
+      : existing.severity;
+    const title = String(finding.title || '').length > String(existing.title || '').length
+      ? finding.title
+      : existing.title;
+    const description = String(finding.description || '').length > String(existing.description || '').length
+      ? finding.description
+      : existing.description;
+    const recommendation = String(finding.recommendation || '').length > String(existing.recommendation || '').length
+      ? finding.recommendation
+      : existing.recommendation;
+
+    grouped.set(key, {
+      ...existing,
+      severity,
+      title,
+      description,
+      recommendation,
+      provider: [...providers].join(', '),
+      confidence: existing.confidence ?? finding.confidence ?? null,
+      providers: [...providers],
+    });
+  });
+
+  return sortValidationFindings([...grouped.values()]);
+}
+
+const validationDemoSnippets = {
+  auth: {
+    language: 'javascript',
+    filename: 'auth.js',
+    context: 'Review this login handler for hardcoded secrets, token generation risks, and missing security controls.',
+    code: `const password = 'secret';
+async function login(req, res) {
+  if (req.body.password === password) {
+    res.json({ ok: true, token: 'hardcoded-token' });
+  } else {
+    res.status(401).json({ ok: false });
+  }
+}`,
+  },
+  sql: {
+    language: 'javascript',
+    filename: 'users.js',
+    context: 'Review this API handler for injection, validation, and unsafe database access patterns.',
+    code: `app.get('/users', async (req, res) => {
+  const query = "SELECT * FROM users WHERE email = '" + req.query.email + "'";
+  const rows = await db.query(query);
+  res.json(rows);
+});`,
+  },
+  secrets: {
+    language: 'python',
+    filename: 'storage.py',
+    context: 'Review this cloud utility for credential handling, access control, and data exposure risks.',
+    code: `AWS_ACCESS_KEY = "AKIA_TEST_KEY"
+AWS_SECRET_KEY = "demo-secret-key"
+
+def upload_report(client, payload):
+    bucket = "company-prod-data"
+    return client.put_object(Bucket=bucket, Key="reports/latest.json", Body=payload, ACL="public-read")`,
+  },
+};
+
 function buildValidationReportText(payload) {
   const results = payload?.results || [];
-  const findings = sortValidationFindings(payload?.mergedFindings || []);
+  const findings = dedupeValidationFindings(payload?.mergedFindings || []);
   const errors = payload?.errors || [];
 
   const providerSection = results.length
@@ -352,7 +437,7 @@ function renderCodeValidationResults(payload) {
 
   lastCodeValidationPayload = payload || null;
 
-  const mergedFindings = sortValidationFindings(payload?.mergedFindings || []);
+  const mergedFindings = dedupeValidationFindings(payload?.mergedFindings || []);
   const resultCount = mergedFindings.length;
   const providerCount = payload?.meta?.successfulProviders || 0;
   if (meta) {
@@ -523,6 +608,21 @@ async function handleCodeValidationRun() {
   }
 }
 
+function applyValidationDemoSnippet(key) {
+  const snippet = validationDemoSnippets[key];
+  if (!snippet) return;
+
+  const languageEl = document.getElementById('validationLanguage');
+  const filenameEl = document.getElementById('validationFilename');
+  const contextEl = document.getElementById('validationContext');
+  const codeEl = document.getElementById('validationCode');
+
+  if (languageEl) languageEl.value = snippet.language;
+  if (filenameEl) filenameEl.value = snippet.filename;
+  if (contextEl) contextEl.value = snippet.context;
+  if (codeEl) codeEl.value = snippet.code;
+}
+
 function wireCodeValidation() {
   const button = document.getElementById('runCodeValidation');
   if (button) {
@@ -533,6 +633,10 @@ function wireCodeValidation() {
   if (copyButton) {
     copyButton.addEventListener('click', copyValidationReport);
   }
+
+  document.querySelectorAll('[data-validation-snippet]').forEach((buttonEl) => {
+    buttonEl.addEventListener('click', () => applyValidationDemoSnippet(buttonEl.dataset.validationSnippet));
+  });
 }
 
 // ==========================================

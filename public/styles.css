@@ -3757,6 +3757,35 @@ select.input option {
   line-height: 1.6;
 }
 
+.validation-demo-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.validation-demo-label {
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.validation-demo-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.validation-demo-btn {
+  width: auto;
+  min-width: 0;
+  padding: 8px 12px;
+  font-size: 0.8rem;
+}
+
 .validation-results-header {
   display: flex;
   align-items: center;
