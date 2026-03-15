@@ -2756,7 +2756,7 @@ const ABTestingModule = {
       if (!select) return;
       const currentValue = select.value;
       select.innerHTML = '<option value="">Select a prompt kit...</option>' + this.promptKits.map((kit) => (
-        `<option value="${kit.id}">${this.escapeHtml(kit.name)}</option>`
+        `<option value="${kit.id}">${escapeHtml(kit.name)}</option>`
       )).join('');
 
       if (currentValue && this.promptKits.some((kit) => String(kit.id) === String(currentValue))) {
