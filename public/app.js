@@ -762,6 +762,7 @@ async function handlePlaygroundRun() {
   }
   
   const imageNote = uploadedImageData ? ' (with image)' : '';
+  lastPlaygroundResults = [];
   renderPlaygroundResults(selected.map((id) => {
     const meta = models.find((m) => m.id === id) || { label: id };
     return { label: meta.label, status: 'running...' + imageNote, text: '' };
@@ -770,11 +771,14 @@ async function handlePlaygroundRun() {
   const results = [];
   for (const id of selected) {
     const meta = models.find((m) => m.id === id) || { label: id };
+    const startedAt = performance.now();
     try {
       const reply = await callModel(id, prompt, uploadedImageData);
-      results.push({ label: meta.label, status: 'done', text: reply });
+      const latency = Math.round(performance.now() - startedAt);
+      results.push({ id, label: meta.label, status: 'done', text: reply, latency, success: true });
     } catch (err) {
-      results.push({ label: meta.label, status: 'error', text: err.message || err.toString() });
+      const latency = Math.round(performance.now() - startedAt);
+      results.push({ id, label: meta.label, status: 'error', text: err.message || err.toString(), latency, success: false });
     }
     // Update UI progressively
     renderPlaygroundResults([...results, ...selected.slice(results.length).map(rid => {
@@ -1966,8 +1970,130 @@ const AnalyticsTracker = {
     
     this.saveToStorage();
     this.updateDashboard();
+    this.persistExperiment(experiment);
     
     return experiment;
+  },
+
+  async persistExperiment(experiment) {
+    try {
+      const response = await fetch('/api/analytics/experiments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: experiment.title,
+          prompt: experiment.prompt,
+          models: experiment.models,
+          results: experiment.results,
+          avgLatency: experiment.avgLatency,
+          successRate: experiment.successRate,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Experiment persistence failed with ${response.status}`);
+      }
+
+      const savedExperiment = await response.json();
+      await this.updateAnalytics();
+      window.ABTestingModule?.handleExperimentTracked(savedExperiment, experiment);
+    } catch (error) {
+      console.warn('Experiment persistence failed, using local analytics only', error);
+      window.ABTestingModule?.handleExperimentTracked(null, experiment);
+    }
+  },
+
+  renderPerformanceChart(metrics = []) {
+    const chartContainer = document.getElementById('modelPerformanceChart');
+    if (!chartContainer) return;
+
+    if (!Array.isArray(metrics) || metrics.length === 0) {
+      chartContainer.innerHTML = `
+        <div class="results-placeholder">
+          <p>No model performance data yet. Run an experiment in the Playground.</p>
+        </div>
+      `;
+      return;
+    }
+
+    const labelMap = {
+      openai: 'ChatGPT',
+      anthropic: 'Claude',
+      gemini: 'Gemini',
+      llama: 'Llama',
+      kimi: 'Kimi-K2',
+      gptoss120b: 'GPT-OSS 120B',
+      gptoss20b: 'GPT-OSS 20B',
+      compound: 'Compound',
+      grok: 'Grok',
+    };
+
+    const colorMap = {
+      openai: 'chart-bar-openai',
+      anthropic: 'chart-bar-claude',
+      gemini: 'chart-bar-gemini',
+      llama: 'chart-bar-llama',
+      kimi: 'chart-bar-kimi',
+      gptoss120b: 'chart-bar-gptoss120b',
+      gptoss20b: 'chart-bar-gptoss20b',
+      compound: 'chart-bar-compound',
+      grok: 'chart-bar-openai',
+    };
+
+    chartContainer.innerHTML = `
+      <div class="chart-bar-container">
+        ${metrics.map((metric) => {
+          const successRate = Math.round(metric.success_rate || 0);
+          const label = labelMap[metric.model_id] || metric.model_id;
+          const colorClass = colorMap[metric.model_id] || 'chart-bar-openai';
+
+          return `
+            <div class="chart-bar-row">
+              <span class="chart-label">${this.escapeHtml(label)}</span>
+              <div class="chart-bar-bg"><div class="chart-bar ${colorClass}" style="width: ${successRate}%"></div></div>
+              <span class="chart-value">${successRate}%</span>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  },
+
+  renderRecentExperiments(experiments = []) {
+    const logContainer = document.getElementById('experimentLog');
+    if (!logContainer) return;
+
+    if (!Array.isArray(experiments) || experiments.length === 0) {
+      logContainer.innerHTML = `
+        <div class="experiment-item">
+          <div class="experiment-info">
+            <div class="experiment-title">No experiments yet</div>
+            <div class="experiment-meta">Run your first experiment in the Playground</div>
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    logContainer.innerHTML = experiments.map((exp) => {
+      const timeAgo = this.getTimeAgo(new Date(exp.created_at || exp.timestamp || Date.now()));
+      const successRate = Math.round(exp.success_rate ?? exp.successRate ?? 0);
+      const statusClass = successRate >= 70 ? 'status-success' : successRate >= 40 ? 'status-warning' : 'status-error';
+      const modelCount = Array.isArray(exp.models) ? exp.models.length : 0;
+      const avgLatency = exp.avg_latency ?? exp.avgLatency ?? 0;
+      const title = exp.title || (exp.prompt ? `${exp.prompt.substring(0, 50)}...` : 'Untitled');
+
+      return `
+        <div class="experiment-item">
+          <div class="experiment-status ${statusClass}"></div>
+          <div class="experiment-info">
+            <div class="experiment-title">${this.escapeHtml(title)}</div>
+            <div class="experiment-meta">${modelCount} models • ${avgLatency}ms avg • ${timeAgo}</div>
+          </div>
+          <div class="experiment-score">${successRate}%</div>
+        </div>
+      `;
+    }).join('');
   },
   
   // Update the dashboard UI
@@ -1990,35 +2116,13 @@ const AnalyticsTracker = {
     if (successRateEl) successRateEl.textContent = `${data.successRate}%`;
     if (avgLatencyEl) avgLatencyEl.textContent = `${data.avgLatency}ms`;
     if (modelsUsedEl) modelsUsedEl.textContent = data.modelsUsed;
-    
-    // Render Chart if placeholder exists
-    const chartPlaceholder = document.querySelector('.chart-placeholder');
-    if (chartPlaceholder && data.performanceData) {
-       // Simple HTML bar chart visualization
-       const maxVal = Math.max(...data.performanceData.datasets[0].data, ...data.performanceData.datasets[1].data);
-       
-       let html = '<div class="bar-chart" style="display: flex; align-items: flex-end; height: 100%; gap: 8px; padding-top: 20px;">';
-       data.performanceData.labels.forEach((label, idx) => {
-         const val1 = data.performanceData.datasets[0].data[idx];
-         const val2 = data.performanceData.datasets[1].data[idx];
-         const h1 = (val1 / maxVal) * 100;
-         const h2 = (val2 / maxVal) * 100;
-         
-         html += `
-           <div class="bar-group" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;">
-             <div style="display: flex; gap: 4px; align-items: flex-end; height: 150px; width: 100%;">
-               <div style="flex: 1; background: var(--accent); height: ${h1}%; border-radius: 4px 4px 0 0;" title="GPT-4: ${val1}"></div>
-               <div style="flex: 1; background: var(--accent-2); height: ${h2}%; border-radius: 4px 4px 0 0;" title="Claude 3: ${val2}"></div>
-             </div>
-             <span style="font-size: 0.75rem; color: var(--muted);">${label}</span>
-           </div>
-         `;
-       });
-       html += '</div>';
-       chartPlaceholder.innerHTML = html;
-    }
+
+    this.renderPerformanceChart(data.modelPerformance || []);
+    this.renderRecentExperiments(data.recentExperiments || []);
     } catch (err) {
     console.warn('Analytics update failed', err);
+    this.updatePerformanceChart();
+    this.updateExperimentLog();
   }
   },
   
@@ -2150,7 +2254,28 @@ const AnalyticsTracker = {
   },
   
   // Export analytics data
-  exportAnalytics() {
+  async exportAnalytics() {
+    try {
+      const response = await fetch('/api/analytics/export');
+      if (!response.ok) {
+        throw new Error(`Export failed with ${response.status}`);
+      }
+
+      const data = await response.json();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `interlink-analytics-${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+
+      showNotification('Analytics exported successfully!', 'success');
+      return;
+    } catch (error) {
+      console.warn('Backend analytics export failed, using local data', error);
+    }
+
     const data = {
       exportDate: new Date().toISOString(),
       summary: {
@@ -2276,9 +2401,31 @@ const WorkflowTracker = {
     this.data.stages.development.experiments++;
     this.saveToStorage();
     this.updateDashboard();
+    this.persistPromptKit(kit);
+    window.ABTestingModule?.loadPromptKits();
     
     showNotification(`Prompt kit "${name}" created!`, 'success');
     return kit;
+  },
+
+  async persistPromptKit(kit) {
+    try {
+      const response = await fetch('/api/workflow/kits', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: kit.name,
+          prompt: kit.prompt,
+          models: kit.models,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Prompt kit persistence failed with ${response.status}`);
+      }
+    } catch (error) {
+      console.warn('Prompt kit persistence failed, using local workflow data only', error);
+    }
   },
   
   // Promote a prompt kit to the next stage
@@ -2506,11 +2653,89 @@ window.renderPlaygroundResults = function() {
 const ABTestingModule = {
   tests: [],
   currentUser: null,
+  promptKits: [],
+  pendingRun: null,
   
   init() {
+    this.loadPromptKits();
     this.loadTests();
     this.setupEventListeners();
     this.initTrafficSplitSlider();
+  },
+
+  normalizeTest(test) {
+    if (!test) return null;
+
+    const resultMap = { A: { total: 0, successes: 0, avgLatency: 0 }, B: { total: 0, successes: 0, avgLatency: 0 } };
+    if (Array.isArray(test.results)) {
+      test.results.forEach((entry) => {
+        if (entry.variant && resultMap[entry.variant]) {
+          resultMap[entry.variant] = {
+            total: entry.total || 0,
+            successes: entry.successes || 0,
+            avgLatency: Math.round(entry.avg_latency || entry.avgLatency || 0),
+            avgRating: entry.avg_rating || entry.avgRating || null,
+          };
+        }
+      });
+    } else if (test.results?.A && test.results?.B) {
+      resultMap.A = { ...resultMap.A, ...test.results.A };
+      resultMap.B = { ...resultMap.B, ...test.results.B };
+    }
+
+    return {
+      id: test.id,
+      name: test.name,
+      status: test.status || 'draft',
+      variantAId: test.variantAId || test.variant_a_id || test.variantA?.id,
+      variantBId: test.variantBId || test.variant_b_id || test.variantB?.id,
+      variantA: test.variantA || null,
+      variantB: test.variantB || null,
+      trafficSplit: test.trafficSplit || test.traffic_split || 0.5,
+      minSamples: test.minSamples || test.min_samples || 100,
+      metricType: test.metricType || test.metric_type || 'success_rate',
+      createdAt: test.createdAt || test.created_at,
+      startedAt: test.startedAt || test.started_at,
+      endedAt: test.endedAt || test.ended_at,
+      winner: test.winner || null,
+      results: resultMap,
+      statistics: test.statistics || null,
+    };
+  },
+
+  async loadPromptKits() {
+    try {
+      const response = await fetch('/api/workflow/kits');
+      if (response.ok) {
+        this.promptKits = await response.json();
+        this.populatePromptKitSelects();
+        return;
+      }
+    } catch (error) {
+      console.warn('Prompt kit fetch failed, using local workflow kits', error);
+    }
+
+    this.promptKits = window.WorkflowTracker?.data?.promptKits || [];
+    this.populatePromptKitSelects();
+  },
+
+  populatePromptKitSelects() {
+    const selects = [
+      document.getElementById('variantAKit'),
+      document.getElementById('variantBKit'),
+    ];
+
+    selects.forEach((select) => {
+      if (!select) return;
+      const currentValue = select.value;
+      select.innerHTML = '<option value="">Select a prompt kit...</option>' + this.promptKits.map((kit) => (
+        `<option value="${kit.id}">${this.escapeHtml(kit.name)}</option>`
+      )).join('');
+
+      if (currentValue && this.promptKits.some((kit) => String(kit.id) === String(currentValue))) {
+        select.value = currentValue;
+      }
+    });
   },
   
   setupEventListeners() {
@@ -2545,13 +2770,39 @@ const ABTestingModule = {
     try {
       const response = await fetch('/api/ab-tests');
       if (response.ok) {
-        this.tests = await response.json();
+        const tests = await response.json();
+        this.tests = await Promise.all(tests.map((test) => this.hydrateTest(test)));
         this.renderTests();
+        return;
       }
     } catch (error) {
-      console.log('Using local A/B test data');
-      this.tests = this.getLocalTests();
-      this.renderTests();
+      console.warn('Using local A/B test data', error);
+    }
+
+    this.tests = this.getLocalTests().map((test) => this.normalizeTest(test));
+    this.renderTests();
+  },
+
+  async hydrateTest(test) {
+    const normalized = this.normalizeTest(test);
+
+    try {
+      const response = await fetch(`/api/ab-tests/${normalized.id}`);
+      if (!response.ok) {
+        return normalized;
+      }
+
+      const details = await response.json();
+      return this.normalizeTest({
+        ...normalized,
+        ...details,
+        results: details.results,
+        statistics: details.statistics,
+        variantA: details.variantA || normalized.variantA,
+        variantB: details.variantB || normalized.variantB,
+      });
+    } catch (error) {
+      return normalized;
     }
   },
   
@@ -2573,6 +2824,16 @@ const ABTestingModule = {
     
     if (!name) {
       showNotification('Please enter a test name', 'error');
+      return;
+    }
+
+    if (!variantAId || !variantBId) {
+      showNotification('Please select both prompt kit variants', 'error');
+      return;
+    }
+
+    if (variantAId === variantBId) {
+      showNotification('Variant A and Variant B must be different prompt kits', 'error');
       return;
     }
     
@@ -2601,13 +2862,13 @@ const ABTestingModule = {
       
       if (response.ok) {
         const savedTest = await response.json();
-        this.tests.unshift(savedTest);
+        this.tests.unshift(await this.hydrateTest(savedTest));
       } else {
-        this.tests.unshift(test);
+        this.tests.unshift(this.normalizeTest(test));
         this.saveLocalTests();
       }
     } catch (error) {
-      this.tests.unshift(test);
+      this.tests.unshift(this.normalizeTest(test));
       this.saveLocalTests();
     }
     
@@ -2626,7 +2887,10 @@ const ABTestingModule = {
     test.startedAt = new Date().toISOString();
     
     try {
-      await fetch(`/api/ab-tests/${testId}/start`, { method: 'POST' });
+      const response = await fetch(`/api/ab-tests/${testId}/start`, { method: 'POST' });
+      if (!response.ok) {
+        throw new Error(`Start failed with ${response.status}`);
+      }
     } catch (error) {
       this.saveLocalTests();
     }
@@ -2648,7 +2912,14 @@ const ABTestingModule = {
     test.winner = rateB > rateA ? 'B' : (rateA > rateB ? 'A' : null);
     
     try {
-      await fetch(`/api/ab-tests/${testId}/end`, { method: 'POST' });
+      const response = await fetch(`/api/ab-tests/${testId}/end`, { method: 'POST' });
+      if (response.ok) {
+        const payload = await response.json();
+        test.winner = payload.winner || test.winner;
+        test.statistics = payload.statistics || test.statistics;
+      } else {
+        throw new Error(`End failed with ${response.status}`);
+      }
     } catch (error) {
       this.saveLocalTests();
     }
@@ -2657,7 +2928,7 @@ const ABTestingModule = {
     showNotification(`A/B test completed! ${test.winner ? `Variant ${test.winner} wins!` : 'No clear winner.'}`, 'success');
   },
   
-  recordResult(testId, variant, success, latencyMs) {
+  async recordResult(testId, variant, success, latencyMs, experimentId = null) {
     const test = this.tests.find(t => t.id === testId);
     if (!test || test.status !== 'running') return;
     
@@ -2666,6 +2937,32 @@ const ABTestingModule = {
     test.results[variant].avgLatency = 
       (test.results[variant].avgLatency * (test.results[variant].total - 1) + latencyMs) / test.results[variant].total;
     
+    try {
+      const response = await fetch(`/api/ab-tests/${testId}/results`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          variant,
+          experimentId,
+          success,
+          latencyMs,
+        }),
+      });
+
+      if (response.ok) {
+        const payload = await response.json();
+        if (payload.autoEnded) {
+          test.status = 'completed';
+          test.winner = payload.winner || test.winner;
+          test.statistics = payload.statistics || test.statistics;
+        }
+      } else {
+        throw new Error(`Result recording failed with ${response.status}`);
+      }
+    } catch (error) {
+      this.saveLocalTests();
+    }
+
     this.saveLocalTests();
     this.renderTests();
     
@@ -2674,6 +2971,70 @@ const ABTestingModule = {
     if (totalSamples >= test.minSamples) {
       this.checkStatisticalSignificance(test);
     }
+  },
+
+  findPromptKit(kitId) {
+    return this.promptKits.find((kit) => String(kit.id) === String(kitId))
+      || window.WorkflowTracker?.data?.promptKits?.find((kit) => String(kit.id) === String(kitId))
+      || null;
+  },
+
+  prepareVariantRun(testId, variant) {
+    const test = this.tests.find((entry) => entry.id === testId);
+    if (!test) return;
+
+    const kitId = variant === 'A' ? test.variantAId : test.variantBId;
+    const promptKit = this.findPromptKit(kitId);
+    if (!promptKit) {
+      showNotification('Prompt kit not found for this variant', 'error');
+      return;
+    }
+
+    const promptEl = document.getElementById('playgroundPrompt');
+    if (promptEl) {
+      promptEl.value = promptKit.prompt || '';
+    }
+
+    const selectedModels = Array.isArray(promptKit.models) ? promptKit.models : [];
+    if (selectedModels.length) {
+      const toggles = document.querySelectorAll('#model-toggles input[type="checkbox"]');
+      toggles.forEach((toggle) => {
+        toggle.checked = selectedModels.includes(toggle.value);
+      });
+    }
+
+    this.pendingRun = {
+      testId,
+      variant,
+      promptKitId: kitId,
+      prompt: promptKit.prompt || '',
+    };
+
+    const section = document.getElementById('playground');
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    showNotification(`Loaded Variant ${variant} into the Playground`, 'info');
+  },
+
+  handleExperimentTracked(savedExperiment, localExperiment) {
+    if (!this.pendingRun) return;
+
+    const experiment = savedExperiment || localExperiment;
+    const successRate = experiment?.success_rate ?? experiment?.successRate ?? 0;
+    const avgLatency = experiment?.avg_latency ?? experiment?.avgLatency ?? 0;
+    const success = successRate >= 70;
+
+    this.recordResult(
+      this.pendingRun.testId,
+      this.pendingRun.variant,
+      success,
+      avgLatency,
+      experiment?.id || null
+    );
+
+    this.pendingRun = null;
   },
   
   checkStatisticalSignificance(test) {
@@ -2724,6 +3085,8 @@ const ABTestingModule = {
         if (action === 'start') this.startTest(testId);
         else if (action === 'end') this.endTest(testId);
         else if (action === 'view') this.viewTestDetails(testId);
+        else if (action === 'run-a') this.prepareVariantRun(testId, 'A');
+        else if (action === 'run-b') this.prepareVariantRun(testId, 'B');
       });
     });
   },
@@ -2793,6 +3156,8 @@ const ABTestingModule = {
         ` : ''}
         <div class="ab-test-actions">
           <button class="btn btn-sm btn-ghost" data-action="view" data-test-id="${test.id}">View Details</button>
+          ${test.status === 'running' ? `<button class="btn btn-sm btn-ghost" data-action="run-a" data-test-id="${test.id}">Run A</button>` : ''}
+          ${test.status === 'running' ? `<button class="btn btn-sm btn-ghost" data-action="run-b" data-test-id="${test.id}">Run B</button>` : ''}
           ${test.status === 'draft' ? `<button class="btn btn-sm btn-primary" data-action="start" data-test-id="${test.id}">Start Test</button>` : ''}
           ${test.status === 'running' ? `<button class="btn btn-sm btn-outline" data-action="end" data-test-id="${test.id}">End Test</button>` : ''}
         </div>
