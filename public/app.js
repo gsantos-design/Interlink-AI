@@ -177,6 +177,7 @@ async function fetchModels() {
   // Force defaults first to ensure UI populates immediately
   models = [...defaultModels];
   renderModelSelectors();
+  populateChatModelSelect();
 
   try {
     const res = await fetch('/api/models');
@@ -195,6 +196,7 @@ async function fetchModels() {
           };
         });
         renderModelSelectors();
+        populateChatModelSelect();
       }
     }
   } catch (err) {
@@ -224,6 +226,22 @@ function renderModelSelectors() {
       container.appendChild(label);
     });
   });
+}
+
+function populateChatModelSelect() {
+  const select = document.getElementById('chatModel');
+  if (!select) return;
+
+  const previousValue = select.value;
+  select.innerHTML = models
+    .map((model) => `<option value="${model.id}">${model.label}</option>`)
+    .join('');
+
+  if (models.some((model) => model.id === previousValue)) {
+    select.value = previousValue;
+  } else if (models.some((model) => model.id === 'openai')) {
+    select.value = 'openai';
+  }
 }
 
 function getSelectedModelIds(containerId = 'model-toggles') {
@@ -963,12 +981,16 @@ function selectTutor(tutorId) {
   
   // Update tutor display
   const avatarLarge = document.getElementById('activeTutorIcon');
+  const avatarImage = document.getElementById('activeTutorImg');
   const tutorName = document.getElementById('activeTutorName');
   const tutorGreeting = document.getElementById('tutorGreeting');
   
   if (avatarLarge) {
-    avatarLarge.textContent = tutor.icon;
     avatarLarge.style.background = tutor.color;
+  }
+  if (avatarImage) {
+    avatarImage.src = tutor.icon;
+    avatarImage.alt = tutor.name;
   }
   if (tutorName) tutorName.textContent = tutor.name;
   if (tutorGreeting) tutorGreeting.textContent = tutor.name;
@@ -1409,7 +1431,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   wireParticipants();
   wireVoiceControls();
   wireNavigation();
-  // await initVoiceUI(); // Removed non-existent function call
+  await initVoiceUI();
   
   // Load voices for TTS
   if ('speechSynthesis' in window) {
