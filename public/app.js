@@ -270,6 +270,189 @@ async function callModel(modelId, prompt, imageData = null) {
   return data.reply || '';
 }
 
+function getCheckedValues(containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return [];
+
+  return Array.from(container.querySelectorAll('input[type="checkbox"]:checked'))
+    .map((input) => input.value);
+}
+
+function renderCodeValidationResults(payload) {
+  const container = document.getElementById('codeValidationResults');
+  const meta = document.getElementById('validationMeta');
+  if (!container) return;
+
+  const resultCount = payload?.meta?.totalFindings || 0;
+  const providerCount = payload?.meta?.successfulProviders || 0;
+  if (meta) {
+    meta.textContent = providerCount
+      ? `${providerCount} provider${providerCount === 1 ? '' : 's'} • ${resultCount} finding${resultCount === 1 ? '' : 's'}`
+      : 'No successful providers';
+  }
+
+  if (!payload || (!payload.results?.length && !payload.errors?.length)) {
+    container.innerHTML = `
+      <div class="results-placeholder">
+        <p>No validation data yet.</p>
+      </div>
+    `;
+    return;
+  }
+
+  const providerHtml = (payload.results || []).map((result) => `
+    <article class="validation-provider-card">
+      <div class="validation-provider-head">
+        <h4>${escapeHtml(result.provider)}</h4>
+        <span class="validation-provider-model">${escapeHtml(result.model)}</span>
+      </div>
+      <div class="validation-provider-summary">${escapeHtml(result.summary || 'No summary returned.')}</div>
+    </article>
+  `).join('');
+
+  const findingsHtml = (payload.mergedFindings || []).map((finding) => `
+    <article class="validation-finding-card">
+      <div class="validation-finding-head">
+        <h4>${escapeHtml(finding.title)}</h4>
+        <span class="severity-pill severity-${escapeHtml(finding.severity)}">${escapeHtml(finding.severity)}</span>
+      </div>
+      <div class="validation-finding-meta">
+        ${escapeHtml(finding.provider)} • ${escapeHtml(finding.category)} • ${escapeHtml(finding.file || 'snippet')}${finding.line ? `:${finding.line}` : ''}
+      </div>
+      <p>${escapeHtml(finding.description || '')}</p>
+      ${finding.recommendation ? `<p><strong>Recommendation:</strong> ${escapeHtml(finding.recommendation)}</p>` : ''}
+    </article>
+  `).join('');
+
+  const errorsHtml = (payload.errors || []).map((entry) => `
+    <article class="validation-error-card">
+      <div class="validation-finding-head">
+        <h4>${escapeHtml(entry.provider)}</h4>
+        <span class="severity-pill severity-medium">error</span>
+      </div>
+      <p>${escapeHtml(entry.error)}</p>
+    </article>
+  `).join('');
+
+  container.innerHTML = `
+    ${providerHtml ? `<div class="validation-provider-list">${providerHtml}</div>` : ''}
+    ${findingsHtml ? `<h4 class="validation-section-title">Merged Findings</h4><div class="validation-findings-list">${findingsHtml}</div>` : '<p class="validation-provider-summary">No findings returned.</p>'}
+    ${errorsHtml ? `<h4 class="validation-section-title">Provider Errors</h4><div class="validation-errors-list">${errorsHtml}</div>` : ''}
+  `;
+}
+
+function renderModelUpdates(modelsData, updatedAt) {
+  const container = document.getElementById('modelUpdatesList');
+  const meta = document.getElementById('modelUpdatesMeta');
+  if (!container) return;
+
+  if (meta) {
+    meta.textContent = updatedAt ? `Updated ${new Date(updatedAt).toLocaleString()}` : 'Metadata loaded';
+  }
+
+  if (!Array.isArray(modelsData) || !modelsData.length) {
+    container.innerHTML = `
+      <div class="results-placeholder">
+        <p>No model version data available.</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = modelsData.map((model) => `
+    <article class="model-update-card">
+      <div class="model-update-head">
+        <h4>${escapeHtml(model.label)}</h4>
+        <span class="status-pill status-${escapeHtml(model.status)}">${escapeHtml(model.status.replace('_', ' '))}</span>
+      </div>
+      <div class="model-update-provider">${escapeHtml(model.provider)} • ${escapeHtml(model.version)}</div>
+      <p>${model.lastVerifiedAt ? `Last verified ${escapeHtml(new Date(model.lastVerifiedAt).toLocaleString())}` : 'Not yet verified automatically'}</p>
+    </article>
+  `).join('');
+}
+
+async function loadModelUpdates() {
+  try {
+    const response = await fetch('/api/model-updates');
+    if (!response.ok) {
+      throw new Error(`Model updates request failed with ${response.status}`);
+    }
+
+    const data = await response.json();
+    renderModelUpdates(data.models, data.updatedAt);
+  } catch (error) {
+    console.warn('Model updates failed', error);
+    renderModelUpdates([], null);
+  }
+}
+
+async function handleCodeValidationRun() {
+  const codeEl = document.getElementById('validationCode');
+  const languageEl = document.getElementById('validationLanguage');
+  const filenameEl = document.getElementById('validationFilename');
+  const repoUrlEl = document.getElementById('validationRepoUrl');
+  const contextEl = document.getElementById('validationContext');
+
+  const code = codeEl?.value?.trim();
+  if (!code) {
+    showNotification('Please enter code to validate', 'error');
+    return;
+  }
+
+  const providers = getCheckedValues('codeValidationProviders');
+  const checks = getCheckedValues('codeValidationChecks');
+  if (!providers.length || !checks.length) {
+    showNotification('Select at least one provider and one check', 'error');
+    return;
+  }
+
+  const container = document.getElementById('codeValidationResults');
+  const meta = document.getElementById('validationMeta');
+  if (meta) meta.textContent = 'Running...';
+  if (container) {
+    container.innerHTML = `
+      <div class="results-placeholder">
+        <p>Running validation across ${providers.join(', ')}...</p>
+      </div>
+    `;
+  }
+
+  try {
+    const response = await fetch('/api/validate/code', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        code,
+        language: languageEl?.value?.trim() || 'text',
+        filename: filenameEl?.value?.trim() || 'snippet',
+        repoUrl: repoUrlEl?.value?.trim() || '',
+        context: contextEl?.value?.trim() || '',
+        checks,
+        providers,
+      }),
+    });
+
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok && !data.results?.length) {
+      throw new Error(data.error || `Validation failed with ${response.status}`);
+    }
+
+    renderCodeValidationResults(data);
+    showNotification('Code validation complete', 'success');
+  } catch (error) {
+    console.error('Code validation failed', error);
+    renderCodeValidationResults({ results: [], mergedFindings: [], errors: [{ provider: 'system', error: error.message || 'Validation failed' }], meta: { successfulProviders: 0, totalFindings: 0 } });
+    showNotification(error.message || 'Code validation failed', 'error');
+  }
+}
+
+function wireCodeValidation() {
+  const button = document.getElementById('runCodeValidation');
+  if (button) {
+    button.addEventListener('click', handleCodeValidationRun);
+  }
+}
+
 // ==========================================
 // Hero Section
 // ==========================================
@@ -1431,6 +1614,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderRaceEntries();
   wireHero();
   wirePlayground();
+  wireCodeValidation();
   wireRace();
   wirePricingButtons();
   wireCTA();
@@ -1438,6 +1622,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   wireVoiceControls();
   wireNavigation();
   await initVoiceUI();
+  await loadModelUpdates();
   
   // Load voices for TTS
   if ('speechSynthesis' in window) {

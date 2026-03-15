@@ -3699,6 +3699,182 @@ select.input option {
   font-size: 0.95rem;
 }
 
+.code-validation-layout {
+  display: grid;
+  grid-template-columns: minmax(320px, 420px) minmax(0, 1fr);
+  gap: 32px;
+  align-items: start;
+}
+
+.code-validation-panel,
+.validation-results-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow);
+}
+
+.code-validation-results {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.validation-toggle-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.validation-toggle-group label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--muted);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.validation-toggle-group label:has(input:checked) {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.validation-toggle-group input[type="checkbox"] {
+  accent-color: var(--accent);
+}
+
+.code-textarea {
+  min-height: 280px;
+  font-family: Consolas, "SFMono-Regular", Menlo, monospace;
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.validation-results-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.validation-results-header h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.validation-meta {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.validation-provider-list,
+.validation-findings-list,
+.validation-errors-list,
+.model-updates-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.validation-provider-card,
+.validation-finding-card,
+.validation-error-card,
+.model-update-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-contrast);
+  padding: 16px;
+}
+
+.validation-provider-head,
+.validation-finding-head,
+.model-update-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.validation-provider-head h4,
+.validation-finding-head h4,
+.model-update-head h4 {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.validation-provider-model,
+.model-update-provider,
+.validation-finding-meta,
+.validation-provider-summary {
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.validation-section-title {
+  margin: 18px 0 10px;
+  font-size: 0.92rem;
+  color: var(--text);
+}
+
+.severity-pill,
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 0.76rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.severity-low {
+  background: rgba(16, 185, 129, 0.15);
+  color: #6ee7b7;
+}
+
+.severity-medium {
+  background: rgba(245, 158, 11, 0.16);
+  color: #fcd34d;
+}
+
+.severity-high,
+.severity-critical {
+  background: rgba(239, 68, 68, 0.16);
+  color: #fca5a5;
+}
+
+.severity-info {
+  background: rgba(59, 130, 246, 0.15);
+  color: #93c5fd;
+}
+
+.status-configured {
+  background: rgba(16, 185, 129, 0.15);
+  color: #6ee7b7;
+}
+
+.status-missing_key {
+  background: rgba(148, 163, 184, 0.15);
+  color: #cbd5e1;
+}
+
+.validation-finding-card p,
+.validation-provider-card p,
+.validation-error-card p,
+.model-update-card p {
+  margin: 6px 0 0;
+}
+
 .status-text {
   font-size: 0.9rem;
   color: var(--muted);
@@ -3819,6 +3995,10 @@ select.input option {
 
 @media (max-width: 768px) {
   .control-row {
+    grid-template-columns: 1fr;
+  }
+
+  .code-validation-layout {
     grid-template-columns: 1fr;
   }
   

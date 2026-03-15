@@ -285,6 +285,95 @@
         </div>
       </section>
 
+      <section class="section section-alt" id="code-validation">
+        <div class="section-header">
+          <p class="kicker">Code Validation</p>
+          <h2>Run AI code review and security validation in one pass.</h2>
+          <p class="section-sub">Send a snippet through OpenAI and Claude-style reviewers, merge the findings, and keep model/version visibility in the same workspace.</p>
+        </div>
+
+        <div class="code-validation-layout">
+          <div class="code-validation-panel">
+            <div class="control-section">
+              <label class="field-label" for="validationLanguage">Language</label>
+              <input type="text" id="validationLanguage" class="input" value="javascript" />
+            </div>
+            <div class="control-section">
+              <label class="field-label" for="validationFilename">Filename</label>
+              <input type="text" id="validationFilename" class="input" value="auth.js" />
+            </div>
+            <div class="control-section">
+              <label class="field-label" for="validationRepoUrl">Repository URL (Optional)</label>
+              <input type="text" id="validationRepoUrl" class="input" placeholder="https://github.com/your-org/your-repo" />
+            </div>
+            <div class="control-section">
+              <label class="field-label" for="validationContext">Review Context (Optional)</label>
+              <textarea id="validationContext" class="input" rows="3" placeholder="What is this code supposed to do? Are there security or compliance concerns?"></textarea>
+            </div>
+            <div class="control-section">
+              <label class="field-label">Providers</label>
+              <div class="validation-toggle-group" id="codeValidationProviders">
+                <label><input type="checkbox" value="openai" checked /><span>OpenAI</span></label>
+                <label><input type="checkbox" value="anthropic" checked /><span>Anthropic</span></label>
+              </div>
+            </div>
+            <div class="control-section">
+              <label class="field-label">Checks</label>
+              <div class="validation-toggle-group" id="codeValidationChecks">
+                <label><input type="checkbox" value="quality" checked /><span>Code Quality</span></label>
+                <label><input type="checkbox" value="security" checked /><span>Security</span></label>
+              </div>
+            </div>
+            <div class="control-section">
+              <label class="field-label" for="validationCode">Code</label>
+              <textarea id="validationCode" class="input code-textarea" rows="14">const password = 'secret';
+async function login(req, res) {
+  if (req.body.password === password) {
+    res.json({ ok: true, token: 'hardcoded-token' });
+  } else {
+    res.status(401).json({ ok: false });
+  }
+}</textarea>
+            </div>
+            <button id="runCodeValidation" class="btn btn-primary full">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 12l2 2 4-4"/>
+                <path d="M21 12c.552 0 1 .449.976 1a9 9 0 1 1-3.064-6.747"/>
+              </svg>
+              Run code validation
+            </button>
+          </div>
+
+          <div class="code-validation-results">
+            <div class="validation-results-card">
+              <div class="validation-results-header">
+                <h3>Validation Results</h3>
+                <span id="validationMeta" class="validation-meta">No run yet</span>
+              </div>
+              <div id="codeValidationResults" class="results-placeholder">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.5">
+                  <path d="M9 12l2 2 4-4"/>
+                  <path d="M21 12c.552 0 1 .449.976 1a9 9 0 1 1-3.064-6.747"/>
+                </svg>
+                <p>Run a code validation pass to see provider summaries and merged findings.</p>
+              </div>
+            </div>
+
+            <div class="validation-results-card">
+              <div class="validation-results-header">
+                <h3>AI Version Updates</h3>
+                <span id="modelUpdatesMeta" class="validation-meta">Loading...</span>
+              </div>
+              <div id="modelUpdatesList" class="model-updates-grid">
+                <div class="results-placeholder">
+                  <p>Loading model version metadata...</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section class="section" id="races">
         <div class="section-header">
           <p class="kicker">Prompt Races</p>
@@ -1751,6 +1840,6 @@
     </div>
   </div>
 
-  <script src="app.js?v=2.2"></script>
+  <script src="app.js?v=2.3"></script>
 </body>
 </html>

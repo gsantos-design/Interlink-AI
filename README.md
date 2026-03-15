@@ -33,6 +33,7 @@ If a key is missing, the services return stubbed text so the UI still works.
 - `routes/chatRoutes.js` — POST `/api/chat` { model, prompt }
 - `routes/contestRoutes.js` — POST `/api/contest` { prompt, models[] } fan-out to providers, returns timings
 - `routes/modelsRoutes.js` — GET `/api/models` for frontend toggles
+- `routes/modelUpdatesRoutes.js` — GET `/api/model-updates` for model version/status metadata
 - `routes/codeValidationRoutes.js` — POST `/api/validate/code` for AI code quality + security review
 - `routes/billingRoutes.js` — POST `/api/billing/create-checkout-session` (expects Stripe keys)
 - `services/*Service.js` — OpenAI/Anthropic/Gemini helpers with real calls when keys exist and stub fallbacks otherwise
