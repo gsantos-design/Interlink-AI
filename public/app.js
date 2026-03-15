@@ -75,6 +75,7 @@ let uploadedImageData = null;
 let currentTutorialStep = 1;
 let selectedTutor = null;
 let chatHistory = [];
+let lastCodeValidationPayload = null;
 
 // Language options for voice
 const languageOptions = [
@@ -278,12 +279,81 @@ function getCheckedValues(containerId) {
     .map((input) => input.value);
 }
 
+function getSeverityRank(severity) {
+  const ranks = { critical: 5, high: 4, medium: 3, low: 2, info: 1 };
+  return ranks[String(severity || '').toLowerCase()] || 0;
+}
+
+function sortValidationFindings(findings = []) {
+  return [...findings].sort((a, b) => {
+    const severityDiff = getSeverityRank(b.severity) - getSeverityRank(a.severity);
+    if (severityDiff !== 0) return severityDiff;
+
+    const fileDiff = String(a.file || '').localeCompare(String(b.file || ''));
+    if (fileDiff !== 0) return fileDiff;
+
+    return (a.line || 0) - (b.line || 0);
+  });
+}
+
+function buildValidationReportText(payload) {
+  const results = payload?.results || [];
+  const findings = sortValidationFindings(payload?.mergedFindings || []);
+  const errors = payload?.errors || [];
+
+  const providerSection = results.length
+    ? results.map((result) => `- ${result.provider} (${result.model}): ${result.summary || 'No summary returned.'}`).join('\n')
+    : '- No successful providers';
+
+  const findingSection = findings.length
+    ? findings.map((finding) => {
+      const location = `${finding.file || 'snippet'}${finding.line ? `:${finding.line}` : ''}`;
+      return `- [${String(finding.severity || 'medium').toUpperCase()}] ${finding.title} | ${finding.provider} | ${finding.category} | ${location}\n  ${finding.description || ''}\n  Recommendation: ${finding.recommendation || 'None provided.'}`;
+    }).join('\n')
+    : '- No findings returned.';
+
+  const errorSection = errors.length
+    ? errors.map((entry) => `- ${entry.provider}: ${entry.error}`).join('\n')
+    : '- None';
+
+  return [
+    'Interlink AI Code Validation Report',
+    '',
+    'Providers',
+    providerSection,
+    '',
+    'Merged Findings',
+    findingSection,
+    '',
+    'Provider Errors',
+    errorSection,
+  ].join('\n');
+}
+
+async function copyValidationReport() {
+  if (!lastCodeValidationPayload) {
+    showNotification('Run a validation pass before copying the report', 'error');
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(buildValidationReportText(lastCodeValidationPayload));
+    showNotification('Validation report copied', 'success');
+  } catch (error) {
+    console.error('Failed to copy validation report', error);
+    showNotification('Unable to copy report from this browser', 'error');
+  }
+}
+
 function renderCodeValidationResults(payload) {
   const container = document.getElementById('codeValidationResults');
   const meta = document.getElementById('validationMeta');
   if (!container) return;
 
-  const resultCount = payload?.meta?.totalFindings || 0;
+  lastCodeValidationPayload = payload || null;
+
+  const mergedFindings = sortValidationFindings(payload?.mergedFindings || []);
+  const resultCount = mergedFindings.length;
   const providerCount = payload?.meta?.successfulProviders || 0;
   if (meta) {
     meta.textContent = providerCount
@@ -310,7 +380,7 @@ function renderCodeValidationResults(payload) {
     </article>
   `).join('');
 
-  const findingsHtml = (payload.mergedFindings || []).map((finding) => `
+  const findingsHtml = mergedFindings.map((finding) => `
     <article class="validation-finding-card">
       <div class="validation-finding-head">
         <h4>${escapeHtml(finding.title)}</h4>
@@ -366,6 +436,7 @@ function renderModelUpdates(modelsData, updatedAt) {
         <span class="status-pill status-${escapeHtml(model.status)}">${escapeHtml(model.status.replace('_', ' '))}</span>
       </div>
       <div class="model-update-provider">${escapeHtml(model.provider)} • ${escapeHtml(model.version)}</div>
+      ${model.reviewModel ? `<div class="model-update-review">Code validation model: ${escapeHtml(model.reviewModel)}</div>` : ''}
       <p>${model.lastVerifiedAt ? `Last verified ${escapeHtml(new Date(model.lastVerifiedAt).toLocaleString())}` : 'Not yet verified automatically'}</p>
     </article>
   `).join('');
@@ -456,6 +527,11 @@ function wireCodeValidation() {
   const button = document.getElementById('runCodeValidation');
   if (button) {
     button.addEventListener('click', handleCodeValidationRun);
+  }
+
+  const copyButton = document.getElementById('copyValidationReport');
+  if (copyButton) {
+    copyButton.addEventListener('click', copyValidationReport);
   }
 }
 

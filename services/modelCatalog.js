@@ -133,12 +133,25 @@ function getPublicModels() {
   return getAvailableModels().map(toPublicModel);
 }
 
+function getReviewModelForUpdate(model) {
+  if (model.id === 'openai') {
+    return process.env.OPENAI_CODE_REVIEW_MODEL || null;
+  }
+
+  if (model.id === 'anthropic') {
+    return process.env.ANTHROPIC_CODE_REVIEW_MODEL || null;
+  }
+
+  return null;
+}
+
 function getModelUpdates() {
   return modelCatalog.map((model) => ({
     id: model.id,
     label: model.label,
     provider: model.provider,
     version: model.version,
+    reviewModel: getReviewModelForUpdate(model),
     status: isConfigured(model) ? 'configured' : 'missing_key',
     configured: isConfigured(model),
     lastVerifiedAt: null,

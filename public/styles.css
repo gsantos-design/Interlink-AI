@@ -3765,6 +3765,11 @@ select.input option {
   margin-bottom: 16px;
 }
 
+.validation-results-header > div {
+  display: grid;
+  gap: 4px;
+}
+
 .validation-results-header h3 {
   margin: 0;
   font-size: 1.05rem;
@@ -3773,6 +3778,13 @@ select.input option {
 .validation-meta {
   font-size: 0.82rem;
   color: var(--muted);
+}
+
+.validation-action-btn {
+  width: auto;
+  min-width: 120px;
+  padding: 10px 14px;
+  font-size: 0.82rem;
 }
 
 .validation-provider-list,
@@ -3816,6 +3828,12 @@ select.input option {
 .validation-provider-summary {
   color: var(--muted);
   font-size: 0.84rem;
+}
+
+.model-update-review {
+  margin-top: 8px;
+  font-size: 0.8rem;
+  color: var(--text);
 }
 
 .validation-section-title {

@@ -304,7 +304,7 @@
             </div>
             <div class="control-section">
               <label class="field-label" for="validationRepoUrl">Repository URL (Optional)</label>
-              <input type="text" id="validationRepoUrl" class="input" placeholder="https://github.com/your-org/your-repo" />
+              <input type="text" id="validationRepoUrl" class="input" placeholder="https://github.com/your-repo" />
             </div>
             <div class="control-section">
               <label class="field-label" for="validationContext">Review Context (Optional)</label>
@@ -347,8 +347,11 @@ async function login(req, res) {
           <div class="code-validation-results">
             <div class="validation-results-card">
               <div class="validation-results-header">
-                <h3>Validation Results</h3>
-                <span id="validationMeta" class="validation-meta">No run yet</span>
+                <div>
+                  <h3>Validation Results</h3>
+                  <span id="validationMeta" class="validation-meta">No run yet</span>
+                </div>
+                <button id="copyValidationReport" class="btn btn-secondary validation-action-btn" type="button">Copy report</button>
               </div>
               <div id="codeValidationResults" class="results-placeholder">
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.5">
