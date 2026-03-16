@@ -32,9 +32,9 @@ ProviderModelsOpenAIGPT-4o, GPT-4, GPT-3.5 Turbo, o1, o3AnthropicClaude 3.5 Sonn
 
 Quick Start
 bash# Clone the repository
-git clone https://github.com/gsantos-design/Interlink-AI.git
+git clone 
 cd Interlink-AI
-
+https://interlink-ai-1-codex-code-validation.onrender.com/Default
 # Install dependencies
 npm install
 
@@ -130,11 +130,12 @@ Render will serve the public/ directory via Express
 Version History
 VersionKey Featuresv3.0Backend persistence (SQLite), real-time collaboration (Socket.IO), CI/CD pipeline, time-series charts (Chart.js), A/B testing with statistical significancev2.0Research analytics dashboard, DevOps workflow pipeline, 12+ models, AI expert avatarsv1.0Multi-model playground, prompt racing, voice/vision input, expert mode, pricing
 
-Built By
-Giselle Santos — Founder & CPO, MiraElla Group
-Telecom infrastructure veteran (Nokia Bell Labs, BT-MIT Labs, Lumen, Sprint) applying carrier-grade orchestration principles to AI model deployment.
+Built By Giselle Santos — Founder & CPO, MiraElla Group
+Carrier-grade multicloud, wireless, microservices, AI security, and government compliance architect. Background spans Nokia Nuage, Nokia Bell Labs, BT / BT-MIT Labs / Adastral Park, Honeywell, and Exiger — applying infrastructure-grade orchestration principles to AI model deployment at scale.
 📧 hello@interlinkai.com
 🔗 MiraElla Group
 
 License
-MIT
+MIT 
+
+
