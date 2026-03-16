@@ -174,7 +174,7 @@ VersionBranchKey Featuresv3.0 + Codexcodex/code-validationAll v3.0 features + AI
 Built By
 Giselle Santos — Founder & CPO, MiraElla Group
 Carrier-grade multicloud, wireless, microservices, AI security, and government compliance architect. Background spans Nokia Nuage, Nokia Bell Labs, BT / BT-MIT Labs / Adastral Park, Honeywell, and Exiger — applying infrastructure-grade orchestration principles to AI model deployment at scale.
-📧 hello@interlinkai.com
+📧director@miraellagroup.com or gsantos@fabricplexus.com
 🔗 MiraElla Group
 
 License
